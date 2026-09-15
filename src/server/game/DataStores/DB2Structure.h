@@ -4998,8 +4998,6 @@ struct NeighborhoodPlotEntry
     uint32 Flags;
 };
 
-};
-
 struct TraitTreeXTraitCurrencyEntry
 {
     uint32 ID;
