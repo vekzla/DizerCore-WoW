@@ -137,6 +137,23 @@ TC_GAME_API extern DB2Storage<GuildColorBorderEntry>                sGuildColorB
 TC_GAME_API extern DB2Storage<GuildColorEmblemEntry>                sGuildColorEmblemStore;
 TC_GAME_API extern DB2Storage<GuildPerkSpellsEntry>                 sGuildPerkSpellsStore;
 TC_GAME_API extern DB2Storage<HolidaysEntry>                        sHolidaysStore;
+
+// ============================================================================
+// HOUSING SYSTEM DB2 STORAGE
+// ============================================================================
+TC_GAME_API extern DB2Storage<HouseEntry>                        sHouseStore;
+TC_GAME_API extern DB2Storage<HouseDecorEntry>                   sHouseDecorStore;
+TC_GAME_API extern DB2Storage<HouseDecorMaterialEntry>            sHouseDecorMaterialStore;
+TC_GAME_API extern DB2Storage<HouseDecorThemeSetEntry>            sHouseDecorThemeSetStore;
+TC_GAME_API extern DB2Storage<HouseExteriorWmoDataEntry>          sHouseExteriorWmoDataStore;
+TC_GAME_API extern DB2Storage<HouseLevelDataEntry>               sHouseLevelDataStore;
+TC_GAME_API extern DB2Storage<HouseLevelRewardInfoEntry>          sHouseLevelRewardInfoStore;
+TC_GAME_API extern DB2Storage<HouseRoomEntry>                     sHouseRoomStore;
+TC_GAME_API extern DB2Storage<HouseThemeEntry>                    sHouseThemeStore;
+TC_GAME_API extern DB2Storage<NeighborhoodInitiativeEntry>         sNeighborhoodInitiativeStore;
+TC_GAME_API extern DB2Storage<NeighborhoodMapEntry>               sNeighborhoodMapStore;
+TC_GAME_API extern DB2Storage<NeighborhoodNameGenEntry>            sNeighborhoodNameGenStore;
+TC_GAME_API extern DB2Storage<NeighborhoodPlotEntry>               sNeighborhoodPlotStore;
 TC_GAME_API extern DB2Storage<ImportPriceArmorEntry>                sImportPriceArmorStore;
 TC_GAME_API extern DB2Storage<ImportPriceQualityEntry>              sImportPriceQualityStore;
 TC_GAME_API extern DB2Storage<ImportPriceShieldEntry>               sImportPriceShieldStore;

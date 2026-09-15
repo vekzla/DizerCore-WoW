@@ -1542,6 +1542,57 @@ class TC_GAME_API WorldSession
 
         void HandleDeclineNeighborhoodInvites(WorldPackets::Housing::DeclineNeighborhoodInvites const& declineNeighborhoodInvites);
 
+        // Housing handlers
+        void Handle_HousingDecorDeleteFromStorage(WorldPackets::Housing::HousingDecorDeleteFromStorage const& packet);
+        void Handle_HousingDecorLock(WorldPackets::Housing::HousingDecorLock const& packet);
+        void Handle_HousingDecorMove(WorldPackets::Housing::HousingDecorMove const& packet);
+        void Handle_HousingDecorPlace(WorldPackets::Housing::HousingDecorPlace const& packet);
+        void Handle_HousingDecorRedeemDeferredDecor(WorldPackets::Housing::HousingDecorRedeemDeferredDecor const& packet);
+        void Handle_HousingDecorRemove(WorldPackets::Housing::HousingDecorRemove const& packet);
+        void Handle_HousingDecorRequestStorage(WorldPackets::Housing::HousingDecorRequestStorage const& packet);
+        void Handle_HousingDecorSetDyeSlots(WorldPackets::Housing::HousingDecorSetDyeSlots const& packet);
+        void Handle_HousingDecorSetEditMode(WorldPackets::Housing::HousingDecorSetEditMode const& packet);
+        void Handle_HousingDecorSetPet(WorldPackets::Housing::HousingDecorSetPet const& packet);
+        void Handle_HousingFixtureCreateFixture(WorldPackets::Housing::HousingFixtureCreateFixture const& packet);
+        void Handle_HousingFixtureDeleteFixture(WorldPackets::Housing::HousingFixtureDeleteFixture const& packet);
+        void Handle_HousingFixtureSetCoreFixture(WorldPackets::Housing::HousingFixtureSetCoreFixture const& packet);
+        void Handle_HousingFixtureSetEditMode(WorldPackets::Housing::HousingFixtureSetEditMode const& packet);
+        void Handle_HousingFixtureSetHouseSize(WorldPackets::Housing::HousingFixtureSetHouseSize const& packet);
+        void Handle_HousingFixtureSetHouseType(WorldPackets::Housing::HousingFixtureSetHouseType const& packet);
+        void Handle_HousingGetCurrentHouseInfo(WorldPackets::Housing::HousingGetCurrentHouseInfo const& packet);
+        void Handle_HousingGetPlayerPermissions(WorldPackets::Housing::HousingGetPlayerPermissions const& packet);
+        void Handle_HousingHouseStatus(WorldPackets::Housing::HousingHouseStatus const& packet);
+        void Handle_HousingPhotoSharingClearAuthorization(WorldPackets::Housing::HousingPhotoSharingClearAuthorization const& packet);
+        void Handle_HousingPhotoSharingCompleteAuthorization(WorldPackets::Housing::HousingPhotoSharingCompleteAuthorization const& packet);
+        void Handle_HousingResetHouse(WorldPackets::Housing::HousingResetHouse const& packet);
+        void Handle_HousingResetKioskMode(WorldPackets::Housing::HousingResetKioskMode const& packet);
+        void Handle_HousingRoomAdd(WorldPackets::Housing::HousingRoomAdd const& packet);
+        void Handle_HousingRoomApplyComponentMaterials(WorldPackets::Housing::HousingRoomApplyComponentMaterials const& packet);
+        void Handle_HousingRoomMove(WorldPackets::Housing::HousingRoomMove const& packet);
+        void Handle_HousingRoomRemove(WorldPackets::Housing::HousingRoomRemove const& packet);
+        void Handle_HousingRoomRotate(WorldPackets::Housing::HousingRoomRotate const& packet);
+        void Handle_HousingRoomSetCeilingType(WorldPackets::Housing::HousingRoomSetCeilingType const& packet);
+        void Handle_HousingRoomSetComponentTheme(WorldPackets::Housing::HousingRoomSetComponentTheme const& packet);
+        void Handle_HousingRoomSetDoorType(WorldPackets::Housing::HousingRoomSetDoorType const& packet);
+        void Handle_HousingRoomSetLayoutEditMode(WorldPackets::Housing::HousingRoomSetLayoutEditMode const& packet);
+        void Handle_HousingSvcsAcceptNeighborhoodOwnership(WorldPackets::Housing::HousingSvcsAcceptNeighborhoodOwnership const& packet);
+        void Handle_HousingSvcsDeleteAllNeighborhoodInvites(WorldPackets::Housing::HousingSvcsDeleteAllNeighborhoodInvites const& packet);
+        void Handle_HousingSvcsGetBnetFriendNeighborhoods(WorldPackets::Housing::HousingSvcsGetBnetFriendNeighborhoods const& packet);
+        void Handle_HousingSvcsGetHouseFinderInfo(WorldPackets::Housing::HousingSvcsGetHouseFinderInfo const& packet);
+        void Handle_HousingSvcsGetHouseFinderNeighborhood(WorldPackets::Housing::HousingSvcsGetHouseFinderNeighborhood const& packet);
+        void Handle_HousingSvcsGetPlayerHousesInfo(WorldPackets::Housing::HousingSvcsGetPlayerHousesInfo const& packet);
+        void Handle_HousingSvcsGetPotentialHouseOwners(WorldPackets::Housing::HousingSvcsGetPotentialHouseOwners const& packet);
+        void Handle_HousingSvcsGuildCreateNeighborhood(WorldPackets::Housing::HousingSvcsGuildCreateNeighborhood const& packet);
+        void Handle_HousingSvcsHouseFinderIgnoreNeighborhood(WorldPackets::Housing::HousingSvcsHouseFinderIgnoreNeighborhood const& packet);
+        void Handle_HousingSvcsNeighborhoodReservePlot(WorldPackets::Housing::HousingSvcsNeighborhoodReservePlot const& packet);
+        void Handle_HousingSvcsPlayerViewHousesByBNetAccount(WorldPackets::Housing::HousingSvcsPlayerViewHousesByBNetAccount const& packet);
+        void Handle_HousingSvcsPlayerViewHousesByPlayer(WorldPackets::Housing::HousingSvcsPlayerViewHousesByPlayer const& packet);
+        void Handle_HousingSvcsRejectNeighborhoodOwnership(WorldPackets::Housing::HousingSvcsRejectNeighborhoodOwnership const& packet);
+        void Handle_HousingSvcsRelinquishHouse(WorldPackets::Housing::HousingSvcsRelinquishHouse const& packet);
+        void Handle_HousingSvcsStartTutorial(WorldPackets::Housing::HousingSvcsStartTutorial const& packet);
+        void Handle_HousingSvcsTeleportToPlot(WorldPackets::Housing::HousingSvcsTeleportToPlot const& packet);
+        void Handle_HousingSvcsUpdateHouseSettings(WorldPackets::Housing::HousingSvcsUpdateHouseSettings const& packet);
+
         void HandleEnableTaxiNodeOpcode(WorldPackets::Taxi::EnableTaxiNode& enableTaxiNode);
         void HandleTaxiNodeStatusQueryOpcode(WorldPackets::Taxi::TaxiNodeStatusQuery& taxiNodeStatusQuery);
         void HandleTaxiQueryAvailableNodesOpcode(WorldPackets::Taxi::TaxiQueryAvailableNodes& taxiQueryAvailableNodes);

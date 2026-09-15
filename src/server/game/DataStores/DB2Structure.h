@@ -4847,6 +4847,155 @@ struct TraitTreeXTraitCostEntry
 {
     uint32 ID;
     uint32 TraitTreeID;
+};
+
+// ============================================================================
+// HOUSING SYSTEM DBC STRUCTURES
+// ============================================================================
+
+struct HouseEntry
+{
+    uint32 ID;
+    LocalizedString Name;
+    uint8 HouseType;                                                   // 0=Small, 1=Medium, 2=Large
+    uint8 Faction;                                                     // 0=Alliance, 1=Horde
+    uint8 HouseStyle;                                                  // Faction-specific style
+    uint32 UiModelSceneID;
+    uint32 FileDataID;
+};
+
+struct HouseDecorEntry
+{
+    uint32 ID;
+    LocalizedString Name;
+    LocalizedString Description;
+    uint32 UiModelSceneID;
+    uint32 FileDataID;
+    uint8 DecorType;                                                  // Type/category of decor
+    uint8 PlacementType;                                               // Where it can be placed
+    uint16 PlacementCost;                                             // Budget cost
+    uint32 DyeCategoryID;                                             // Dye customization options
+    uint32 PlayerConditionID;                                         // Condition to acquire
+    uint32 Flags;
+};
+
+struct HouseDecorMaterialEntry
+{
+    uint32 ID;
+    LocalizedString Name;
+    uint32 MaterialType;
+    uint32 FileDataID;
+    uint32 ColorR;
+    uint32 ColorG;
+    uint32 ColorB;
+};
+
+struct HouseDecorThemeSetEntry
+{
+    uint32 ID;
+    LocalizedString Name;
+    uint32 UiTextureKitID;
+};
+
+struct HouseExteriorWmoDataEntry
+{
+    uint32 ID;
+    uint32 HouseID;
+    uint32 FileDataID;
+    float PositionX;
+    float PositionY;
+    float PositionZ;
+    float Orientation;
+};
+
+struct HouseLevelDataEntry
+{
+    uint32 ID;
+    uint8 Level;
+    uint32 RequiredXP;
+    uint16 InteriorDecorBudget;
+    uint8 RoomPlacementBudget;
+    uint16 ExteriorDecorBudget;
+};
+
+struct HouseLevelRewardInfoEntry
+{
+    uint32 ID;
+    uint8 Level;
+    uint8 RewardType;                                                 // 0=Room, 1=Exterior, 2=Decor, 3=Feature
+    uint32 RewardTemplateID;
+    uint32 Flags;
+};
+
+struct HouseRoomEntry
+{
+    uint32 ID;
+    LocalizedString Name;
+    uint8 RoomType;                                                   // Shape/size type
+    uint8 RoomSize;                                                   // Size category
+    uint16 PlacementCost;                                             // Budget cost
+    uint32 FileDataID;
+    uint32 UiModelSceneID;
+    uint8 DefaultCeilingType;
+    uint8 DefaultDoorType;
+    uint32 MaxComponents;
+};
+
+struct HouseThemeEntry
+{
+    uint32 ID;
+    LocalizedString Name;
+    uint8 Faction;
+    uint8 HouseType;
+    uint32 UiTextureKitID;
+    uint32 FileDataID;
+};
+
+struct NeighborhoodInitiativeEntry
+{
+    uint32 ID;
+    LocalizedString Name;
+    LocalizedString Description;
+    uint8 Faction;
+    uint32 DurationSeconds;
+    uint32 TargetProgress;
+    uint32 XPReward;
+    uint32 Flags;
+};
+
+struct NeighborhoodMapEntry
+{
+    uint32 ID;
+    uint32 MapID;
+    uint32 AreaTableID;
+    float PositionX;
+    float PositionY;
+    float PositionZ;
+    float Orientation;
+};
+
+struct NeighborhoodNameGenEntry
+{
+    uint32 ID;
+    uint8 Faction;
+    uint32 NamePart1;
+    uint32 NamePart2;
+    uint32 NamePart3;
+};
+
+struct NeighborhoodPlotEntry
+{
+    uint32 ID;
+    uint32 NeighborhoodMapID;
+    uint8 PlotIndex;                                                  // 0-54
+    float PositionX;
+    float PositionY;
+    float PositionZ;
+    float Orientation;
+    float PlotWidth;
+    float PlotHeight;
+    uint32 Flags;
+};
     int32 TraitCostID;
 };
 
