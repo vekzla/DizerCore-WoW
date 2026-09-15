@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `room_materials` (
   `materialId` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique material identifier',
   `roomId` int unsigned NOT NULL COMMENT 'Reference to house_rooms table',
   `componentSlot` tinyint unsigned NOT NULL COMMENT 'Component slot to apply material to',
-  `materialId` int unsigned NOT NULL COMMENT 'DBC material template ID',
+  `materialTemplateId` int unsigned NOT NULL COMMENT 'DBC material template ID',
   PRIMARY KEY (`materialId`),
   UNIQUE KEY `uniq_room_component` (`roomId`, `componentSlot`),
   CONSTRAINT `fk_material_room` FOREIGN KEY (`roomId`) REFERENCES `house_rooms` (`roomId`) ON DELETE CASCADE

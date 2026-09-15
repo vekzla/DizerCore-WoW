@@ -14,8 +14,15 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
+ 
 #include "HousingServiceMgr.h"
+#include "HouseMgr.h"
+#include "NeighborhoodMgr.h"
+#include "DecorMgr.h"
+#include "RoomMgr.h"
+#include "PermissionMgr.h"
+#include "HousingEntities.h"   // <- add: full House/Neighborhood/NeighborhoodPlot defs  
+#include "DB2Stores.h"         // <- add: sHouseStore + HouseEntry  
 #include "DatabaseEnv.h"
 #include "Log.h"
 #include "Player.h"
@@ -98,37 +105,63 @@ House* HousingServiceMgr::GetActiveHouse(ObjectGuid playerGuid) const
     return _houseMgr->GetActiveHouse(playerGuid);
 }
 
-bool HousingServiceMgr::CreateHouse(Player* player, uint32 plotId, uint32 houseTemplateId)
-{
-    if (!player)
-        return false;
-
-    // Check if player already has max houses (2: one per faction)
-    auto houses = GetPlayerHouses(player->GetGUID());
-    if (houses.size() >= 2)
-    {
-        LOG_ERROR("housing", "Player {} already has maximum number of houses", player->GetGUID().ToString());
-        return false;
+bool HousingServiceMgr::CreateHouse(Player* player, uint32 plotId, uint32 houseTemplateId)  
+{  
+    if (!player)  
+        return false;  
+  
+    // Check if plot is available  
+    NeighborhoodPlot* plot = _neighborhoodMgr->GetPlot(plotId);  
+    if (!plot || plot->GetOwnerGuid())  
+    {  
+        LOG_ERROR("housing", "Plot {} is not available for house creation", plotId);  
+        return false;  
+    }  
+  
+    // Determine the faction of the target plot's neighborhood  
+    Neighborhood* targetNeighborhood = _neighborhoodMgr->GetNeighborhood(plot->GetNeighborhoodId());  
+    if (!targetNeighborhood)  
+    {  
+        LOG_ERROR("housing", "Plot {} has no valid neighborhood", plotId);  
+        return false;  
+    }  
+    uint8 targetFaction = targetNeighborhood->GetFaction();  
+    
+	// Strict rule: player may only create a house matching their own faction  
+    if (targetFaction != static_cast<uint8>(player->GetTeamId()))  
+    {  
+        LOG_ERROR("housing", "Player {} (team {}) cannot create a house in faction {} neighborhood",  
+            player->GetGUID().ToString(), static_cast<uint8>(player->GetTeamId()), targetFaction);  
+        return false;  
     }
-
-    // Check if plot is available
-    NeighborhoodPlot* plot = _neighborhoodMgr->GetPlot(plotId);
-    if (!plot || plot->GetOwnerGuid())
-    {
-        LOG_ERROR("housing", "Plot {} is not available for house creation", plotId);
-        return false;
-    }
-
-    // Check house template validity
-    HouseEntry const* houseTemplate = sHouseStore->GetEntry(houseTemplateId);
-    if (!houseTemplate)
-    {
-        LOG_ERROR("housing", "Invalid house template ID {}", houseTemplateId);
-        return false;
-    }
-
-    // Create the house
-    return _houseMgr->CreateHouse(player->GetGUID(), plotId, houseTemplateId);
+	
+    // Enforce one house per faction: reject if the player already owns a  
+    // house on a plot belonging to a same-faction neighborhood  
+    for (House* existing : GetPlayerHouses(player->GetGUID()))  
+    {  
+        NeighborhoodPlot* existingPlot = _neighborhoodMgr->GetPlot(existing->GetPlotId());  
+        if (!existingPlot)  
+            continue;  
+  
+        Neighborhood* existingNeighborhood = _neighborhoodMgr->GetNeighborhood(existingPlot->GetNeighborhoodId());  
+        if (existingNeighborhood && existingNeighborhood->GetFaction() == targetFaction)  
+        {  
+            LOG_ERROR("housing", "Player {} already owns a house for faction {}",  
+                player->GetGUID().ToString(), targetFaction);  
+            return false;  
+        }  
+    }  
+  
+    // Check house template validity  
+    HouseEntry const* houseTemplate = sHouseStore->GetEntry(houseTemplateId);  
+    if (!houseTemplate)  
+    {  
+        LOG_ERROR("housing", "Invalid house template ID {}", houseTemplateId);  
+        return false;  
+    }  
+  
+    // Create the house  
+    return _houseMgr->CreateHouse(player->GetGUID(), plotId, houseTemplateId);  
 }
 
 bool HousingServiceMgr::RelinquishHouse(ObjectGuid playerGuid, uint32 houseId)
