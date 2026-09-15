@@ -115,12 +115,6 @@ void WorldSession::Handle_HousingFixtureSetCoreFixture(WorldPackets::Housing::Ho
     // TODO: Implement core fixture setting
 }
 
-void WorldSession::Handle_HousingFixtureSetEditMode(WorldPackets::Housing::HousingFixtureSetEditMode const& packet)
-{
-    LOG_INFO("network", "CMSG_HOUSING_FIXTURE_SET_EDIT_MODE from {}", GetPlayerInfo());
-    // TODO: Implement fixture edit mode
-}
-
 void WorldSession::Handle_HousingFixtureSetHouseSize(WorldPackets::Housing::HousingFixtureSetHouseSize const& packet)
 {
     LOG_INFO("network", "CMSG_HOUSING_FIXTURE_SET_HOUSE_SIZE from {}", GetPlayerInfo());
