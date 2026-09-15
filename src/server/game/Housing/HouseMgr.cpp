@@ -47,18 +47,18 @@ void HouseMgr::LoadHouses()
     do
     {
         Field* fields = result->Fetch();
-        uint32 houseId = fields[0].Get<uint32>();
-        ObjectGuid ownerGuid = ObjectGuid::Create<HighGuid::Player>(fields[1].Get<uint64>());
-        uint32 plotId = fields[2].Get<uint32>();
-        uint32 houseTemplateId = fields[3].Get<uint32>();
-        uint8 houseType = fields[4].Get<uint8>();
-        uint8 houseStyle = fields[5].Get<uint8>();
-        uint8 houseLevel = fields[6].Get<uint8>();
-        uint32 houseXP = fields[7].Get<uint32>();
-        uint32 interiorDecorBudget = fields[8].Get<uint32>();
-        uint32 roomPlacementBudget = fields[9].Get<uint32>();
-        uint32 exteriorDecorBudget = fields[10].Get<uint32>();
-        bool isActive = fields[11].Get<bool>();
+		uint32 houseId              = fields[0].GetUInt32();  
+		ObjectGuid ownerGuid        = ObjectGuid::Create<HighGuid::Player>(fields[1].GetUInt64());  
+		uint32 plotId               = fields[2].GetUInt32();  
+		uint32 houseTemplateId      = fields[3].GetUInt32();  
+		uint8 houseType             = fields[4].GetUInt8();  
+		uint8 houseStyle            = fields[5].GetUInt8();  
+		uint8 houseLevel            = fields[6].GetUInt8();  
+		uint32 houseXP              = fields[7].GetUInt32();  
+		uint32 interiorDecorBudget  = fields[8].GetUInt32();  
+		uint32 roomPlacementBudget  = fields[9].GetUInt32();  
+		uint32 exteriorDecorBudget  = fields[10].GetUInt32();  
+		bool isActive               = fields[11].GetBool();
 
         auto house = std::make_unique<House>();
         house->SetPlotId(plotId);

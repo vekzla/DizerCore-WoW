@@ -44,10 +44,9 @@ void DecorMgr::LoadDecorCollections()
     do
     {
         Field* fields = result->Fetch();
-        ObjectGuid ownerGuid = ObjectGuid::Create<HighGuid::Player>(fields[0].Get<uint64>());
-        uint32 decorTemplateId = fields[1].Get<uint32>();
-        uint32 quantity = fields[2].Get<uint32>();
-
+        ObjectGuid ownerGuid    = ObjectGuid::Create<HighGuid::Player>(fields[0].GetUInt64());  
+		uint32 decorTemplateId  = fields[1].GetUInt32();  
+		uint32 quantity         = fields[2].GetUInt32();
         _decorCollections[ownerGuid][decorTemplateId] = quantity;
         ++count;
     } while (result->NextRow());

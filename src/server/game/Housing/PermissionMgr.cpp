@@ -45,17 +45,17 @@ void PermissionMgr::LoadPermissions()
     do
     {
         Field* fields = result->Fetch();
-        uint32 permissionId = fields[0].Get<uint32>();
-        uint32 houseId = fields[1].Get<uint32>();
-        ObjectGuid targetGuid = ObjectGuid::Create<HighGuid::Player>(fields[2].Get<uint64>());
-        uint32 targetGuildId = fields[3].Get<uint32>();
-        uint8 permissionType = fields[4].Get<uint8>();
-        bool canEnterInterior = fields[5].Get<bool>();
-        bool canEnterExterior = fields[6].Get<bool>();
-        bool canEditInterior = fields[7].Get<bool>();
-        bool canEditExterior = fields[8].Get<bool>();
-        bool canCopyBlueprint = fields[9].Get<bool>();
-        ObjectGuid grantedByGuid = ObjectGuid::Create<HighGuid::Player>(fields[10].Get<uint64>());
+        uint32 permissionId       = fields[0].GetUInt32();  
+		uint32 houseId            = fields[1].GetUInt32();  
+		ObjectGuid targetGuid     = ObjectGuid::Create<HighGuid::Player>(fields[2].GetUInt64());  
+		uint32 targetGuildId      = fields[3].GetUInt32();  
+		uint8 permissionType      = fields[4].GetUInt8();  
+		bool canEnterInterior     = fields[5].GetBool();  
+		bool canEnterExterior     = fields[6].GetBool();  
+		bool canEditInterior      = fields[7].GetBool();  
+		bool canEditExterior      = fields[8].GetBool();  
+		bool canCopyBlueprint     = fields[9].GetBool();  
+		ObjectGuid grantedByGuid  = ObjectGuid::Create<HighGuid::Player>(fields[10].GetUInt64());
 
         auto permission = std::make_unique<HousePermission>();
         permission->SetHouseId(houseId);

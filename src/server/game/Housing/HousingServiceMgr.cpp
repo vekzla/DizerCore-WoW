@@ -114,7 +114,7 @@ bool HousingServiceMgr::CreateHouse(Player* player, uint32 plotId, uint32 houseT
     NeighborhoodPlot* plot = _neighborhoodMgr->GetPlot(plotId);  
     if (!plot || !plot->GetOwnerGuid().IsEmpty()) 
     {  
-        LOG_ERROR("housing", "Plot {} is not available for house creation", plotId);  
+        TC_LOG_ERROR("housing", "Plot {} is not available for house creation", plotId);  
         return false;  
     }  
   
@@ -122,7 +122,7 @@ bool HousingServiceMgr::CreateHouse(Player* player, uint32 plotId, uint32 houseT
     Neighborhood* targetNeighborhood = _neighborhoodMgr->GetNeighborhood(plot->GetNeighborhoodId());  
     if (!targetNeighborhood)  
     {  
-        LOG_ERROR("housing", "Plot {} has no valid neighborhood", plotId);  
+        TC_LOG_ERROR("housing", "Plot {} has no valid neighborhood", plotId);  
         return false;  
     }  
     uint8 targetFaction = targetNeighborhood->GetFaction();  
@@ -130,7 +130,7 @@ bool HousingServiceMgr::CreateHouse(Player* player, uint32 plotId, uint32 houseT
 	// Strict rule: player may only create a house matching their own faction  
     if (targetFaction != static_cast<uint8>(player->GetTeamId()))  
     {  
-        LOG_ERROR("housing", "Player {} (team {}) cannot create a house in faction {} neighborhood",  
+        TC_LOG_ERROR("housing", "Player {} (team {}) cannot create a house in faction {} neighborhood",  
             player->GetGUID().ToString(), static_cast<uint8>(player->GetTeamId()), targetFaction);  
         return false;  
     }
@@ -146,17 +146,17 @@ bool HousingServiceMgr::CreateHouse(Player* player, uint32 plotId, uint32 houseT
         Neighborhood* existingNeighborhood = _neighborhoodMgr->GetNeighborhood(existingPlot->GetNeighborhoodId());  
         if (existingNeighborhood && existingNeighborhood->GetFaction() == targetFaction)  
         {  
-            LOG_ERROR("housing", "Player {} already owns a house for faction {}",  
+            TC_LOG_ERROR("housing", "Player {} already owns a house for faction {}",  
                 player->GetGUID().ToString(), targetFaction);  
             return false;  
         }  
     }  
   
     // Check house template validity  
-    HouseEntry const* houseTemplate = sHouseStore->LookupEntry(houseTemplateId);
+    HouseEntry const* houseTemplate = sHouseStore->LookupEntry(houseTemplateId);  
     if (!houseTemplate)  
     {  
-        LOG_ERROR("housing", "Invalid house template ID {}", houseTemplateId);  
+        TC_LOG_ERROR("housing", "Invalid house template ID {}", houseTemplateId);  
         return false;  
     }  
   

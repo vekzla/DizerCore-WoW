@@ -7006,20 +7006,20 @@ struct NeighborhoodPlotLoadInfo
   
     static constexpr DB2LoadInfo Instance{ Fields, 10, nullptr, HOTFIX_SEL_NEIGHBORHOOD_PLOT };  
 };  
-  
+
 struct TraitTreeLoadoutEntryLoadInfo  
 {  
     static constexpr DB2FieldMeta Fields[6] =  
     {  
         { .IsSigned = false, .Type = FT_INT, .Name = "ID" },  
         { .IsSigned = false, .Type = FT_INT, .Name = "TraitTreeLoadoutID" },  
-        { .IsSigned = true, .Type = FT_INT, .Name = "SelectedTraitNodeID" },  
-        { .IsSigned = true, .Type = FT_INT, .Name = "SelectedTraitNodeEntryID" },  
-        { .IsSigned = true, .Type = FT_INT, .Name = "NumPoints" },  
-        { .IsSigned = true, .Type = FT_INT, .Name = "OrderIndex" },  
+        { .IsSigned = true,  .Type = FT_INT, .Name = "SelectedTraitNodeID" },  
+        { .IsSigned = true,  .Type = FT_INT, .Name = "SelectedTraitNodeEntryID" },  
+        { .IsSigned = true,  .Type = FT_INT, .Name = "NumPoints" },  
+        { .IsSigned = true,  .Type = FT_INT, .Name = "OrderIndex" },  
     };  
   
-    static constexpr DB2LoadInfo Instance{ Fields, 6, &TraitTreeLoadoutEntryMeta::Instance, HOTFIX_SEL_TRAIT_TREE_LOADOUT_ENTRY };  
+    static constexpr DB2LoadInfo Instance{ Fields, 6, &TraitTreeLoadoutEntryMeta::Instance, HOTFIX_SEL_TRAIT_TREE_LOADOUT_ENTRY }; 
 };
 
 struct TraitTreeXTraitCurrencyLoadInfo

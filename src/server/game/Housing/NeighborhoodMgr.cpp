@@ -46,13 +46,13 @@ void NeighborhoodMgr::LoadNeighborhoods()
     do
     {
         Field* fields = result->Fetch();
-        uint32 neighborhoodId = fields[0].Get<uint32>();
-        std::string name = fields[1].Get<std::string>();
-        uint8 type = fields[2].Get<uint8>();
-        uint8 faction = fields[3].Get<uint8>();
-        uint32 guildId = fields[4].Get<uint32>();
-        uint32 ownerAccountId = fields[5].Get<uint32>();
-        bool isActive = fields[6].Get<bool>();
+		uint32 neighborhoodId = fields[0].GetUInt32();  
+		std::string name      = fields[1].GetString();  
+		uint8 type            = fields[2].GetUInt8();  
+		uint8 faction         = fields[3].GetUInt8();  
+		uint32 guildId        = fields[4].GetUInt32();  
+		uint32 ownerAccountId = fields[5].GetUInt32();  
+		bool isActive         = fields[6].GetBool();
 
         auto neighborhood = std::make_unique<Neighborhood>();
         neighborhood->SetName(name);
@@ -85,18 +85,18 @@ void NeighborhoodMgr::LoadPlots()
     do
     {
         Field* fields = result->Fetch();
-        uint32 plotId = fields[0].Get<uint32>();
-        uint32 neighborhoodId = fields[1].Get<uint32>();
-        uint8 plotIndex = fields[2].Get<uint8>();
-        ObjectGuid ownerGuid = ObjectGuid::Create<HighGuid::Player>(fields[3].Get<uint64>());
-        uint32 houseId = fields[4].Get<uint32>();
-        bool isReserved = fields[5].Get<bool>();
-        uint32 reservedByAccountId = fields[6].Get<uint32>();
-        float positionX = fields[7].Get<float>();
-        float positionY = fields[8].Get<float>();
-        float positionZ = fields[9].Get<float>();
-        float orientation = fields[10].Get<float>();
-        bool isActive = fields[11].Get<bool>();
+		uint32 plotId              = fields[0].GetUInt32();  
+		uint32 neighborhoodId      = fields[1].GetUInt32();  
+		uint8 plotIndex            = fields[2].GetUInt8();  
+		ObjectGuid ownerGuid       = ObjectGuid::Create<HighGuid::Player>(fields[3].GetUInt64());  
+		uint32 houseId             = fields[4].GetUInt32();  
+		bool isReserved            = fields[5].GetBool();  
+		uint32 reservedByAccountId = fields[6].GetUInt32();  
+		float positionX            = fields[7].GetFloat();  
+		float positionY            = fields[8].GetFloat();  
+		float positionZ            = fields[9].GetFloat();  
+		float orientation          = fields[10].GetFloat();  
+		bool isActive              = fields[11].GetBool();
 
         auto plot = std::make_unique<NeighborhoodPlot>();
         plot->SetOwnerGuid(ownerGuid);
