@@ -39,7 +39,7 @@ void HouseMgr::LoadHouses()
 
     if (!result)
     {
-        LOG_INFO("server.loading", ">> Loaded 0 houses. DB table `player_houses` is empty.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 houses. DB table `player_houses` is empty.");
         return;
     }
 
@@ -75,7 +75,7 @@ void HouseMgr::LoadHouses()
         ++count;
     } while (result->NextRow());
 
-    LOG_INFO("server.loading", ">> Loaded {} houses in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded {} houses in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 std::vector<House*> HouseMgr::GetPlayerHouses(ObjectGuid playerGuid) const

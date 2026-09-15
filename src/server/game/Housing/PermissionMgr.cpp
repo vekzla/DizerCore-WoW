@@ -37,7 +37,7 @@ void PermissionMgr::LoadPermissions()
 
     if (!result)
     {
-        LOG_INFO("server.loading", ">> Loaded 0 house permissions. DB table `house_permissions` is empty.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 house permissions. DB table `house_permissions` is empty.");
         return;
     }
 
@@ -72,7 +72,7 @@ void PermissionMgr::LoadPermissions()
         ++count;
     } while (result->NextRow());
 
-    LOG_INFO("server.loading", ">> Loaded {} house permissions in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded {} house permissions in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 bool PermissionMgr::SetHousePermission(ObjectGuid playerGuid, uint32 houseId, ObjectGuid targetGuid, uint8 permissionType, bool canEnterInterior, bool canEnterExterior, bool canEditInterior, bool canEditExterior)

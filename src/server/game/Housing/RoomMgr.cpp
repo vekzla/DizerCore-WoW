@@ -37,7 +37,7 @@ void RoomMgr::LoadRooms()
 
     if (!result)
     {
-        LOG_INFO("server.loading", ">> Loaded 0 rooms. DB table `house_rooms` is empty.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 rooms. DB table `house_rooms` is empty.");
         return;
     }
 
@@ -45,16 +45,16 @@ void RoomMgr::LoadRooms()
     do
     {
         Field* fields = result->Fetch();
-        uint32 roomId = fields[0].Get<uint32>();
-        uint32 houseId = fields[1].Get<uint32>();
-        uint32 roomTemplateId = fields[2].Get<uint32>();
-        float positionX = fields[3].Get<float>();
-        float positionY = fields[4].Get<float>();
-        uint8 orientation = fields[5].Get<uint8>();
-        uint8 ceilingType = fields[6].Get<uint8>();
-        uint8 doorType = fields[7].Get<uint8>();
-        uint32 componentTheme = fields[8].Get<uint32>();
-        bool isActive = fields[9].Get<bool>();
+        uint32 roomId          = fields[0].GetUInt32();  
+        uint32 houseId         = fields[1].GetUInt32();  
+        uint32 roomTemplateId  = fields[2].GetUInt32();  
+        float  positionX       = fields[3].GetFloat();  
+        float  positionY       = fields[4].GetFloat();  
+        uint8  orientation     = fields[5].GetUInt8();  
+        uint8  ceilingType     = fields[6].GetUInt8();  
+        uint8  doorType        = fields[7].GetUInt8();  
+        uint32 componentTheme  = fields[8].GetUInt32();  
+        bool   isActive        = fields[9].GetBool();
 
         auto room = std::make_unique<Room>();
         room->SetHouseId(houseId);
@@ -71,7 +71,7 @@ void RoomMgr::LoadRooms()
         ++count;
     } while (result->NextRow());
 
-    LOG_INFO("server.loading", ">> Loaded {} rooms in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded {} rooms in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 bool RoomMgr::AddRoom(ObjectGuid playerGuid, uint32 houseId, uint32 roomTemplateId, float posX, float posY, uint8 orientation)

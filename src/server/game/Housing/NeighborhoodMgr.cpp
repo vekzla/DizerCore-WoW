@@ -38,7 +38,7 @@ void NeighborhoodMgr::LoadNeighborhoods()
 
     if (!result)
     {
-        LOG_INFO("server.loading", ">> Loaded 0 neighborhoods. DB table `neighborhoods` is empty.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 neighborhoods. DB table `neighborhoods` is empty.");
         return;
     }
 
@@ -66,7 +66,7 @@ void NeighborhoodMgr::LoadNeighborhoods()
         ++count;
     } while (result->NextRow());
 
-    LOG_INFO("server.loading", ">> Loaded {} neighborhoods in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded {} neighborhoods in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void NeighborhoodMgr::LoadPlots()
@@ -77,7 +77,7 @@ void NeighborhoodMgr::LoadPlots()
 
     if (!result)
     {
-        LOG_INFO("server.loading", ">> Loaded 0 plots. DB table `neighborhood_plots` is empty.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 plots. DB table `neighborhood_plots` is empty.");
         return;
     }
 
@@ -109,7 +109,7 @@ void NeighborhoodMgr::LoadPlots()
         ++count;
     } while (result->NextRow());
 
-    LOG_INFO("server.loading", ">> Loaded {} plots in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded {} plots in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 Neighborhood* NeighborhoodMgr::GetNeighborhood(uint32 neighborhoodId) const

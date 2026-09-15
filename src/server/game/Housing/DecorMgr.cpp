@@ -36,7 +36,7 @@ void DecorMgr::LoadDecorCollections()
 
     if (!result)
     {
-        LOG_INFO("server.loading", ">> Loaded 0 decor collections. DB table `player_decor_collection` is empty.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 decor collections. DB table `player_decor_collection` is empty.");
         return;
     }
 
@@ -52,7 +52,7 @@ void DecorMgr::LoadDecorCollections()
         ++count;
     } while (result->NextRow());
 
-    LOG_INFO("server.loading", ">> Loaded {} decor collection entries in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded {} decor collection entries in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 void DecorMgr::LoadPlacedDecor()
@@ -63,7 +63,7 @@ void DecorMgr::LoadPlacedDecor()
 
     if (!result)
     {
-        LOG_INFO("server.loading", ">> Loaded 0 placed decor. DB table `placed_decor` is empty.");
+        TC_LOG_INFO("server.loading", ">> Loaded 0 placed decor. DB table `placed_decor` is empty.");
         return;
     }
 
@@ -74,7 +74,7 @@ void DecorMgr::LoadPlacedDecor()
         ++count;
     } while (result->NextRow());
 
-    LOG_INFO("server.loading", ">> Loaded {} placed decor items in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded {} placed decor items in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
 bool DecorMgr::AddDecorToCollection(ObjectGuid playerGuid, uint32 decorTemplateId, uint32 quantity)

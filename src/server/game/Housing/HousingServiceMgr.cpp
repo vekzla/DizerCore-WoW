@@ -50,7 +50,7 @@ HousingServiceMgr* HousingServiceMgr::instance()
 
 void HousingServiceMgr::Initialize()
 {
-    LOG_INFO("server.loading", "Loading Housing Service Manager...");
+    TC_LOG_INFO("server.loading", "Loading Housing Service Manager...");
 
     // Initialize sub-managers
     _houseMgr = new HouseMgr();
@@ -59,12 +59,12 @@ void HousingServiceMgr::Initialize()
     _roomMgr = new RoomMgr();
     _permissionMgr = new PermissionMgr();
 
-    LOG_INFO("server.loading", "Housing Service Manager initialized");
+    TC_LOG_INFO("server.loading", "Housing Service Manager initialized");
 }
 
 void HousingServiceMgr::LoadFromDB()
 {
-    LOG_INFO("server.loading", "Loading housing data from database...");
+    TC_LOG_INFO("server.loading", "Loading housing data from database...");
 
     uint32 oldMSTime = getMSTime();
 
@@ -87,7 +87,7 @@ void HousingServiceMgr::LoadFromDB()
     // Load permissions
     _permissionMgr->LoadPermissions();
 
-    LOG_INFO("server.loading", ">> Loaded housing data in {} ms", GetMSTimeDiffToNow(oldMSTime));
+    TC_LOG_INFO("server.loading", ">> Loaded housing data in {} ms", GetMSTimeDiffToNow(oldMSTime));
 }
 
 std::vector<House*> HousingServiceMgr::GetPlayerHouses(ObjectGuid playerGuid) const
@@ -112,7 +112,7 @@ bool HousingServiceMgr::CreateHouse(Player* player, uint32 plotId, uint32 houseT
   
     // Check if plot is available  
     NeighborhoodPlot* plot = _neighborhoodMgr->GetPlot(plotId);  
-    if (!plot || plot->GetOwnerGuid())  
+    if (!plot || !plot->GetOwnerGuid().IsEmpty()) 
     {  
         LOG_ERROR("housing", "Plot {} is not available for house creation", plotId);  
         return false;  
@@ -153,7 +153,7 @@ bool HousingServiceMgr::CreateHouse(Player* player, uint32 plotId, uint32 houseT
     }  
   
     // Check house template validity  
-    HouseEntry const* houseTemplate = sHouseStore->GetEntry(houseTemplateId);  
+    HouseEntry const* houseTemplate = sHouseStore->LookupEntry(houseTemplateId);
     if (!houseTemplate)  
     {  
         LOG_ERROR("housing", "Invalid house template ID {}", houseTemplateId);  

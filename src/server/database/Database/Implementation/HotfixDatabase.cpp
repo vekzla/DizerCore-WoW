@@ -869,6 +869,59 @@ void HotfixDatabaseConnection::DoPrepareStatements()
         " WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);
     PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOLIDAYS, "SELECT MAX(ID) + 1 FROM holidays", CONNECTION_SYNCH);
 
+    // Housing DBCs  
+    PrepareStatement(HOTFIX_SEL_HOUSE, "SELECT ID, Name, HouseType, Faction, HouseStyle, UiModelSceneID, FileDataID"  
+        " FROM house WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE, "SELECT MAX(ID) + 1 FROM house", CONNECTION_SYNCH);  
+  
+    PrepareStatement(HOTFIX_SEL_HOUSE_DECOR, "SELECT ID, Name, Description, UiModelSceneID, FileDataID, DecorType, PlacementType, PlacementCost, DyeCategoryID, PlayerConditionID, Flags"  
+        " FROM house_decor WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE_DECOR, "SELECT MAX(ID) + 1 FROM house_decor", CONNECTION_SYNCH);  
+  
+    PrepareStatement(HOTFIX_SEL_HOUSE_DECOR_MATERIAL, "SELECT ID, Name, MaterialType, FileDataID, ColorR, ColorG, ColorB"  
+        " FROM house_decor_material WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE_DECOR_MATERIAL, "SELECT MAX(ID) + 1 FROM house_decor_material", CONNECTION_SYNCH);  
+  
+    PrepareStatement(HOTFIX_SEL_HOUSE_DECOR_THEME_SET, "SELECT ID, Name, UiTextureKitID"  
+        " FROM house_decor_theme_set WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE_DECOR_THEME_SET, "SELECT MAX(ID) + 1 FROM house_decor_theme_set", CONNECTION_SYNCH);  
+  
+    PrepareStatement(HOTFIX_SEL_HOUSE_EXTERIOR_WMO_DATA, "SELECT ID, HouseID, FileDataID, PositionX, PositionY, PositionZ"  
+        " FROM house_exterior_wmo_data WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE_EXTERIOR_WMO_DATA, "SELECT MAX(ID) + 1 FROM house_exterior_wmo_data", CONNECTION_SYNCH);  
+  
+    PrepareStatement(HOTFIX_SEL_HOUSE_LEVEL_DATA, "SELECT ID, Level, RequiredXP, InteriorDecorBudget, RoomPlacementBudget"  
+        " FROM house_level_data WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE_LEVEL_DATA, "SELECT MAX(ID) + 1 FROM house_level_data", CONNECTION_SYNCH);  
+  
+    PrepareStatement(HOTFIX_SEL_HOUSE_LEVEL_REWARD_INFO, "SELECT ID, Level, RewardType, RewardTemplateID"  
+        " FROM house_level_reward_info WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE_LEVEL_REWARD_INFO, "SELECT MAX(ID) + 1 FROM house_level_reward_info", CONNECTION_SYNCH);  
+  
+    PrepareStatement(HOTFIX_SEL_HOUSE_ROOM, "SELECT ID, Name, RoomType, RoomSize, PlacementCost, FileDataID, UiModelSceneID, DefaultCeilingType, DefaultDoorType, MaxComponents"  
+        " FROM house_room WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE_ROOM, "SELECT MAX(ID) + 1 FROM house_room", CONNECTION_SYNCH);  
+  
+    PrepareStatement(HOTFIX_SEL_HOUSE_THEME, "SELECT ID, Name, Faction, HouseType, UiTextureKitID, FileDataID"  
+        " FROM house_theme WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE_THEME, "SELECT MAX(ID) + 1 FROM house_theme", CONNECTION_SYNCH);  
+  
+    PrepareStatement(HOTFIX_SEL_NEIGHBORHOOD_INITIATIVE, "SELECT ID, Name, Description, Faction, DurationSeconds, TargetProgress, XPReward"  
+        " FROM neighborhood_initiative WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_NEIGHBORHOOD_INITIATIVE, "SELECT MAX(ID) + 1 FROM neighborhood_initiative", CONNECTION_SYNCH);  
+  
+    PrepareStatement(HOTFIX_SEL_NEIGHBORHOOD_MAP, "SELECT ID, MapID, AreaTableID, PositionX, PositionY, PositionZ, Orientation"  
+        " FROM neighborhood_map WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_NEIGHBORHOOD_MAP, "SELECT MAX(ID) + 1 FROM neighborhood_map", CONNECTION_SYNCH);  
+  
+    PrepareStatement(HOTFIX_SEL_NEIGHBORHOOD_NAME_GEN, "SELECT ID, Faction, NamePart1, NamePart2, NamePart3"  
+        " FROM neighborhood_name_gen WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_NEIGHBORHOOD_NAME_GEN, "SELECT MAX(ID) + 1 FROM neighborhood_name_gen", CONNECTION_SYNCH);  
+  
+    PrepareStatement(HOTFIX_SEL_NEIGHBORHOOD_PLOT, "SELECT ID, NeighborhoodMapID, PlotIndex, PositionX, PositionY, PositionZ, Orientation, PlotWidth"  
+        " FROM neighborhood_plot WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_NEIGHBORHOOD_PLOT, "SELECT MAX(ID) + 1 FROM neighborhood_plot", CONNECTION_SYNCH);
+
     // ImportPriceArmor.db2
     PrepareStatement(HOTFIX_SEL_IMPORT_PRICE_ARMOR, "SELECT ID, ClothModifier, LeatherModifier, ChainModifier, PlateModifier FROM import_price_armor"
         " WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);
