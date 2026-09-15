@@ -6785,19 +6785,6 @@ struct TraitTreeLoadoutLoadInfo
     static constexpr DB2LoadInfo Instance{ Fields, 3, &TraitTreeLoadoutMeta::Instance, HOTFIX_SEL_TRAIT_TREE_LOADOUT };
 };
 
-struct TraitTreeLoadoutEntryLoadInfo
-{
-    static constexpr DB2FieldMeta Fields[5] =
-    {
-        { .IsSigned = false, .Type = FT_INT, .Name = "ID" },
-        { .IsSigned = false, .Type = FT_INT, .Name = "TraitTreeLoadoutID" },
-        { .IsSigned = true, .Type = FT_INT, .Name = "SelectedTraitNodeID" },
-        { .IsSigned = true, .Type = FT_INT, .Name = "SelectedTraitNodeEntryID" },
-        { .IsSigned = true, .Type = FT_INT, .Name = "NumPoints" },
-    };
-
-    static constexpr DB2LoadInfo Instance{ Fields, 5, &TraitTreeLoadoutEntryMeta::Instance, HOTFIX_SEL_TRAIT_TREE_LOADOUT_ENTRY };
-};
 // ============================================================================  
 // HOUSING SYSTEM LOAD INFO  
 // ============================================================================  

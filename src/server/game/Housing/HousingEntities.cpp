@@ -42,7 +42,7 @@ bool House::AddXP(uint32 xp)
 
 bool House::CheckLevelUp()
 {
-    HouseLevelDataEntry const* levelData = sHouseLevelDataStore->GetEntry(_houseLevel + 1);
+    HouseLevelDataEntry const* levelData = sHouseLevelDataStore.LookupEntry(_houseLevel + 1);
     if (levelData && _houseXP >= levelData->RequiredXP)
     {
         _houseLevel++;
@@ -54,7 +54,7 @@ bool House::CheckLevelUp()
 
 void House::UpdateBudgets()
 {
-    HouseLevelDataEntry const* levelData = sHouseLevelDataStore->GetEntry(_houseLevel);
+        HouseLevelDataEntry const* levelData = sHouseLevelDataStore.LookupEntry(_houseLevel);
     if (levelData)
     {
         _interiorDecorBudget = levelData->InteriorDecorBudget;

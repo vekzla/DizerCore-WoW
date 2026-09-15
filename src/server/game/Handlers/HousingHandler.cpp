@@ -257,7 +257,7 @@ void WorldSession::Handle_HousingSvcsDeleteAllNeighborhoodInvites(WorldPackets::
     // TODO: Implement neighborhood invite deletion
 }
 
-void WorldSession::Handle_HousingSvcsGetBnetFriendNeighborhoods(WorldPackets::Housing::HousingSvcsGetBnetFriendNeighborhoods const& packet)
+void WorldSession::Handle_HousingSvcsGetBNetFriendNeighborhoods(WorldPackets::Housing::HousingSvcsGetBNetFriendNeighborhoods const& packet)
 {
     TC_LOG_INFO("network", "CMSG_HOUSING_SVCS_GET_BNET_FRIEND_NEIGHBORHOODS from {}", GetPlayerInfo());
     // TODO: Implement BNet friend neighborhoods request
@@ -305,7 +305,7 @@ void WorldSession::Handle_HousingSvcsNeighborhoodReservePlot(WorldPackets::Housi
     // TODO: Implement plot reservation
 }
 
-void WorldSession::Handle_HousingSvcsPlayerViewHousesByBnetAccount(WorldPackets::Housing::HousingSvcsPlayerViewHousesByBnetAccount const& packet)
+void WorldSession::Handle_HousingSvcsPlayerViewHousesByBNetAccount(WorldPackets::Housing::HousingSvcsPlayerViewHousesByBNetAccount const& packet)
 {
     TC_LOG_INFO("network", "CMSG_HOUSING_SVCS_PLAYER_VIEW_HOUSES_BY_BNET_ACCOUNT from {}", GetPlayerInfo());
     // TODO: Implement BNet account house viewing

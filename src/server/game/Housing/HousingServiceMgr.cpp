@@ -112,7 +112,7 @@ bool HousingServiceMgr::CreateHouse(Player* player, uint32 plotId, uint32 houseT
   
     // Check if plot is available  
     NeighborhoodPlot* plot = _neighborhoodMgr->GetPlot(plotId);  
-    if (!plot || !plot->GetOwnerGuid().IsEmpty()) 
+	if (!plot || !plot->GetOwnerGuid().IsEmpty())
     {  
         TC_LOG_ERROR("housing", "Plot {} is not available for house creation", plotId);  
         return false;  
@@ -176,7 +176,7 @@ bool HousingServiceMgr::MoveHouse(ObjectGuid playerGuid, uint32 houseId, uint32 
         return false;
 
     NeighborhoodPlot* newPlot = _neighborhoodMgr->GetPlot(newPlotId);
-    if (!newPlot || newPlot->GetOwnerGuid())
+	if (!newPlot || !newPlot->GetOwnerGuid().IsEmpty())  
         return false;
 
     return _houseMgr->MoveHouse(houseId, newPlotId);
