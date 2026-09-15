@@ -4847,6 +4847,7 @@ struct TraitTreeXTraitCostEntry
 {
     uint32 ID;
     uint32 TraitTreeID;
+	int32 TraitCostID;
 };
 
 // ============================================================================
@@ -4996,7 +4997,7 @@ struct NeighborhoodPlotEntry
     float PlotHeight;
     uint32 Flags;
 };
-    int32 TraitCostID;
+
 };
 
 struct TraitTreeXTraitCurrencyEntry
