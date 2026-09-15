@@ -444,11 +444,8 @@ namespace WorldPackets
         class HotfixRequest;
     }
 
-    namespace Housing
-    {
-        class DeclineNeighborhoodInvites;
-		namespace Housing  
-{  
+    namespace Housing  
+	{  
     class DeclineNeighborhoodInvites;  
     class HousingDecorDeleteFromStorage;  
     class HousingDecorLock;  
@@ -499,7 +496,6 @@ namespace WorldPackets
     class HousingSvcsStartTutorial;  
     class HousingSvcsTeleportToPlot;  
     class HousingSvcsUpdateHouseSettings;  
-}
     }
 
     namespace Inspect
