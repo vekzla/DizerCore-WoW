@@ -18,7 +18,9 @@
 #ifndef TRINITYCORE_HOUSING_PACKETS_H
 #define TRINITYCORE_HOUSING_PACKETS_H
 
+#include "ObjectGuid.h"
 #include "Packet.h"
+#include <string>
 
 namespace WorldPackets::Housing
 {

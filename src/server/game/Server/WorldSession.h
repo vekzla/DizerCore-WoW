@@ -447,6 +447,59 @@ namespace WorldPackets
     namespace Housing
     {
         class DeclineNeighborhoodInvites;
+		namespace Housing  
+{  
+    class DeclineNeighborhoodInvites;  
+    class HousingDecorDeleteFromStorage;  
+    class HousingDecorLock;  
+    class HousingDecorMove;  
+    class HousingDecorPlace;  
+    class HousingDecorRedeemDeferredDecor;  
+    class HousingDecorRemove;  
+    class HousingDecorRequestStorage;  
+    class HousingDecorSetDyeSlots;  
+    class HousingDecorSetEditMode;  
+    class HousingDecorSetPet;  
+    class HousingFixtureCreateFixture;  
+    class HousingFixtureDeleteFixture;  
+    class HousingFixtureSetCoreFixture;  
+    class HousingFixtureSetEditMode;  
+    class HousingFixtureSetHouseSize;  
+    class HousingFixtureSetHouseType;  
+    class HousingGetCurrentHouseInfo;  
+    class HousingGetPlayerPermissions;  
+    class HousingHouseStatus;  
+    class HousingPhotoSharingClearAuthorization;  
+    class HousingPhotoSharingCompleteAuthorization;  
+    class HousingResetHouse;  
+    class HousingResetKioskMode;  
+    class HousingRoomAdd;  
+    class HousingRoomApplyComponentMaterials;  
+    class HousingRoomMove;  
+    class HousingRoomRemove;  
+    class HousingRoomRotate;  
+    class HousingRoomSetCeilingType;  
+    class HousingRoomSetComponentTheme;  
+    class HousingRoomSetDoorType;  
+    class HousingRoomSetLayoutEditMode;  
+    class HousingSvcsAcceptNeighborhoodOwnership;  
+    class HousingSvcsDeleteAllNeighborhoodInvites;  
+    class HousingSvcsGetBnetFriendNeighborhoods;  
+    class HousingSvcsGetHouseFinderInfo;  
+    class HousingSvcsGetHouseFinderNeighborhood;  
+    class HousingSvcsGetPlayerHousesInfo;  
+    class HousingSvcsGetPotentialHouseOwners;  
+    class HousingSvcsGuildCreateNeighborhood;  
+    class HousingSvcsHouseFinderIgnoreNeighborhood;  
+    class HousingSvcsNeighborhoodReservePlot;  
+    class HousingSvcsPlayerViewHousesByBNetAccount;  
+    class HousingSvcsPlayerViewHousesByPlayer;  
+    class HousingSvcsRejectNeighborhoodOwnership;  
+    class HousingSvcsRelinquishHouse;  
+    class HousingSvcsStartTutorial;  
+    class HousingSvcsTeleportToPlot;  
+    class HousingSvcsUpdateHouseSettings;  
+}
     }
 
     namespace Inspect
