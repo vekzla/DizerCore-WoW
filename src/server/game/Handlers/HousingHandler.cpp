@@ -257,7 +257,7 @@ void WorldSession::Handle_HousingSvcsDeleteAllNeighborhoodInvites(WorldPackets::
     // TODO: Implement neighborhood invite deletion
 }
 
-void WorldSession::Handle_HousingSvcsGetBNetFriendNeighborhoods(WorldPackets::Housing::HousingSvcsGetBNetFriendNeighborhoods const& packet)
+void WorldSession::Handle_HousingSvcsGetBnetFriendNeighborhoods(WorldPackets::Housing::HousingSvcsGetBnetFriendNeighborhoods const& packet)
 {
     TC_LOG_INFO("network", "CMSG_HOUSING_SVCS_GET_BNET_FRIEND_NEIGHBORHOODS from {}", GetPlayerInfo());
     // TODO: Implement BNet friend neighborhoods request
