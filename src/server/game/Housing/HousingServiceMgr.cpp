@@ -153,7 +153,7 @@ bool HousingServiceMgr::CreateHouse(Player* player, uint32 plotId, uint32 houseT
     }  
   
     // Check house template validity  
-    HouseEntry const* houseTemplate = sHouseStore->LookupEntry(houseTemplateId);  
+	HouseEntry const* houseTemplate = sHouseStore.LookupEntry(houseTemplateId);
     if (!houseTemplate)  
     {  
         TC_LOG_ERROR("housing", "Invalid house template ID {}", houseTemplateId);  

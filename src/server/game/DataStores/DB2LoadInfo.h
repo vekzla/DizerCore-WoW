@@ -6996,17 +6996,29 @@ struct NeighborhoodPlotLoadInfo
 
 struct TraitTreeLoadoutEntryLoadInfo  
 {  
-    static constexpr DB2FieldMeta Fields[6] =  
+    static constexpr DB2FieldMeta Fields[6] =              // was Fields[5]  
     {  
         { .IsSigned = false, .Type = FT_INT, .Name = "ID" },  
         { .IsSigned = false, .Type = FT_INT, .Name = "TraitTreeLoadoutID" },  
-        { .IsSigned = true,  .Type = FT_INT, .Name = "SelectedTraitNodeID" },  
-        { .IsSigned = true,  .Type = FT_INT, .Name = "SelectedTraitNodeEntryID" },  
-        { .IsSigned = true,  .Type = FT_INT, .Name = "NumPoints" },  
-        { .IsSigned = true,  .Type = FT_INT, .Name = "OrderIndex" },  
+        { .IsSigned = true, .Type = FT_INT, .Name = "SelectedTraitNodeID" },  
+        { .IsSigned = true, .Type = FT_INT, .Name = "SelectedTraitNodeEntryID" },  
+        { .IsSigned = true, .Type = FT_INT, .Name = "NumPoints" },  
+        { .IsSigned = true, .Type = FT_INT, .Name = "OrderIndex" },   // ADD this line  
     };  
   
-    static constexpr DB2LoadInfo Instance{ Fields, 6, &TraitTreeLoadoutEntryMeta::Instance, HOTFIX_SEL_TRAIT_TREE_LOADOUT_ENTRY }; 
+    static constexpr DB2LoadInfo Instance{ Fields, 6, &TraitTreeLoadoutEntryMeta::Instance, HOTFIX_SEL_TRAIT_TREE_LOADOUT_ENTRY };   // count 5 -> 6  
+};
+
+struct TraitTreeXTraitCostLoadInfo  
+{  
+    static constexpr DB2FieldMeta Fields[3] =  
+    {  
+        { .IsSigned = false, .Type = FT_INT, .Name = "ID" },  
+        { .IsSigned = false, .Type = FT_INT, .Name = "TraitTreeID" },  
+        { .IsSigned = true, .Type = FT_INT, .Name = "TraitCostID" },  
+    };  
+  
+    static constexpr DB2LoadInfo Instance{ Fields, 3, &TraitTreeXTraitCostMeta::Instance, HOTFIX_SEL_TRAIT_TREE_X_TRAIT_COST };  
 };
 
 struct TraitTreeXTraitCurrencyLoadInfo
