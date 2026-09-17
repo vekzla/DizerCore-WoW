@@ -1,0 +1,96 @@
+-- Housing System Database Schema for DizerCore
+-- This file contains all housing-related tables for the hotfixes database
+
+-- Housing hotfix (DB2) tables  
+  
+DROP TABLE IF EXISTS `house`;  
+CREATE TABLE `house` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `Name` TEXT,  
+  `HouseType` TINYINT UNSIGNED NOT NULL DEFAULT 0, `Faction` TINYINT UNSIGNED NOT NULL DEFAULT 0,  
+  `HouseStyle` TINYINT UNSIGNED NOT NULL DEFAULT 0, `UiModelSceneID` INT NOT NULL DEFAULT 0,  
+  `FileDataID` INT NOT NULL DEFAULT 0, `VerifiedBuild` INT NOT NULL DEFAULT 0,  
+  PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;  
+  
+DROP TABLE IF EXISTS `house_decor`;  
+CREATE TABLE `house_decor` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `Name` TEXT, `Description` TEXT,  
+  `UiModelSceneID` INT NOT NULL DEFAULT 0, `FileDataID` INT NOT NULL DEFAULT 0,  
+  `DecorType` TINYINT UNSIGNED NOT NULL DEFAULT 0, `PlacementType` TINYINT UNSIGNED NOT NULL DEFAULT 0,  
+  `PlacementCost` INT NOT NULL DEFAULT 0, `DyeCategoryID` INT NOT NULL DEFAULT 0,  
+  `PlayerConditionID` INT NOT NULL DEFAULT 0, `Flags` INT NOT NULL DEFAULT 0,  
+  `VerifiedBuild` INT NOT NULL DEFAULT 0, PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;  
+  
+DROP TABLE IF EXISTS `house_decor_material`;  
+CREATE TABLE `house_decor_material` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `Name` TEXT, `MaterialType` TINYINT UNSIGNED NOT NULL DEFAULT 0,  
+  `FileDataID` INT NOT NULL DEFAULT 0, `ColorR` TINYINT UNSIGNED NOT NULL DEFAULT 0,  
+  `ColorG` TINYINT UNSIGNED NOT NULL DEFAULT 0, `ColorB` TINYINT UNSIGNED NOT NULL DEFAULT 0,  
+  `VerifiedBuild` INT NOT NULL DEFAULT 0, PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;  
+  
+DROP TABLE IF EXISTS `house_decor_theme_set`;  
+CREATE TABLE `house_decor_theme_set` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `Name` TEXT, `UiTextureKitID` INT NOT NULL DEFAULT 0,  
+  `VerifiedBuild` INT NOT NULL DEFAULT 0, PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;  
+  
+DROP TABLE IF EXISTS `house_exterior_wmo_data`;  
+CREATE TABLE `house_exterior_wmo_data` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `HouseID` INT NOT NULL DEFAULT 0, `FileDataID` INT NOT NULL DEFAULT 0,  
+  `PositionX` FLOAT NOT NULL DEFAULT 0, `PositionY` FLOAT NOT NULL DEFAULT 0, `PositionZ` FLOAT NOT NULL DEFAULT 0,  
+  `VerifiedBuild` INT NOT NULL DEFAULT 0, PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;  
+  
+DROP TABLE IF EXISTS `house_level_data`;  
+CREATE TABLE `house_level_data` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `Level` TINYINT UNSIGNED NOT NULL DEFAULT 0,  
+  `RequiredXP` INT NOT NULL DEFAULT 0, `InteriorDecorBudget` INT NOT NULL DEFAULT 0,  
+  `RoomPlacementBudget` INT NOT NULL DEFAULT 0, `VerifiedBuild` INT NOT NULL DEFAULT 0,  
+  PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;  
+  
+DROP TABLE IF EXISTS `house_level_reward_info`;  
+CREATE TABLE `house_level_reward_info` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `Level` TINYINT UNSIGNED NOT NULL DEFAULT 0,  
+  `RewardType` TINYINT UNSIGNED NOT NULL DEFAULT 0, `RewardTemplateID` INT NOT NULL DEFAULT 0,  
+  `VerifiedBuild` INT NOT NULL DEFAULT 0, PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;  
+  
+DROP TABLE IF EXISTS `house_room`;  
+CREATE TABLE `house_room` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `Name` TEXT, `RoomType` TINYINT UNSIGNED NOT NULL DEFAULT 0,  
+  `RoomSize` TINYINT UNSIGNED NOT NULL DEFAULT 0, `PlacementCost` INT NOT NULL DEFAULT 0,  
+  `FileDataID` INT NOT NULL DEFAULT 0, `UiModelSceneID` INT NOT NULL DEFAULT 0,  
+  `DefaultCeilingType` TINYINT UNSIGNED NOT NULL DEFAULT 0, `DefaultDoorType` TINYINT UNSIGNED NOT NULL DEFAULT 0,  
+  `MaxComponents` INT NOT NULL DEFAULT 0, `VerifiedBuild` INT NOT NULL DEFAULT 0,  
+  PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;  
+  
+DROP TABLE IF EXISTS `house_theme`;  
+CREATE TABLE `house_theme` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `Name` TEXT, `Faction` TINYINT UNSIGNED NOT NULL DEFAULT 0,  
+  `HouseType` TINYINT UNSIGNED NOT NULL DEFAULT 0, `UiTextureKitID` INT NOT NULL DEFAULT 0,  
+  `FileDataID` INT NOT NULL DEFAULT 0, `VerifiedBuild` INT NOT NULL DEFAULT 0,  
+  PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;  
+  
+DROP TABLE IF EXISTS `neighborhood_initiative`;  
+CREATE TABLE `neighborhood_initiative` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `Name` TEXT, `Description` TEXT,  
+  `Faction` TINYINT UNSIGNED NOT NULL DEFAULT 0, `DurationSeconds` INT NOT NULL DEFAULT 0,  
+  `TargetProgress` INT NOT NULL DEFAULT 0, `XPReward` INT NOT NULL DEFAULT 0,  
+  `VerifiedBuild` INT NOT NULL DEFAULT 0, PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;  
+  
+DROP TABLE IF EXISTS `neighborhood_map`;  
+CREATE TABLE `neighborhood_map` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `MapID` INT NOT NULL DEFAULT 0, `AreaTableID` INT NOT NULL DEFAULT 0,  
+  `PositionX` FLOAT NOT NULL DEFAULT 0, `PositionY` FLOAT NOT NULL DEFAULT 0, `PositionZ` FLOAT NOT NULL DEFAULT 0,  
+  `Orientation` FLOAT NOT NULL DEFAULT 0, `VerifiedBuild` INT NOT NULL DEFAULT 0,  
+  PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;  
+  
+DROP TABLE IF EXISTS `neighborhood_name_gen`;  
+CREATE TABLE `neighborhood_name_gen` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `Faction` TINYINT UNSIGNED NOT NULL DEFAULT 0,  
+  `NamePart1` TEXT, `NamePart2` TEXT, `NamePart3` TEXT,  
+  `VerifiedBuild` INT NOT NULL DEFAULT 0, PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;  
+  
+DROP TABLE IF EXISTS `neighborhood_plot`;  
+CREATE TABLE `neighborhood_plot` (  
+  `ID` INT UNSIGNED NOT NULL DEFAULT 0, `NeighborhoodMapID` INT NOT NULL DEFAULT 0,  
+  `PlotIndex` TINYINT UNSIGNED NOT NULL DEFAULT 0, `PositionX` FLOAT NOT NULL DEFAULT 0,  
+  `PositionY` FLOAT NOT NULL DEFAULT 0, `PositionZ` FLOAT NOT NULL DEFAULT 0,  
+  `Orientation` FLOAT NOT NULL DEFAULT 0, `PlotWidth` FLOAT NOT NULL DEFAULT 0,  
+  `VerifiedBuild` INT NOT NULL DEFAULT 0, PRIMARY KEY (`ID`,`VerifiedBuild`)) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;
