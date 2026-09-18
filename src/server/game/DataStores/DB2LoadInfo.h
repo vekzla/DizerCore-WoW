@@ -6863,7 +6863,7 @@ struct HouseExteriorWmoDataLoadInfo
 {  
     static constexpr DB2FieldMeta Fields[5] =  
     {  
-        { .IsSigned = true,  .Type = FT_STRING, .Name = "Name" },  
+        { .IsSigned = false, .Type = FT_STRING, .Name = "Name" },  
         { .IsSigned = false, .Type = FT_INT,    .Name = "ID" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "Flags" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "Field_12_0_5_66330_003" },  
@@ -6889,8 +6889,8 @@ struct HouseLevelRewardInfoLoadInfo
 {  
     static constexpr DB2FieldMeta Fields[6] =  
     {  
-        { .IsSigned = true,  .Type = FT_STRING, .Name = "Name" },  
-        { .IsSigned = true,  .Type = FT_STRING, .Name = "Description" },  
+        { .IsSigned = false, .Type = FT_STRING, .Name = "Name" },  
+        { .IsSigned = false, .Type = FT_STRING, .Name = "Description" },  
         { .IsSigned = false, .Type = FT_INT,    .Name = "ID" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "HouseLevelDataID" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "Field_12_0_0_63967_004" },  
@@ -6904,7 +6904,7 @@ struct HouseRoomLoadInfo
 {  
     static constexpr DB2FieldMeta Fields[10] =  
     {  
-        { .IsSigned = true,  .Type = FT_STRING, .Name = "Name" },  
+        { .IsSigned = false, .Type = FT_STRING, .Name = "Name" },  
         { .IsSigned = false, .Type = FT_INT,    .Name = "ID" },  
         { .IsSigned = true,  .Type = FT_BYTE,   .Name = "Field_12_0_0_63967_001" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "Flags" },  
@@ -6935,8 +6935,8 @@ struct NeighborhoodInitiativeLoadInfo
 {  
     static constexpr DB2FieldMeta Fields[7] =  
     {  
-        { .IsSigned = true,  .Type = FT_STRING, .Name = "Name" },  
-        { .IsSigned = true,  .Type = FT_STRING, .Name = "Description" },  
+        { .IsSigned = false, .Type = FT_STRING, .Name = "Name" },  
+        { .IsSigned = false, .Type = FT_STRING, .Name = "Description" },  
         { .IsSigned = false, .Type = FT_INT,    .Name = "ID" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "Flags" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "Field_12_0_0_63534_004" },  

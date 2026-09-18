@@ -10831,10 +10831,10 @@ struct HouseMeta
     static constexpr DB2Meta Instance =  
     {  
         .FileDataId       = 5149690,  
-        .IndexField       = 0,  
+        .IndexField       = -1,  
         .ParentIndexField = -1,  
-        .FieldCount       = 5,  
-        .FileFieldCount   = 5,  
+        .FieldCount       = 4,  
+        .FileFieldCount   = 4,  
         .LayoutHash       = 0x9E44E080,  
         .Fields           = Fields  
     };  
@@ -10870,7 +10870,7 @@ struct HouseDecorMeta
         .ParentIndexField = -1,  
         .FieldCount       = 17,  
         .FileFieldCount   = 17,  
-        .LayoutHash       = 0x2AB712C4,  
+        .LayoutHash       = 0x6A051268,  
         .Fields           = Fields  
     };  
 };
@@ -10894,7 +10894,7 @@ struct HouseDecorMaterialMeta
         .ParentIndexField   = -1,  
         .FieldCount         = 6,  
         .FileFieldCount     = 6,  
-        .LayoutHash         = 0x2EF5AFD1,  
+        .LayoutHash         = 0x3C05FE9C,  
         .Fields             = Fields  
     };  
 };
@@ -15929,7 +15929,7 @@ struct NeighborhoodPlotMeta
         .ParentIndexField = -1,  
         .FieldCount       = 16,  
         .FileFieldCount   = 16,  
-        .LayoutHash       = 0x03FC4E53,  
+        .LayoutHash       = 0x2E9A7182,  
         .Fields           = Fields  
     };  
 };
