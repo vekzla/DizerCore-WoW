@@ -6805,10 +6805,12 @@ struct HouseLoadInfo
   
 struct HouseDecorLoadInfo  
 {  
-    static constexpr DB2FieldMeta Fields[17] =  
+    static constexpr DB2FieldMeta Fields[19] =  
     {  
         { .IsSigned = true,  .Type = FT_STRING, .Name = "Name" },  
-        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "InitialRotation" }, 
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "InitialRotation" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "InitialRotation" },
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "InitialRotation" },
         { .IsSigned = false, .Type = FT_INT,    .Name = "ID" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "GameObjectID" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "Flags" },  
@@ -6826,7 +6828,7 @@ struct HouseDecorLoadInfo
         { .IsSigned = true,  .Type = FT_INT,    .Name = "UiModelSceneID" },  
     };  
   
-    static constexpr DB2LoadInfo Instance{ Fields, 17, &HouseDecorMeta::Instance, HOTFIX_SEL_HOUSE_DECOR };  
+    static constexpr DB2LoadInfo Instance{ Fields, 19, &HouseDecorMeta::Instance, HOTFIX_SEL_HOUSE_DECOR };  
 };
   
 struct HouseDecorMaterialLoadInfo  

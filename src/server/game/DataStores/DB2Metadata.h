@@ -15929,7 +15929,7 @@ struct NeighborhoodPlotMeta
         .ParentIndexField = -1,  
         .FieldCount       = 16,  
         .FileFieldCount   = 16,  
-        .LayoutHash       = 0x2E9A7182,  
+        .LayoutHash       = 0x03FC4E53,  
         .Fields           = Fields  
     };  
 };

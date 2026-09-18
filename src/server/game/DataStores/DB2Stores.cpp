@@ -177,21 +177,19 @@ DB2Storage<GuildColorBorderEntry>               sGuildColorBorderStore("GuildCol
 DB2Storage<GuildColorEmblemEntry>               sGuildColorEmblemStore("GuildColorEmblem.db2", &GuildColorEmblemLoadInfo::Instance);
 DB2Storage<GuildPerkSpellsEntry>                sGuildPerkSpellsStore("GuildPerkSpells.db2", &GuildPerkSpellsLoadInfo::Instance);
 
-// ============================================================================
 // HOUSING SYSTEM DB2 STORAGE INSTANTIATIONS
-// ============================================================================
-DB2Storage<HouseEntry>                        sHouseStore("House.db2", &HouseLoadInfo::Instance);
-DB2Storage<HouseDecorEntry>                   sHouseDecorStore("HouseDecor.db2", &HouseDecorLoadInfo::Instance);
-DB2Storage<HouseDecorMaterialEntry>            sHouseDecorMaterialStore("HouseDecorMaterial.db2", &HouseDecorMaterialLoadInfo::Instance);
-DB2Storage<HouseDecorThemeSetEntry>            sHouseDecorThemeSetStore("HouseDecorThemeSet.db2", &HouseDecorThemeSetLoadInfo::Instance);
-DB2Storage<HouseExteriorWmoDataEntry>          sHouseExteriorWmoDataStore("HouseExteriorWmoData.db2", &HouseExteriorWmoDataLoadInfo::Instance);
-DB2Storage<HouseLevelDataEntry>               sHouseLevelDataStore("HouseLevelData.db2", &HouseLevelDataLoadInfo::Instance);
-DB2Storage<HouseLevelRewardInfoEntry>          sHouseLevelRewardInfoStore("HouseLevelRewardInfo.db2", &HouseLevelRewardInfoLoadInfo::Instance);
-DB2Storage<HouseRoomEntry>                     sHouseRoomStore("HouseRoom.db2", &HouseRoomLoadInfo::Instance);
-DB2Storage<HouseThemeEntry>                    sHouseThemeStore("HouseTheme.db2", &HouseThemeLoadInfo::Instance);
-DB2Storage<NeighborhoodInitiativeEntry>         sNeighborhoodInitiativeStore("NeighborhoodInitiative.db2", &NeighborhoodInitiativeLoadInfo::Instance);
-DB2Storage<NeighborhoodMapEntry>               sNeighborhoodMapStore("NeighborhoodMap.db2", &NeighborhoodMapLoadInfo::Instance);
-DB2Storage<NeighborhoodNameGenEntry>            sNeighborhoodNameGenStore("NeighborhoodNameGen.db2", &NeighborhoodNameGenLoadInfo::Instance);
+DB2Storage<HouseEntry>                          sHouseStore("House.db2", &HouseLoadInfo::Instance);  
+DB2Storage<HouseDecorEntry>                     sHouseDecorStore("HouseDecor.db2", &HouseDecorLoadInfo::Instance);  
+DB2Storage<HouseDecorMaterialEntry>             sHouseDecorMaterialStore("HouseDecorMaterial.db2", &HouseDecorMaterialLoadInfo::Instance);  
+DB2Storage<HouseDecorThemeSetEntry>             sHouseDecorThemeSetStore("HouseDecorThemeSet.db2", &HouseDecorThemeSetLoadInfo::Instance);  
+DB2Storage<HouseExteriorWmoDataEntry>           sHouseExteriorWmoDataStore("HouseExteriorWmoData.db2", &HouseExteriorWmoDataLoadInfo::Instance);  
+DB2Storage<HouseLevelDataEntry>                 sHouseLevelDataStore("HouseLevelData.db2", &HouseLevelDataLoadInfo::Instance);  
+DB2Storage<HouseLevelRewardInfoEntry>           sHouseLevelRewardInfoStore("HouseLevelRewardInfo.db2", &HouseLevelRewardInfoLoadInfo::Instance);  
+DB2Storage<HouseRoomEntry>                      sHouseRoomStore("HouseRoom.db2", &HouseRoomLoadInfo::Instance);  
+DB2Storage<HouseThemeEntry>                     sHouseThemeStore("HouseTheme.db2", &HouseThemeLoadInfo::Instance);  
+DB2Storage<NeighborhoodInitiativeEntry>         sNeighborhoodInitiativeStore("NeighborhoodInitiative.db2", &NeighborhoodInitiativeLoadInfo::Instance);  
+DB2Storage<NeighborhoodMapEntry>                sNeighborhoodMapStore("NeighborhoodMap.db2", &NeighborhoodMapLoadInfo::Instance);  
+DB2Storage<NeighborhoodNameGenEntry>            sNeighborhoodNameGenStore("NeighborhoodNameGen.db2", &NeighborhoodNameGenLoadInfo::Instance);  
 DB2Storage<NeighborhoodPlotEntry>               sNeighborhoodPlotStore("NeighborhoodPlot.db2", &NeighborhoodPlotLoadInfo::Instance);
 
 DB2Storage<HeirloomEntry>                       sHeirloomStore("Heirloom.db2", &HeirloomLoadInfo::Instance);
@@ -769,19 +767,20 @@ uint32 DB2Manager::LoadStores(std::string const& dataPath, LocaleConstant defaul
     LOAD_DB2(sBannedAddonsStore);
 
     // Housing DB2 stores
-    LOAD_DB2(sHouseStore);
-    LOAD_DB2(sHouseDecorStore);
-    LOAD_DB2(sHouseDecorMaterialStore);
-    LOAD_DB2(sHouseDecorThemeSetStore);
-    LOAD_DB2(sHouseExteriorWmoDataStore);
-    LOAD_DB2(sHouseLevelDataStore);
-    LOAD_DB2(sHouseLevelRewardInfoStore);
-    LOAD_DB2(sHouseRoomStore);
-    LOAD_DB2(sHouseThemeStore);
-    LOAD_DB2(sNeighborhoodInitiativeStore);
-    LOAD_DB2(sNeighborhoodMapStore);
-    LOAD_DB2(sNeighborhoodNameGenStore);
+    LOAD_DB2(sHouseStore);  
+    LOAD_DB2(sHouseDecorStore);  
+    LOAD_DB2(sHouseDecorMaterialStore);  
+    LOAD_DB2(sHouseDecorThemeSetStore);  
+    LOAD_DB2(sHouseExteriorWmoDataStore);  
+    LOAD_DB2(sHouseLevelDataStore);  
+    LOAD_DB2(sHouseLevelRewardInfoStore);  
+    LOAD_DB2(sHouseRoomStore);  
+    LOAD_DB2(sHouseThemeStore);  
+    LOAD_DB2(sNeighborhoodInitiativeStore);  
+    LOAD_DB2(sNeighborhoodMapStore);  
+    LOAD_DB2(sNeighborhoodNameGenStore);  
     LOAD_DB2(sNeighborhoodPlotStore);
+	
     LOAD_DB2(sBarberShopStyleStore);
     LOAD_DB2(sBattlePetAbilityStore);
     LOAD_DB2(sBattlePetBreedQualityStore);

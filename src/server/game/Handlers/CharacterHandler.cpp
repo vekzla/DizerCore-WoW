@@ -1899,7 +1899,29 @@ void WorldSession::SendFeatureSystemStatus()
     features.GroupChatThrottle.UsedTriesPerMessage = 1;
     features.GroupChatThrottle.TriesRestoredPerSecond = 20;
 
-    SendPacket(features.Write());
+    SendPacket(features.Write());  
+  
+    WorldPackets::System::MirrorVarSingle vars[] =  
+    {  
+        { "raidLockoutExtendEnabled"sv, "1"sv },  
+        { "sellAllJunkEnabled"sv, "1"sv },  
+        { "bypassItemLevelScalingCode"sv, "0"sv },  
+        { "shop2Enabled"sv, "0"sv },  
+        { "bpayStoreEnable"sv, "0"sv },  
+        { "recentAlliesEnabledClient"sv, "0"sv },  
+        { "browserEnabled"sv, "0"sv },  
+        { "housingEnableCreateGuildNeighborhood"sv, "1"sv },  
+        { "housingEnableDeleteHouse"sv, "1"sv },  
+        { "housingServiceEnabled"sv, "1"sv },  
+        { "housingEnableMoveHouse"sv, "1"sv },  
+        { "housingEnableCreateCharterNeighborhood"sv, "1"sv },  
+        { "housingEnableBuyHouse"sv, "1"sv },  
+        { "housingMarketEnabled"sv, "1"sv },  
+    };  
+  
+    WorldPackets::System::MirrorVars variables;  
+    variables.Variables = vars;  
+    SendPacket(variables.Write());  
 }
 
 void WorldSession::HandleSetFactionAtWar(WorldPackets::Character::SetFactionAtWar& packet)
