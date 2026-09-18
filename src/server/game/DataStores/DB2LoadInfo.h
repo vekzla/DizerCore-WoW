@@ -6808,7 +6808,7 @@ struct HouseDecorLoadInfo
     static constexpr DB2FieldMeta Fields[17] =  
     {  
         { .IsSigned = true,  .Type = FT_STRING, .Name = "Name" },  
-        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "InitialRotation" }, // array[3]  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "InitialRotation" }, 
         { .IsSigned = false, .Type = FT_INT,    .Name = "ID" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "GameObjectID" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "Flags" },  
