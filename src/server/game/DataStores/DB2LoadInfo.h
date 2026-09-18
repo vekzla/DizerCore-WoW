@@ -6794,7 +6794,7 @@ struct HouseLoadInfo
     static constexpr DB2FieldMeta Fields[5] =  
     {  
         { .IsSigned = false, .Type = FT_INT,                  .Name = "ID" },  
-        { .IsSigned = true,  .Type = FT_STRING_NOT_LOCALIZED, .Name = "Name" },  
+        { .IsSigned = false, .Type = FT_STRING_NOT_LOCALIZED, .Name = "Name" },  
         { .IsSigned = true,  .Type = FT_INT,                  .Name = "Field_12_0_0_63534_001" },  
         { .IsSigned = true,  .Type = FT_INT,                  .Name = "Field_12_0_0_63534_002" },  
         { .IsSigned = true,  .Type = FT_INT,                  .Name = "Field_12_0_0_63534_003" },  
@@ -6807,7 +6807,7 @@ struct HouseDecorLoadInfo
 {  
     static constexpr DB2FieldMeta Fields[19] =  
     {  
-        { .IsSigned = true,  .Type = FT_STRING, .Name = "Name" },  
+        { .IsSigned = false, .Type = FT_STRING, .Name = "Name" },  
         { .IsSigned = false, .Type = FT_FLOAT,  .Name = "InitialRotation" },  
         { .IsSigned = false, .Type = FT_FLOAT,  .Name = "InitialRotation" },
         { .IsSigned = false, .Type = FT_FLOAT,  .Name = "InitialRotation" },
@@ -6851,7 +6851,7 @@ struct HouseDecorThemeSetLoadInfo
     static constexpr DB2FieldMeta Fields[4] =  
     {  
         { .IsSigned = false, .Type = FT_INT,    .Name = "ID" },  
-        { .IsSigned = true,  .Type = FT_STRING, .Name = "Name" },  
+        { .IsSigned = false, .Type = FT_STRING, .Name = "Name" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "Field_12_0_0_63534_001" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "Field_12_0_0_63534_002" },  
     };  
@@ -6968,9 +6968,9 @@ struct NeighborhoodNameGenLoadInfo
     static constexpr DB2FieldMeta Fields[5] =  
     {  
         { .IsSigned = false, .Type = FT_INT,    .Name = "ID" },  
-        { .IsSigned = true,  .Type = FT_STRING, .Name = "Prefix" },  
-        { .IsSigned = true,  .Type = FT_STRING, .Name = "Middle" },  
-        { .IsSigned = true,  .Type = FT_STRING, .Name = "Suffix" },  
+        { .IsSigned = false, .Type = FT_STRING, .Name = "Prefix" },  
+        { .IsSigned = false, .Type = FT_STRING, .Name = "Middle" },  
+        { .IsSigned = false, .Type = FT_STRING, .Name = "Suffix" },  
         { .IsSigned = false, .Type = FT_INT,    .Name = "NeighborhoodMapID" },  
     };  
     static constexpr DB2LoadInfo Instance{ Fields, 5, &NeighborhoodNameGenMeta::Instance, HOTFIX_SEL_NEIGHBORHOOD_NAME_GEN };  
@@ -6981,22 +6981,22 @@ struct NeighborhoodPlotLoadInfo
     static constexpr DB2FieldMeta Fields[26] =  
     {  
         { .IsSigned = false, .Type = FT_LONG,   .Name = "Cost" },  
-        { .IsSigned = true,  .Type = FT_STRING, .Name = "Name" },  
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "Field_004" },  
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "Field_004" },  
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "Field_004" },  
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "Field_005" },   
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "Field_005" },  
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "Field_005" },  
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "CornerstonePosition" },   
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "CornerstonePosition" },  
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "CornerstonePosition" },  
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "CornerstoneRotation" },   
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "CornerstoneRotation" },  
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "CornerstoneRotation" },  
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "TeleportPosition" }, 
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "TeleportPosition" },  
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "TeleportPosition" },  
+        { .IsSigned = false, .Type = FT_STRING, .Name = "Name" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "Field_004" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "Field_004" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "Field_004" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "Field_005" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "Field_005" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "Field_005" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "CornerstonePosition" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "CornerstonePosition" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "CornerstonePosition" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "CornerstoneRotation" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "CornerstoneRotation" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "CornerstoneRotation" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "TeleportPosition" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "TeleportPosition" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "TeleportPosition" },  
         { .IsSigned = false, .Type = FT_INT,    .Name = "ID" },  
         { .IsSigned = false, .Type = FT_INT,    .Name = "NeighborhoodMapID" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "Field_010" },  
@@ -7004,9 +7004,9 @@ struct NeighborhoodPlotLoadInfo
         { .IsSigned = true,  .Type = FT_INT,    .Name = "PlotIndex" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "WorldState" },  
         { .IsSigned = false, .Type = FT_INT,    .Name = "PlotGameObjectID" },  
-        { .IsSigned = true,  .Type = FT_FLOAT,  .Name = "Field_014" },  
+        { .IsSigned = false, .Type = FT_FLOAT,  .Name = "Field_014" },  
         { .IsSigned = true,  .Type = FT_INT,    .Name = "Field_016" },  
-    };  
+    };
   
     static constexpr DB2LoadInfo Instance{ Fields, 26, &NeighborhoodPlotMeta::Instance, HOTFIX_SEL_NEIGHBORHOOD_PLOT };  
 };  
