@@ -2,6 +2,11 @@
 -- Housing System Hotfix (DB2) Schema for DizerCore  
 -- Retail-accurate columns matching DB2LoadInfo.h Fields[] and Phase-2 SELECTs  
   
+-- Remove stale hotfix_blob/hotfix_data rows for housing tables now loaded as DB2 stores  
+DELETE FROM `hotfix_data` WHERE `TableHash` IN (0x137145D0, 0x24EE8F09, 0xBBA2E8F8);  
+DELETE FROM `hotfix_blob` WHERE `TableHash` IN (0x137145D0, 0x24EE8F09, 0xBBA2E8F8);  
+  
+  
 DROP TABLE IF EXISTS `house`;  
 CREATE TABLE `house` (  
   `ID` INT UNSIGNED NOT NULL DEFAULT 0, `Name` TEXT,  
