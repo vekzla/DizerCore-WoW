@@ -81,6 +81,7 @@ class CinematicMgr;
 class Creature;
 class DynamicObject;
 class Garrison;
+class Housing;
 class Group;
 class Guild;
 class Item;
@@ -1044,6 +1045,11 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOAD_DATA_ELEMENTS,
     PLAYER_LOGIN_QUERY_LOAD_DATA_FLAGS,
     PLAYER_LOGIN_QUERY_LOAD_BANK_TAB_SETTINGS,
+	PLAYER_LOGIN_QUERY_LOAD_HOUSING,
+    PLAYER_LOGIN_QUERY_LOAD_HOUSING_DECOR,
+    PLAYER_LOGIN_QUERY_LOAD_HOUSING_ROOMS,
+    PLAYER_LOGIN_QUERY_LOAD_HOUSING_FIXTURES,
+    PLAYER_LOGIN_QUERY_LOAD_HOUSING_CATALOG,
     PLAYER_LOGIN_QUERY_LOAD_PERKS_CURRENCY,
     PLAYER_LOGIN_QUERY_LOAD_PERKS_PURCHASES,
     PLAYER_LOGIN_QUERY_LOAD_PERKS_FROZEN,
@@ -2991,6 +2997,28 @@ class TC_GAME_API Player final : public Unit, public GridObject<Player>
         void CreateGarrison(uint32 garrSiteId);
         void DeleteGarrison();
         Garrison* GetGarrison() const { return _garrison.get(); }
+		
+		// House-visit teleport target: set by the door GO script, read+cleared by MapManager so a visitor is
+        // routed to the OWNER's HouseInteriorMap instance. Empty = enter own interior (per feature/housing-system).
+        void SetHouseVisitTarget(ObjectGuid ownerGuid) { _houseVisitTargetOwner = ownerGuid; }
+        ObjectGuid GetHouseVisitTarget() const { return _houseVisitTargetOwner; }
+        void ClearHouseVisitTarget() { _houseVisitTargetOwner = ObjectGuid::Empty; }
+
+        void CreateHousing(ObjectGuid neighborhoodGuid, uint8 plotIndex);
+        void DeleteHousing(ObjectGuid neighborhoodGuid);
+        Housing* GetHousing() const;
+        Housing* GetHousingForNeighborhood(ObjectGuid neighborhoodGuid) const;
+        std::vector<Housing const*> GetAllHousings() const;
+        void SetHousingEditorModeUpdateField(uint8 mode);
+        void UpdateHousingMapId(ObjectGuid houseGuid, int32 mapId);
+        void UpdateInitiativeFavor(uint32 favor);
+
+        // 12.0.5 plot-entry mechanism: writes PlayerHouseInfoComponentData.CurrentHouse to
+        // the given house GUID (or ObjectGuid::Empty on plot-leave). Client tracks plot
+        // occupancy by observing this field's UPDATE_OBJECT changes — it replaces the
+        // removed SMSG_NEIGHBORHOOD_PLAYER_ENTER_PLOT / LEAVE_PLOT opcodes and the
+        // per-AT FHousingPlotAreaTrigger_C fragment that were deleted in 12.0.5.
+        void SetCurrentHouse(ObjectGuid houseGuid);
 
         uint8 GetWarbandMaxLevelCharCount() const { return _warbandMaxLevelCharCount; }
 
@@ -3173,6 +3201,12 @@ class TC_GAME_API Player final : public Unit, public GridObject<Player>
 
         UF::UpdateField<UF::PlayerData, int32(WowCS::EntityFragment::CGObject), TYPEID_PLAYER> m_playerData;
         UF::UpdateField<UF::ActivePlayerData, int32(WowCS::EntityFragment::CGObject), TYPEID_ACTIVE_PLAYER> m_activePlayerData;
+
+        // Housing entity fragment (optional - only set when player has housing data)
+        UF::OptionalUpdateField<UF::PlayerHouseInfoComponentData, int32(WowCS::EntityFragment::PlayerHouseInfoComponent_C), 0> m_playerHouseInfoComponentData;
+
+        // Initiative entity fragment (optional - initiative/endeavor state for UI)
+        UF::OptionalUpdateField<UF::PlayerInitiativeComponentData, int32(WowCS::EntityFragment::PlayerInitiativeComponent_C), 0> m_playerInitiativeComponentData;
 
         void SetAreaSpiritHealer(Creature* creature);
         ObjectGuid const& GetSpiritHealerGUID() const { return _areaSpiritHealerGUID; }
@@ -3535,11 +3569,18 @@ class TC_GAME_API Player final : public Unit, public GridObject<Player>
 
         uint32 _pendingBindId;
         uint32 _pendingBindTimer;
+        
+		// Owner of the house this player is currently teleporting to visit.
+        // Empty for "enter my own interior". Set by the door GO script and
+        // consumed by MapManager when it creates/finds the HouseInteriorMap
+        // instance. Not persisted.
+        ObjectGuid _houseVisitTargetOwner;
 
         uint32 _activeCheats;
 
         std::unique_ptr<Garrison> _garrison;
-
+        std::vector<std::unique_ptr<Housing>> _housings;
+		
         uint8 _warbandMaxLevelCharCount = 0;
 
         bool _advancedCombatLoggingEnabled;
