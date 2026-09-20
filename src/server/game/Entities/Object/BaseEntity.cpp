@@ -21,6 +21,7 @@
 #include "Errors.h"
 #include "GameTime.h"
 #include "Log.h"
+#include "MeshObject.h" 
 #include "MovementPackets.h"
 #include "Player.h"
 #include "SmoothPhasing.h"

@@ -58,6 +58,7 @@
 #include "GameTime.h"
 #include "GarrisonMgr.h"
 #include "GitRevision.h"
+#include "GoingPostalMgr.h"
 #include "HousingBlueprintMgr.h"
 #include "HousingMgr.h"
 #include "InitiativeManager.h"

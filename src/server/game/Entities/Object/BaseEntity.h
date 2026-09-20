@@ -191,7 +191,7 @@ class TC_GAME_API BaseEntity
         virtual void DestroyForPlayer(Player const* target) const;
         void SendOutOfRangeForPlayer(Player const* target) const;
 
-        void ClearUpdateMask(bool remove);
+        virtual void ClearUpdateMask(bool remove);
 
         virtual std::string GetNameForLocaleIdx(LocaleConstant locale) const = 0;
 

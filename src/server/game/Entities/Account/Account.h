@@ -24,28 +24,35 @@ class WorldSession;
 
 namespace Battlenet
 {
-class Account final : public BaseEntity
-{
-public:
-    explicit Account(WorldSession* session, ObjectGuid guid, std::string&& name);
-
-    std::string GetNameForLocaleIdx(LocaleConstant locale) const override;
-
-    void BuildUpdate(UpdateDataMapType& data_map) override;
-
-    std::string GetDebugInfo() const override;
-
-    UF::UpdateField<UF::HousingStorageData, int32(WowCS::EntityFragment::FHousingStorage_C), 0> m_housingStorageData;
-
-protected:
-    UF::UpdateFieldFlag GetUpdateFieldFlagsFor(Player const* target) const override;
-
-    bool AddToObjectUpdate() override;
-    void RemoveFromObjectUpdate() override;
-
-private:
-    WorldSession* m_session;
-    std::string m_name;
+class Account final : public BaseEntity  
+{  
+public:  
+    explicit Account(WorldSession* session, ObjectGuid guid, std::string&& name);  
+  
+    void ClearUpdateMask(bool remove) override;                     
+  
+    std::string GetNameForLocaleIdx(LocaleConstant locale) const override;  
+  
+    void BuildUpdate(UpdateDataMapType& data_map) override;  
+  
+    std::string GetDebugInfo() const override;  
+  
+    void SendUpdateToPlayer(Player* player);                      
+  
+    void SetHousingDecorStorageEntry(ObjectGuid decorGuid, ObjectGuid houseGuid, uint8 sourceType, std::string sourceValue = {}); 
+    void RemoveHousingDecorStorageEntry(ObjectGuid decorGuid);     
+  
+    UF::UpdateField<UF::HousingStorageData, int32(WowCS::EntityFragment::FHousingStorage_C), 0> m_housingStorageData;  
+  
+protected:  
+    UF::UpdateFieldFlag GetUpdateFieldFlagsFor(Player const* target) const override;  
+  
+    bool AddToObjectUpdate() override;  
+    void RemoveFromObjectUpdate() override;  
+  
+private:  
+    WorldSession* m_session;  
+    std::string m_name;  
 };
 }
 

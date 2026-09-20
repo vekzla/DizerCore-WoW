@@ -113,6 +113,7 @@
 #include "OutdoorPvP.h"
 #include "OutdoorPvPMgr.h"
 #include "PartyPackets.h"
+#include "PerksProgramMgr.h"
 #include "Pet.h"
 #include "PetPackets.h"
 #include "PoolMgr.h"

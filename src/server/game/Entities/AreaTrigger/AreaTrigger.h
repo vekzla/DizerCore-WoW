@@ -123,9 +123,16 @@ class TC_GAME_API AreaTrigger final : public WorldObject, public GridObject<Area
 
     public:
         static AreaTrigger* CreateAreaTrigger(AreaTriggerCreatePropertiesId areaTriggerCreatePropertiesId, Position const& pos, int32 duration, Unit* caster, Unit* target, SpellCastVisual spellVisual = { 0, 0 }, SpellInfo const* spellInfo = nullptr, Spell* spell = nullptr, AuraEffect const* aurEff = nullptr);
+        static AreaTrigger* CreateStaticAreaTrigger(AreaTriggerCreatePropertiesId areaTriggerCreatePropertiesId, Map* map, Position const& pos, int32 duration = -1, bool addToMap = true);
         static ObjectGuid CreateNewMovementForceId(Map* map, uint32 areaTriggerId);
         bool LoadFromDB(ObjectGuid::LowType spawnId, Map* map, bool addToMap, bool allowDuplicate);
 
+        // Plot AT visual setup (SpellForVisuals, PeriodModifier, ExtraScaleCurve).
+        // 12.0.5 removed the per-AT FHousingPlotAreaTrigger_C fragment; plot ownership is
+        // now communicated via PlayerHouseInfoComponentData.CurrentHouse on the Player.
+        // The AT itself still exists for editor-menu plot bounds / decal placement visuals.
+        void InitHousingPlotVisuals();
+		
         void Update(uint32 diff) override;
         void Remove();
         bool IsRemoved() const { return _isRemoved; }
