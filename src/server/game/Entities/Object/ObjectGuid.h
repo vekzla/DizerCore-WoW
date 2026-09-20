@@ -54,7 +54,7 @@ enum TypeID : uint8
     TYPEID_SCENARIO               = 16,
     TYPEID_LOOT_OBJECT            = 17,
 
-    NUM_CLIENT_OBJECT_TYPES
+    NUM_CLIENT_OBJECT_TYPES,
 
     // Housing entities use objectType=18 in retail but this MUST NOT increase
     // NUM_CLIENT_OBJECT_TYPES because BaseEntity::m_objectTypeId defaults to

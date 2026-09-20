@@ -4262,16 +4262,6 @@ void GameObject::ClearValuesChangesMask()
     WorldObject::ClearValuesChangesMask();
 }
 
-std::span<uint32 const> GameObject::GetPauseTimes() const
-{
-    std::span<uint32 const> result;
-    if (GameObjectType::Transport const* transport = dynamic_cast<GameObjectType::Transport const*>(m_goTypeImpl.get()))
-        result = transport->GetPauseTimes();
-
-    return result;
-}
-
-
 void GameObject::InitHousingCornerstoneData(uint64 cost, int32 plotIndex)
 {
     if (m_housingCornerstoneData.has_value())

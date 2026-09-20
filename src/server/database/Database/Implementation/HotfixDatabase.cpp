@@ -709,8 +709,19 @@ void HotfixDatabaseConnection::DoPrepareStatements()
     PrepareStatement(HOTFIX_SEL_CURVE_POINT, "SELECT PosX, PosY, PreSLSquishPosX, PreSLSquishPosY, ID, CurveID, OrderIndex FROM curve_point"
         " WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);
     PREPARE_MAX_ID_STMT(HOTFIX_SEL_CURVE_POINT, "SELECT MAX(ID) + 1 FROM curve_point", CONNECTION_SYNCH);
+    
+	// DataTagXHouseDecorRecord.db2
+    PrepareStatement(HOTFIX_SEL_DATA_TAG_X_HOUSE_DECOR_RECORD, "SELECT ID, DataTagID, HouseDecorID FROM data_tag_x_house_decor_record"
+        " WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_DATA_TAG_X_HOUSE_DECOR_RECORD, "SELECT MAX(ID) + 1 FROM data_tag_x_house_decor_record", CONNECTION_SYNCH);
 
-    // DelvesSeason.db2
+    // DyeColorCategory.db2
+    PrepareStatement(HOTFIX_SEL_DYE_COLOR_CATEGORY, "SELECT Name, ID FROM dye_color_category"
+        " WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);
+    PREPARE_MAX_ID_STMT(HOTFIX_SEL_DYE_COLOR_CATEGORY, "SELECT MAX(ID) + 1 FROM dye_color_category", CONNECTION_SYNCH);
+    PREPARE_LOCALE_STMT(HOTFIX_SEL_DYE_COLOR_CATEGORY, "SELECT ID, Name_lang FROM dye_color_category_locale WHERE (`VerifiedBuild` > 0) = ? AND locale = ?", CONNECTION_SYNCH);
+    
+	// DelvesSeason.db2
     PrepareStatement(HOTFIX_SEL_DELVES_SEASON, "SELECT ID, FactionID FROM delves_season"
         " WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);
     PREPARE_MAX_ID_STMT(HOTFIX_SEL_DELVES_SEASON, "SELECT MAX(ID) + 1 FROM delves_season", CONNECTION_SYNCH);

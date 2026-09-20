@@ -24,6 +24,7 @@
 #include "Conversation.h"
 #include "DynamicObject.h"
 #include "GameObject.h"
+#include "HousingRoomEntity.h"
 #include "Player.h"
 #include "SceneObject.h"
 #include "Spell.h"

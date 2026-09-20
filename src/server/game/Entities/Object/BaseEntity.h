@@ -77,8 +77,11 @@ namespace UF
 
         template<typename Derived, typename T, int32 BlockBit, uint32 Bit>
         inline void ClearChangesMask(UpdateField<T, BlockBit, Bit>(Derived::* field));
-
-        uint32 GetChangedObjectTypeMask() const { return _changesMask; }
+		
+		template<typename Derived, typename T, int32 BlockBit, uint32 Bit>  
+        inline void ClearChangesMask(OptionalUpdateField<T, BlockBit, Bit>(Derived::* field));
+        
+		uint32 GetChangedObjectTypeMask() const { return _changesMask; }
 
         bool HasChanged(uint32 index) const { return (_changesMask & UpdateMaskHelpers::GetBlockFlag(index)) != 0; }
 
@@ -418,15 +421,26 @@ inline UF::MutableFieldReference<T, false> UF::UpdateFieldHolder::ModifyValue(Op
     return { *uf._value };
 }
 
-template <typename Derived, typename T, int32 BlockBit, uint32 Bit>
-inline void UF::UpdateFieldHolder::ClearChangesMask(UpdateField<T, BlockBit, Bit> Derived::* field)
-{
-    static_assert(WowCS::EntityFragment(BlockBit) == WowCS::EntityFragment::CGObject);
-
-    BaseEntity* owner = GetOwner();
-    _changesMask &= ~UpdateMaskHelpers::GetBlockFlag(Bit);
-
-    (static_cast<Derived*>(owner)->*field)._value.ClearChangesMask();
+template <typename Derived, typename T, int32 BlockBit, uint32 Bit>  
+inline void UF::UpdateFieldHolder::ClearChangesMask(UpdateField<T, BlockBit, Bit> Derived::* field)  
+{  
+    BaseEntity* owner = GetOwner();  
+    if constexpr (WowCS::EntityFragment(BlockBit) == WowCS::EntityFragment::CGObject)  
+        _changesMask &= ~UpdateMaskHelpers::GetBlockFlag(Bit);  
+  
+    (static_cast<Derived*>(owner)->*field)._value.ClearChangesMask();  
+}  
+  
+template <typename Derived, typename T, int32 BlockBit, uint32 Bit>  
+inline void UF::UpdateFieldHolder::ClearChangesMask(OptionalUpdateField<T, BlockBit, Bit> Derived::* field)  
+{  
+    BaseEntity* owner = GetOwner();  
+    if constexpr (WowCS::EntityFragment(BlockBit) == WowCS::EntityFragment::CGObject)  
+        _changesMask &= ~UpdateMaskHelpers::GetBlockFlag(Bit);  
+  
+    auto& uf = (static_cast<Derived*>(owner)->*field);  
+    if (uf.has_value())  
+        uf._value->ClearChangesMask();  
 }
 
 #endif // TRINITYCORE_BASE_ENTITY_H
