@@ -16,6 +16,7 @@
  */
 
 #include "Spell.h"
+#include "Account.h"  
 #include "AccountMgr.h"
 #include "AreaTrigger.h"
 #include "AzeriteEmpoweredItem.h"
@@ -47,6 +48,9 @@
 #include "Group.h"
 #include "GroupMgr.h"
 #include "Guild.h"
+#include "Housing.h"  
+#include "HousingMgr.h"  
+#include "HousingPackets.h"  
 #include "InstanceScript.h"
 #include "Item.h"
 #include "Language.h"
@@ -67,6 +71,7 @@
 #include "PhasingHandler.h"
 #include "Player.h"
 #include "QuestMgr.h"
+#include "RealmList.h"
 #include "ReputationMgr.h"
 #include "RestMgr.h"
 #include "SceneObject.h"

@@ -20,6 +20,7 @@
 
 #include "GridNotifiers.h"
 #include "Corpse.h"
+#include "MeshObject.h"
 #include "Player.h"
 #include "UpdateData.h"
 #include "WorldSession.h"

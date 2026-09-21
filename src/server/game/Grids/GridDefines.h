@@ -88,7 +88,7 @@ enum GridMapTypeMask
     GRID_MAP_TYPE_MASK_CONVERSATION     = 0x80,
 	GRID_MAP_TYPE_MASK_MESHOBJECT       = 0x100,
     GRID_MAP_TYPE_MASK_HOUSINGROMENTITY = 0x200,
-    GRID_MAP_TYPE_MASK_ALL              = 0xFF
+    GRID_MAP_TYPE_MASK_ALL              = 0x3FF
 };
 
 // Creature used instead pet to simplify *::Visit templates (not required duplicate code for Creature->Pet case)

@@ -285,12 +285,15 @@ namespace UF
         std::unordered_map<K, V>& _values;
     };
 
-    template<typename T>
-    struct SetUpdateFieldSetter
-    {
-        template<typename F>
-        friend bool RemoveSetUpdateFieldValue(SetUpdateFieldSetter<F>& setter, std::type_identity_t<F> const& key);
-
+template<typename T>  
+    struct SetUpdateFieldSetter  
+    {  
+        template<typename F>  
+        friend bool InsertSetUpdateFieldValue(SetUpdateFieldSetter<F>& setter, std::type_identity_t<F> const& key);  
+  
+        template<typename F>  
+        friend bool RemoveSetUpdateFieldValue(SetUpdateFieldSetter<F>& setter, std::type_identity_t<F> const& key);  
+  
         SetUpdateFieldSetter(std::unordered_map<T, MapUpdateFieldState>& values) : _values(values) { }
 
     private:
