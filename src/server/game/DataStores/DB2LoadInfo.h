@@ -7083,13 +7083,13 @@ struct HouseLevelDataLoadInfo
     static constexpr DB2FieldMeta Fields[4] =  
     {  
         { .IsSigned = false, .Type = FT_INT, .Name = "ID" },  
-        { .IsSigned = true, .Type = FT_INT, .Name = "Level" },  
+        { .IsSigned = true, .Type = FT_BYTE, .Name = "Level" },  
         { .IsSigned = true, .Type = FT_INT, .Name = "QuestID" },  
-        { .IsSigned = true, .Type = FT_INT, .Name = "Field_12_0_7_67808_003" },  // 12.0.7 (build 67808): new field  
+        { .IsSigned = true, .Type = FT_INT, .Name = "Field_12_0_7_67808_003" },  
     };  
   
     static constexpr DB2LoadInfo Instance{ Fields, 4, &HouseLevelDataMeta::Instance, HOTFIX_SEL_HOUSE_LEVEL_DATA };  
-};  
+}; 
   
 struct HouseLevelRewardInfoLoadInfo  
 {  

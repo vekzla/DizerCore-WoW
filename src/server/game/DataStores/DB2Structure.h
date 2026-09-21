@@ -5037,7 +5037,7 @@ struct HouseExteriorWmoDataEntry
 struct HouseLevelDataEntry  
 {  
     uint32 ID;  
-    int32 Level;  
+    int8 Level;  
     int32 QuestID;  
     int32 Field_12_0_7_67808_003;  
 };  

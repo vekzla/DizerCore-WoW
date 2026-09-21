@@ -427,12 +427,13 @@ CREATE TABLE `house_exterior_wmo_data_locale` (
 DROP TABLE IF EXISTS `house_level_data`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `house_level_data` (
-  `ID` int unsigned NOT NULL DEFAULT '0',
-  `Level` int NOT NULL DEFAULT '0',
-  `QuestID` int NOT NULL DEFAULT '0',
-  `VerifiedBuild` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`ID`,`VerifiedBuild`)
+CREATE TABLE `house_level_data` (  
+  `ID` int unsigned NOT NULL DEFAULT '0',  
+  `Level` int NOT NULL DEFAULT '0',  
+  `QuestID` int NOT NULL DEFAULT '0',  
+  `Field_12_0_7_67808_003` int NOT NULL DEFAULT '0',  
+  `VerifiedBuild` int NOT NULL DEFAULT '0',  
+  PRIMARY KEY (`ID`,`VerifiedBuild`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -490,17 +491,19 @@ CREATE TABLE `house_level_reward_info_locale` (
 DROP TABLE IF EXISTS `house_room`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `house_room` (
-  `ID` int unsigned NOT NULL DEFAULT '0',
-  `Name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `Size` tinyint NOT NULL DEFAULT '0',
-  `Flags` int NOT NULL DEFAULT '0',
-  `Field_002` int NOT NULL DEFAULT '0',
-  `RoomWmoDataID` int NOT NULL DEFAULT '0',
-  `UiTextureAtlasElementID` int NOT NULL DEFAULT '0',
-  `WeightCost` int NOT NULL DEFAULT '0',
-  `VerifiedBuild` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`ID`,`VerifiedBuild`)
+CREATE TABLE `house_room` (  
+  `ID` int unsigned NOT NULL DEFAULT '0',  
+  `Name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,  
+  `Size` tinyint NOT NULL DEFAULT '0',  
+  `Flags` int NOT NULL DEFAULT '0',  
+  `Field_002` int NOT NULL DEFAULT '0',  
+  `RoomWmoDataID` int NOT NULL DEFAULT '0',  
+  `UiTextureAtlasElementID` int NOT NULL DEFAULT '0',  
+  `WeightCost` int NOT NULL DEFAULT '0',  
+  `ItemID` int NOT NULL DEFAULT '0',  
+  `SortPriority` int NOT NULL DEFAULT '0',  
+  `VerifiedBuild` int NOT NULL DEFAULT '0',  
+  PRIMARY KEY (`ID`,`VerifiedBuild`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -966,24 +969,25 @@ CREATE TABLE `room_wmo_data` (
 DROP TABLE IF EXISTS `exterior_component`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `exterior_component` (
-  `Name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `PositionX` float NOT NULL DEFAULT '0',
-  `PositionY` float NOT NULL DEFAULT '0',
-  `PositionZ` float NOT NULL DEFAULT '0',
-  `ID` int unsigned NOT NULL DEFAULT '0',
-  `Type` tinyint unsigned NOT NULL DEFAULT '0',
-  `FileDataID` int NOT NULL DEFAULT '0',
-  `ConditionID` int NOT NULL DEFAULT '0',
-  `HookID` int NOT NULL DEFAULT '0',
-  `Flags` tinyint unsigned NOT NULL DEFAULT '0',
-  `Slot` tinyint unsigned NOT NULL DEFAULT '0',
-  `SortOrder` int NOT NULL DEFAULT '0',
-  `ComponentGroupID` int NOT NULL DEFAULT '0',
-  `UiTextureKitID` int NOT NULL DEFAULT '0',
-  `ExteriorComponentTypeID` int unsigned NOT NULL DEFAULT '0',
-  `VerifiedBuild` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`ID`,`VerifiedBuild`)
+CREATE TABLE `exterior_component` (  
+  `Name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,  
+  `PositionX` float NOT NULL DEFAULT '0',  
+  `PositionY` float NOT NULL DEFAULT '0',  
+  `PositionZ` float NOT NULL DEFAULT '0',  
+  `ID` int unsigned NOT NULL DEFAULT '0',  
+  `Size` tinyint unsigned NOT NULL DEFAULT '0',  
+  `HouseExteriorWmoDataID` int unsigned NOT NULL DEFAULT '0',  
+  `ParentComponentID` int NOT NULL DEFAULT '0',  
+  `ModelFileDataID` int NOT NULL DEFAULT '0',  
+  `Flags` int NOT NULL DEFAULT '0',  
+  `Field_7` tinyint unsigned NOT NULL DEFAULT '0',  
+  `Type` tinyint unsigned NOT NULL DEFAULT '0',  
+  `Field_9` int NOT NULL DEFAULT '0',  
+  `GameObjectID` int NOT NULL DEFAULT '0',  
+  `Field_11` int NOT NULL DEFAULT '0',  
+  `ItemID` int NOT NULL DEFAULT '0',  
+  `VerifiedBuild` int NOT NULL DEFAULT '0',  
+  PRIMARY KEY (`ID`,`VerifiedBuild`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

@@ -98,16 +98,16 @@ void HotfixDatabaseConnection::DoPrepareStatements()
         " WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
     PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE_THEME, "SELECT MAX(ID) + 1 FROM house_theme", CONNECTION_SYNCH);  
     PREPARE_LOCALE_STMT(HOTFIX_SEL_HOUSE_THEME, "SELECT ID, Name_lang FROM house_theme_locale WHERE (`VerifiedBuild` > 0) = ? AND locale = ?", CONNECTION_SYNCH);  
-    PrepareStatement(HOTFIX_SEL_HOUSE_ROOM, "SELECT ID, Name, Size, Flags, Field_002, RoomWmoDataID, UiTextureAtlasElementID, WeightCost"  
-        " FROM house_room WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PrepareStatement(HOTFIX_SEL_HOUSE_ROOM, "SELECT Name, ID, Size, Flags, Field_002, RoomWmoDataID, UiTextureAtlasElementID, WeightCost, ItemID, SortPriority"  
+        " FROM house_room WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);
     PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE_ROOM, "SELECT MAX(ID) + 1 FROM house_room", CONNECTION_SYNCH);  
     PREPARE_LOCALE_STMT(HOTFIX_SEL_HOUSE_ROOM, "SELECT ID, Name_lang FROM house_room_locale WHERE (`VerifiedBuild` > 0) = ? AND locale = ?", CONNECTION_SYNCH);  
     PrepareStatement(HOTFIX_SEL_HOUSE_LEVEL_REWARD_INFO, "SELECT Name, Description, ID, HouseLevelID, RewardType, RewardValue"  
         " FROM house_level_reward_info WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
     PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE_LEVEL_REWARD_INFO, "SELECT MAX(ID) + 1 FROM house_level_reward_info", CONNECTION_SYNCH);  
     PREPARE_LOCALE_STMT(HOTFIX_SEL_HOUSE_LEVEL_REWARD_INFO, "SELECT ID, Name_lang, Description_lang FROM house_level_reward_info_locale WHERE (`VerifiedBuild` > 0) = ? AND locale = ?", CONNECTION_SYNCH);  
-    PrepareStatement(HOTFIX_SEL_HOUSE_LEVEL_DATA, "SELECT ID, Level, QuestID FROM house_level_data"  
-        " WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  
+    PrepareStatement(HOTFIX_SEL_HOUSE_LEVEL_DATA, "SELECT ID, Level, QuestID, Field_12_0_7_67808_003 FROM house_level_data"  
+        " WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);
     PREPARE_MAX_ID_STMT(HOTFIX_SEL_HOUSE_LEVEL_DATA, "SELECT MAX(ID) + 1 FROM house_level_data", CONNECTION_SYNCH);  
     PrepareStatement(HOTFIX_SEL_HOUSE_EXTERIOR_WMO_DATA, "SELECT Name, ID, Flags FROM house_exterior_wmo_data"  
         " WHERE (`VerifiedBuild` > 0) = ?", CONNECTION_SYNCH);  

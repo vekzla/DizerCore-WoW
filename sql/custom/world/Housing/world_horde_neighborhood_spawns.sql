@@ -14,8 +14,37 @@
 -- Source: run2_horde_map2736_world.sql
 -- ============================================================================
 -- table import crashing fix  
-ALTER TABLE `playerchoice`  
-ADD COLUMN `ForceDontShowChoicesAsList` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 AFTER `ShowChoicesAsList`;
+SET @col_exists := (SELECT COUNT(*) FROM information_schema.COLUMNS  
+    WHERE TABLE_SCHEMA = DATABASE()  
+      AND TABLE_NAME  = 'playerchoice'  
+      AND COLUMN_NAME = 'ForceDontShowChoicesAsList');  
+SET @ddl := IF(@col_exists = 0,  
+    'ALTER TABLE `playerchoice` ADD COLUMN `ForceDontShowChoicesAsList` TINYINT NOT NULL DEFAULT 0',  
+    'DO 0');  
+PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- ============================================================================  
+-- Idempotency guards (Horde neighborhood, map 2736)  
+-- Clear this file's reserved ID bands before re-inserting so a re-hash/re-run  
+-- doesn't throw 1062/1060. Order matters: delete children before parents.  
+-- ============================================================================  
+  
+-- Waypoints (MOVID band 11400001+)  
+DELETE FROM `waypoint_path_node` WHERE `PathId` BETWEEN 11400001 AND 11499999;  
+DELETE FROM `waypoint_path`      WHERE `PathId` BETWEEN 11400001 AND 11499999;  
+  
+-- Creatures + gameobjects on this map (covers CGUID/OGUID bands via map)  
+DELETE FROM `creature_addon`   WHERE `guid` IN (SELECT `guid` FROM `creature`   WHERE `map` = 2736);  
+DELETE FROM `creature`         WHERE `map` = 2736;  
+DELETE FROM `gameobject_addon` WHERE `guid` IN (SELECT `guid` FROM `gameobject` WHERE `map` = 2736);  
+DELETE FROM `gameobject`       WHERE `map` = 2736;  
+  
+-- Areatriggers (ATSPAWNID band 11200001+, ATPROPERTIESID band 11300001+)  
+DELETE FROM `areatrigger`                   WHERE `SpawnId` BETWEEN 11200001 AND 11299999;  
+DELETE FROM `areatrigger_create_properties` WHERE `Id`      BETWEEN 11300001 AND 11399999;  
+  
+-- NPC text (NPCTEXTID band 17000001+)  
+DELETE FROM `npc_text` WHERE `ID` BETWEEN 17000001 AND 17999999;
   
 # TrinityCore - WowPacketParser
 # File name: dump_12.0.1.65940_2026-02-19_10-51-32.pkt
