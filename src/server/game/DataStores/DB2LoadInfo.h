@@ -7083,8 +7083,8 @@ struct HouseLevelDataLoadInfo
     static constexpr DB2FieldMeta Fields[4] =  
     {  
         { .IsSigned = false, .Type = FT_INT, .Name = "ID" },  
-        { .IsSigned = true, .Type = FT_BYTE, .Name = "Level" },  
-        { .IsSigned = true, .Type = FT_INT, .Name = "QuestID" },  
+        { .IsSigned = false, .Type = FT_BYTE, .Name = "Level" },  
+        { .IsSigned = false, .Type = FT_INT, .Name = "QuestID" },  
         { .IsSigned = true, .Type = FT_INT, .Name = "Field_12_0_7_67808_003" },  
     };  
   
@@ -7330,10 +7330,10 @@ struct NeighborhoodPlotLoadInfo
         { .IsSigned = false, .Type = FT_INT, .Name = "ID" },  
         { .IsSigned = false, .Type = FT_INT, .Name = "NeighborhoodMapID" },  
         { .IsSigned = true, .Type = FT_INT, .Name = "Field_010" },  
-        { .IsSigned = true, .Type = FT_INT, .Name = "CornerstoneGameObjectID" },  
+        { .IsSigned = false, .Type = FT_INT, .Name = "CornerstoneGameObjectID" },  
         { .IsSigned = true, .Type = FT_INT, .Name = "PlotIndex" },  
         { .IsSigned = true, .Type = FT_INT, .Name = "WorldState" },  
-        { .IsSigned = true, .Type = FT_INT, .Name = "PlotGameObjectID" },  
+        { .IsSigned = false, .Type = FT_INT, .Name = "PlotGameObjectID" },  
         { .IsSigned = false, .Type = FT_FLOAT, .Name = "TeleportFacing" },  
         { .IsSigned = true, .Type = FT_INT, .Name = "Field_016" },  
     };  

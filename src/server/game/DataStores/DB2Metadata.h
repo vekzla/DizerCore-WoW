@@ -15901,7 +15901,7 @@ struct NeighborhoodPlotMeta
     static constexpr DB2MetaField Fields[16] =  
     {  
         { .Type = FT_LONG,   .ArraySize = 1, .IsSigned = false },  
-        { .Type = FT_STRING, .ArraySize = 1, .IsSigned = false },   
+        { .Type = FT_STRING_NOT_LOCALIZED, .ArraySize = 1, .IsSigned = false },   
         { .Type = FT_FLOAT,  .ArraySize = 3, .IsSigned = false }, 
         { .Type = FT_FLOAT,  .ArraySize = 3, .IsSigned = false }, 
         { .Type = FT_FLOAT,  .ArraySize = 3, .IsSigned = false }, 
