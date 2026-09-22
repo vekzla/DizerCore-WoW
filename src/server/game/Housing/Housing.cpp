@@ -972,6 +972,8 @@ HousingResult Housing::PlaceDecorWithGuid(ObjectGuid decorGuid, uint32 decorEntr
         stmt->setUInt64(index++, static_cast<uint64>(decor.PlacementTime));
         stmt->setUInt8(index++, decor.SourceType);
         stmt->setString(index++, decor.SourceValue);
+        stmt->setUInt64(index++, decor.PetGuid.IsEmpty() ? 0 : decor.PetGuid.GetCounter());  
+        stmt->setUInt8(index++, decor.PetFlag);  
         CharacterDatabase.Execute(stmt);
     }
 
@@ -1122,9 +1124,11 @@ HousingResult Housing::PlaceDecor(uint32 decorEntryId, float x, float y, float z
         stmt->setUInt32(index++, 0); // dyeSlot2
         stmt->setUInt64(index++, roomGuid.IsEmpty() ? 0 : roomGuid.GetCounter());
         stmt->setUInt8(index++, 0);  // locked
-        stmt->setUInt64(index++, static_cast<uint64>(decor.PlacementTime));
-        stmt->setUInt8(index++, decor.SourceType);
-        stmt->setString(index++, decor.SourceValue);
+        stmt->setUInt64(index++, static_cast<uint64>(decor.PlacementTime));  
+        stmt->setUInt8(index++, decor.SourceType);  
+        stmt->setString(index++, decor.SourceValue);  
+        stmt->setUInt64(index++, decor.PetGuid.IsEmpty() ? 0 : decor.PetGuid.GetCounter());  
+        stmt->setUInt8(index++, decor.PetFlag);  
         CharacterDatabase.Execute(stmt);
     }
 
