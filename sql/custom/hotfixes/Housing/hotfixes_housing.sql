@@ -429,7 +429,7 @@ DROP TABLE IF EXISTS `house_level_data`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `house_level_data` (  
   `ID` int unsigned NOT NULL DEFAULT '0',  
-  `Level` int NOT NULL DEFAULT '0',  
+  `Level` tinyint NOT NULL DEFAULT '0',  
   `QuestID` int NOT NULL DEFAULT '0',  
   `Field_12_0_7_67808_003` int NOT NULL DEFAULT '0',  
   `VerifiedBuild` int NOT NULL DEFAULT '0',  

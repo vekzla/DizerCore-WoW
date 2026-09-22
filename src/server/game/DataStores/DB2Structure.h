@@ -4892,9 +4892,9 @@ struct DecorSubcategoryEntry
 struct DecorXDecorSubcategoryEntry  
 {  
     uint32 ID;  
-    uint32 HouseDecorID;  
     int32 DecorSubcategoryID;  
-};  
+    uint32 HouseDecorID;  
+};    
   
 struct DyeColorCategoryEntry  
 {  
@@ -4944,8 +4944,8 @@ struct ExteriorComponentGroupEntry
 {  
     std::array<float, 3> Position;  
     uint32 ID;  
-    uint32 HouseExteriorWmoDataID;  
-};  
+    uint32 ExteriorComponentID;  
+};    
   
 struct ExteriorComponentGroupXHookEntry  
 {  
@@ -4973,8 +4973,8 @@ struct ExteriorComponentTypeEntry
 struct ExteriorComponentXGroupEntry  
 {  
     uint32 ID;  
-    int32 ExteriorComponentGroupID;  
     int32 ExteriorComponentID;  
+    int32 ExteriorComponentGroupID;  
 }; 
   
 struct HouseDecorEntry  
@@ -4996,7 +4996,7 @@ struct HouseDecorEntry
     int8 Size;  
     int32 StartingQuantity;  
     int32 UiModelSceneID;  
-};  
+};    
   
 struct HouseDecorMaterialEntry  
 {  
