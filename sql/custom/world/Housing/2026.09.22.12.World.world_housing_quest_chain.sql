@@ -80,3 +80,31 @@ INSERT IGNORE INTO creature_questender (id, quest) VALUES (233063, 91969);
 -- 94210 "Feathering the Nest": Alliance ended by Lyssabel, Horde ended by Tocho
 INSERT IGNORE INTO creature_questender (id, quest) VALUES (233063, 94210);
 INSERT IGNORE INTO creature_questender (id, quest) VALUES (233708, 94210);
+
+-- ============================================================================  
+-- 5. NPC flag restoration + fixes (runs after spawn files re-insert templates)  
+-- ============================================================================  
+  
+-- Dynamic: derive flags from actual table data  
+UPDATE creature_template ct SET ct.npcflag = ct.npcflag | 128  
+WHERE ct.entry IN (SELECT DISTINCT entry FROM npc_vendor)  
+  AND (ct.npcflag & 128) = 0;  
+  
+UPDATE creature_template ct SET ct.npcflag = ct.npcflag | 2  
+WHERE ct.entry IN (SELECT DISTINCT id FROM creature_queststarter  
+                   UNION SELECT DISTINCT id FROM creature_questender)  
+  AND (ct.npcflag & 2) = 0;  
+  
+UPDATE creature_template ct SET ct.npcflag = ct.npcflag | 1  
+WHERE ct.entry IN (SELECT DISTINCT CreatureID FROM creature_template_gossip)  
+  AND (ct.npcflag & 1) = 0;  
+  
+-- Hardcoded: entries that need flags but have no vendor/quest/gossip rows  
+-- TALKTO targets  
+UPDATE creature_template SET npcflag = npcflag | 1  
+WHERE entry IN (216224, 216226, 216228, 216230, 216232, 216234, 216064, 221019);  
+  
+-- Decor vendors (GOSSIP 0x1 + VENDOR 0x80)  
+UPDATE creature_template SET npcflag = npcflag | 129  
+WHERE entry IN (255218, 255203, 255213, 255216, 255221, 255222, 255228, 255230,  
+                255278, 255297, 255298, 255299, 255301, 255319, 255325, 255326);
