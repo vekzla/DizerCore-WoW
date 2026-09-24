@@ -27,7 +27,10 @@ SET @ddl := IF(@col_exists = 0,
     'DO 0');  
 PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;  
   
--- Migrate existing rooms: slotIndex → yard offset (slot * 15), floor 0  
-UPDATE `character_housing_rooms` SET `gridX` = CAST(`slotIndex` AS SIGNED) * 15, `gridY` = 0, `floorIndex` = 0;  
--- Entry room (slot 0) stays at gridX=0  
-UPDATE `character_housing_rooms` SET `gridX` = 0 WHERE `slotIndex` = 0;
+-- Migrate existing rooms: slotIndex -> yard offset (slot * 15), floor 0  
+-- Guarded: only touches rows still at default zeros, so a re-apply  
+-- cannot reset room positions players already placed.  
+UPDATE `character_housing_rooms`  
+   SET `gridX` = CAST(`slotIndex` AS SIGNED) * 15, `gridY` = 0, `floorIndex` = 0  
+ WHERE `slotIndex` <> 0  
+   AND `gridX` = 0 AND `gridY` = 0 AND `floorIndex` = 0;
