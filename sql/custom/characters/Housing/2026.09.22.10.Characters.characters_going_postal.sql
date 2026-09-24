@@ -1,5 +1,4 @@
-DROP TABLE IF EXISTS `character_going_postal`;  
-CREATE TABLE `character_going_postal` (  
+CREATE TABLE IF NOT EXISTS `character_going_postal` (  
   `guid` INT UNSIGNED NOT NULL DEFAULT 0,  
   `routeId` INT UNSIGNED NOT NULL DEFAULT 0,  
   `bestTimeMs` INT UNSIGNED NOT NULL DEFAULT 0,  
