@@ -34,6 +34,7 @@
 #include "Neighborhood.h"
 #include "NeighborhoodCharter.h"
 #include "NeighborhoodMgr.h"
+#include "NPCPackets.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Player.h"
@@ -1865,7 +1866,7 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
     // For unclaimed purchasable plots: PurchaseStatus=0, Cost=plotCost.
     WorldPackets::Neighborhood::NeighborhoodOpenCornerstoneUIResponse response;
     response.PlotIndex = plotIndex;
-    response.PurchaseStatus = 0;
+    response.PurchaseStatus = 73;
     response.NeighborhoodGuid = neighborhood->GetGuid();
     response.CornerstoneGuid = neighborhoodOpenCornerstoneUI.NeighborhoodGuid; // GO GUID from CMSG
     response.IsPlotOwned = isOwned;
@@ -1927,6 +1928,13 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
     }
     WorldPacket const* pkt = response.Write();
     SendPacket(pkt);
+
+	// Retail cornerstone flow: open the CornerstoneInteraction UI  
+    WorldPackets::NPC::NPCInteractionOpenResult npcInteraction;  
+    npcInteraction.Npc = neighborhoodOpenCornerstoneUI.NeighborhoodGuid;  
+    npcInteraction.InteractionType = static_cast<PlayerInteractionType>(70);  
+    npcInteraction.Success = true;  
+    SendPacket(npcInteraction.Write());
 
     TC_LOG_DEBUG("housing", "=== SMSG_NEIGHBORHOOD_OPEN_CORNERSTONE_UI_RESPONSE (0x5C000A) ===\n"
         "  PlotIndex={}, Cost={}, PurchaseStatus={}, CanPurchase={}, IsPlotOwned={}\n"
@@ -2529,17 +2537,3 @@ void WorldSession::HandleNeighborhoodInitiativeOp0F(WorldPackets::Neighborhood::
         TC_LOG_TRACE("housing", "  record: ({}, {}, {}, {})", r.A, r.B, r.C, r.D);
 }
 #endif
-
-// ============================================================
-// Phase 7 — Charter Handlers
-// ============================================================
-
-// Retired 2026-05-12: HandleNeighborhoodCharterSignResponse + HandleNeighborhoodCharterRemoveSignature
-// — fake CMSGs 0x370002 + 0x370005, no client senders in build 67186 (STUB-OK only).
-
-// ============================================================
-// Phase 7 — Neighborhood Handlers
-// ============================================================
-
-
-
