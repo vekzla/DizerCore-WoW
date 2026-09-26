@@ -537,20 +537,20 @@ void GuildGetOthersOwnedHouses::Read()
 
 // --- SMSG Packets ---
 
-WorldPacket const* QueryNeighborhoodNameResponse::Write()
-{
-    _worldPacket << NeighborhoodGuid;
-    _worldPacket << uint8(Result ? 128 : 0);
-    if (Result)
-    {
-        _worldPacket << SizedString::BitsSize<8>(NeighborhoodName);
-        _worldPacket << SizedString::Data(NeighborhoodName);
-    }
-
-    TC_LOG_DEBUG("network.opcode", "SMSG_QUERY_NEIGHBORHOOD_NAME_RESPONSE NeighborhoodGuid: {} Result: {} Name: '{}'",
-        NeighborhoodGuid.ToString(), Result, NeighborhoodName);
-
-    return &_worldPacket;
+WorldPacket const* QueryNeighborhoodNameResponse::Write()  
+{  
+    _worldPacket << NeighborhoodGuid;  
+    _worldPacket.WriteBit(Result);  
+    if (Result)  
+        _worldPacket << SizedString::BitsSize<8>(NeighborhoodName);  
+    _worldPacket.FlushBits();  
+    if (Result)  
+        _worldPacket << SizedString::Data(NeighborhoodName);  
+  
+    TC_LOG_DEBUG("network.opcode", "SMSG_QUERY_NEIGHBORHOOD_NAME_RESPONSE NeighborhoodGuid: {} Result: {} Name: '{}'",  
+        NeighborhoodGuid.ToString(), Result, NeighborhoodName);  
+  
+    return &_worldPacket;  
 }
 
 WorldPacket const* InvalidateNeighborhoodName::Write()
