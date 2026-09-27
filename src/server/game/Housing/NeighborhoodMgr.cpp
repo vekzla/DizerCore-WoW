@@ -16,6 +16,7 @@
  */
 
 #include "NeighborhoodMgr.h"
+#include "Containers.h"
 #include "DatabaseEnv.h"
 #include "DB2Stores.h"
 #include "GameTime.h"
