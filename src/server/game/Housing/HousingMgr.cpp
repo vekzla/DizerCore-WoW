@@ -614,24 +614,38 @@ int32 HousingMgr::ResolvePlotIndex(ObjectGuid cornerstoneGuid, Neighborhood cons
     return plotData->PlotIndex;
 }
 
-std::string HousingMgr::GenerateNeighborhoodName(uint32 neighborhoodMapId) const
-{
-    auto itr = _nameGenByMap.find(neighborhoodMapId);
-    if (itr == _nameGenByMap.end() || itr->second.empty())
-        return "Unnamed Neighborhood";
-
-    std::vector<NeighborhoodNameGenData> const& nameGens = itr->second;
-    uint32 count = static_cast<uint32>(nameGens.size());
-
-    // Retail neighborhood names use hyphen-separated NeighborhoodNameGen entry IDs
-    // (e.g., "75-78-61", "86-90-6"). The client resolves each token to localized
-    // text from its local NeighborhoodNameGen.db2 (Prefix, Suffix, FullName fields).
-    // Pick 3 random entries from this map's pool and combine their IDs.
-    uint32 id1 = nameGens[urand(0, count - 1)].ID;
-    uint32 id2 = nameGens[urand(0, count - 1)].ID;
-    uint32 id3 = nameGens[urand(0, count - 1)].ID;
-
-    return Trinity::StringFormat("{}-{}-{}", id1, id2, id3);
+std::string HousingMgr::GenerateNeighborhoodName(uint32 neighborhoodMapId) const  
+{  
+    auto itr = _nameGenByMap.find(neighborhoodMapId);  
+    if (itr == _nameGenByMap.end() || itr->second.empty())  
+        return "Unnamed Neighborhood";  
+  
+    std::vector<NeighborhoodNameGenData> const& nameGens = itr->second;  
+  
+    // Retail neighborhood names use hyphen-separated NeighborhoodNameGen entry IDs  
+    // (e.g., "75-78-61", "86-90-6"). The client resolves each token to a  
+    // positional field of the named row: token1 -> Prefix, token2 -> Middle,  
+    // token3 -> Suffix. Pick only rows whose field for that position is  
+    // populated, or the client renders '<?>' for that token.  
+    auto pickForField = [&nameGens](std::string NeighborhoodNameGenData::* field) -> uint32  
+    {  
+        for (uint32 i = 0; i < 64; ++i)  
+        {  
+            NeighborhoodNameGenData const& e = nameGens[urand(0, nameGens.size() - 1)];  
+            if (!(e.*field).empty())  
+                return e.ID;  
+        }  
+        return 0;  
+    };  
+  
+    uint32 id1 = pickForField(&NeighborhoodNameGenData::Prefix);  
+    uint32 id2 = pickForField(&NeighborhoodNameGenData::Middle);  
+    uint32 id3 = pickForField(&NeighborhoodNameGenData::Suffix);  
+  
+    if (!id1 || !id2 || !id3)  
+        return "Unnamed Neighborhood";  
+  
+    return Trinity::StringFormat("{}-{}-{}", id1, id2, id3);  
 }
 
 uint32 HousingMgr::GetMaxDecorForLevel(uint32 level) const

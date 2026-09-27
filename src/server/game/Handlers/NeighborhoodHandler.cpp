@@ -1904,7 +1904,7 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
   
     // Flag the neighborhood's active initiative/endeavor for UI treatment.  
     uint64 nhLowGuid = neighborhood->GetGuid().GetCounter();  
-    response.IsInitiative = false; // (sInitiativeManager.GetActiveInitiative(nhLowGuid) != nullptr);  
+    response.IsInitiative = (sInitiativeManager.GetActiveInitiative(nhLowGuid) != nullptr);  
   
     if (isOwned)  
     {  
@@ -1957,19 +1957,23 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
     if (GameObject* cornerstone = player->GetMap()->GetGameObject(neighborhoodOpenCornerstoneUI.NeighborhoodGuid))  
     {  
         GameObjectTemplate const* goInfo = cornerstone->GetGOInfo();  
-        if (goInfo->UILink.PlayerInteractionType)  
-        {  
-            WorldPackets::NPC::NPCInteractionOpenResult npcInteraction;  
-            npcInteraction.Npc = cornerstone->GetGUID();  
-            npcInteraction.InteractionType = static_cast<PlayerInteractionType>(goInfo->UILink.PlayerInteractionType);  
-            npcInteraction.Success = true;  
-            SendPacket(npcInteraction.Write());  
-        }  
         uint32 spellId = goInfo->UILink.spell;   // field is 'spell', not 'SpellID'  
+
         if (!spellId && goInfo->UILink.PlayerInteractionType == 70)  
             spellId = 1266097; // [DNT] Trigger Convo for Unowned Plot  
         if (spellId)  
             player->CastSpell(player, spellId, true);    
+    }  
+  
+    // Fire PLAYER_INTERACTION_MANAGER_FRAME_SHOW (type 70) so the client opens  
+    // HousingCornerstonePurchaseFrame. This is the only send on the cornerstone  
+    // path now — GameObject::Use skips type 70.  
+    {  
+        WorldPackets::NPC::NPCInteractionOpenResult npcInteraction;  
+        npcInteraction.Npc = neighborhoodOpenCornerstoneUI.NeighborhoodGuid; // cornerstone GO GUID  
+        npcInteraction.InteractionType = static_cast<PlayerInteractionType>(70);  
+        npcInteraction.Success = true;  
+        SendPacket(npcInteraction.Write());  
     }  
   
     WorldPacket const* pkt = response.Write();  

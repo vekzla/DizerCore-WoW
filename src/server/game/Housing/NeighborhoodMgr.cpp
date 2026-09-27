@@ -800,89 +800,112 @@ void NeighborhoodMgr::MigrateWrongFactionResidents()
     }
 }
 
-void NeighborhoodMgr::RegenerateNeighborhoodNames()
-{
-    // Neighborhood names are stored as "ID1-ID2-ID3" tokens referencing NeighborhoodNameGen
-    // entry IDs from the base DB2. Old names (from hotfix-era data) may contain text
-    // where the values are the TEXT content of overwritten entries, not actual DB2 entry IDs.
-    // Validate each public neighborhood's name: parse tokens, verify each is a real entry.
-    uint32 regenerated = 0;
-    for (auto& [guid, neighborhood] : _neighborhoods)
-    {
-        if (!neighborhood->IsPublic())
-            continue;
-
-        std::string const& name = neighborhood->GetName();
-        bool needsRegeneration = false;
-
-        // Validate: name must be "ID1-ID2-ID3" where each ID is a valid NeighborhoodNameGen entry
-        std::vector<std::string> tokens;
-        std::string token;
-        for (char c : name)
-        {
-            if (c == '-')
-            {
-                if (!token.empty())
-                    tokens.push_back(token);
-                token.clear();
-            }
-            else
-                token += c;
-        }
-        if (!token.empty())
-            tokens.push_back(token);
-
-        if (tokens.size() != 3)
-        {
-            needsRegeneration = true;
-        }
-        else
-        {
-            for (std::string const& t : tokens)
-            {
-                // Must be purely numeric
-                bool allDigits = !t.empty();
-                for (char c : t)
-                {
-                    if (c < '0' || c > '9')
-                    {
-                        allDigits = false;
-                        break;
-                    }
-                }
-                if (!allDigits)
-                {
-                    needsRegeneration = true;
-                    break;
-                }
-
-                // Must reference a valid NeighborhoodNameGen entry in the base DB2
-                uint32 entryId = std::stoul(t);
-                if (!sNeighborhoodNameGenStore.LookupEntry(entryId))
-                {
-                    needsRegeneration = true;
-                    break;
-                }
-            }
-        }
-
-        if (!needsRegeneration)
-            continue;
-
-        std::string newName = sHousingMgr.GenerateNeighborhoodName(neighborhood->GetNeighborhoodMapID());
-        if (newName == "Unnamed Neighborhood")
-            continue;
-
-        TC_LOG_INFO("server.loading", ">> Regenerating neighborhood (guid={}) name: '{}' -> '{}'",
-            guid.ToString(), name, newName);
-        neighborhood->SetName(newName);
-        ++regenerated;
-    }
-
-    if (regenerated > 0)
-        TC_LOG_INFO("server.loading", ">> Regenerated {} neighborhood name(s) using base DB2 entry IDs", regenerated);
-    else
-        TC_LOG_INFO("server.loading", ">> Public neighborhood names verified");
+void NeighborhoodMgr::RegenerateNeighborhoodNames()  
+{  
+    // Neighborhood names are stored as "ID1-ID2-ID3" tokens referencing NeighborhoodNameGen  
+    // entry IDs from the base DB2. Old names (from hotfix-era data) may contain text  
+    // where the values are the TEXT content of overwritten entries, not actual DB2 entry IDs.  
+    // Validate each public neighborhood's name: parse tokens, verify each is a real entry  
+    // whose positional field (Prefix/Middle/Suffix) is populated.  
+    uint32 regenerated = 0;  
+    for (auto& [guid, neighborhood] : _neighborhoods)  
+    {  
+        if (!neighborhood->IsPublic())  
+            continue;  
+  
+        std::string const& name = neighborhood->GetName();  
+        bool needsRegeneration = false;  
+  
+        // Validate: name must be "ID1-ID2-ID3" where each ID is a valid NeighborhoodNameGen entry  
+        std::vector<std::string> tokens;  
+        std::string token;  
+        for (char c : name)  
+        {  
+            if (c == '-')  
+            {  
+                if (!token.empty())  
+                    tokens.push_back(token);  
+                token.clear();  
+            }  
+            else  
+                token += c;  
+        }  
+        if (!token.empty())  
+            tokens.push_back(token);  
+  
+        if (tokens.size() != 3)  
+        {  
+            needsRegeneration = true;  
+        }  
+        else  
+        {  
+            for (size_t i = 0; i < tokens.size(); ++i)  
+            {  
+                std::string const& t = tokens[i];  
+  
+                // Must be purely numeric  
+                bool allDigits = !t.empty();  
+                for (char c : t)  
+                {  
+                    if (c < '0' || c > '9')  
+                    {  
+                        allDigits = false;  
+                        break;  
+                    }  
+                }  
+                if (!allDigits)  
+                {  
+                    needsRegeneration = true;  
+                    break;  
+                }  
+  
+                // Must reference a valid NeighborhoodNameGen entry in the base DB2  
+                uint32 entryId = std::stoul(t);  
+                NeighborhoodNameGenEntry const* entry = sNeighborhoodNameGenStore.LookupEntry(entryId);  
+                if (!entry)  
+                {  
+                    needsRegeneration = true;  
+                    break;  
+                }  
+  
+                // The client resolves each token positionally: token1 -> Prefix,  
+                // token2 -> Middle, token3 -> Suffix. A row that exists but has an  
+                // empty field for its position renders as '<?>' client-side.  
+                LocalizedString const* field = nullptr;  
+                switch (i)  
+                {  
+                    case 0: field = &entry->Prefix;  break;  
+                    case 1: field = &entry->Middle;  break;  
+                    case 2: field = &entry->Suffix;  break;  
+                    default: break;  
+                }  
+  
+                char const* str = field ? (*field)[sWorld->GetDefaultDbcLocale()] : nullptr;  
+                if (!str || !*str)  
+                {  
+                    needsRegeneration = true;  
+                    break;  
+                }  
+            }  
+        }  
+  
+        if (!needsRegeneration)  
+            continue;  
+  
+        std::string newName = sHousingMgr.GenerateNeighborhoodName(neighborhood->GetNeighborhoodMapID());  
+        if (newName == "Unnamed Neighborhood")  
+            continue;  
+  
+        TC_LOG_INFO("server.loading", ">> Regenerating neighborhood (guid={}) name: '{}' -> '{}'",  
+            guid.ToString(), name, newName);  
+        neighborhood->SetName(newName);  
+        ++regenerated;  
+    }  
+  
+    if (regenerated > 0)  
+        TC_LOG_INFO("server.loading", ">> Regenerated {} neighborhood name(s) using base DB2 entry IDs", regenerated);  
+    else  
+        TC_LOG_INFO("server.loading", ">> Public neighborhood names verified");  
 }
 
 void NeighborhoodMgr::CheckAndExpandNeighborhoods()

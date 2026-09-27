@@ -102,32 +102,53 @@ public:
                     }
                 }
 
-                uint32 destMapId = nbh ? sHousingMgr.GetWorldMapIdByNeighborhoodMapId(nbh->GetNeighborhoodMapID()) : 2735;
-                if (destMapId == 0)
-                    destMapId = 2735;
-
-                // Use TeleportPosition (the safe player spawn point above ground),
-                // NOT HousePosition — HousePosition is where the house WMO root
-                // sits, which is often at ground level or below, so teleporting
-                // there drops the player under the map.
-                uint32 nbhMapId = nbh ? nbh->GetNeighborhoodMapID() : 2;
-                std::vector<NeighborhoodPlotData const*> plots = sHousingMgr.GetPlotsForMap(nbhMapId);
-                float exitX = 0, exitY = 0, exitZ = 0;
-                for (NeighborhoodPlotData const* plot : plots)
-                {
-                    if (plot->PlotIndex == static_cast<int32>(ownerPlotIndex))
-                    {
-                        exitX = plot->TeleportPosition[0];
-                        exitY = plot->TeleportPosition[1];
-                        exitZ = plot->TeleportPosition[2];
-                        break;
-                    }
-                }
-
-                TC_LOG_DEBUG("housing", "go_housing_door: Teleporting {} from interior (owner {}) to map {} plot {} at ({:.1f},{:.1f},{:.1f})",
-                    player->GetGUID().ToString(), houseOwner.ToString(), destMapId, ownerPlotIndex, exitX, exitY, exitZ);
-
-                player->TeleportTo(destMapId, exitX, exitY, exitZ, player->GetOrientation());
+                uint32 nbhMapId = nbh ? nbh->GetNeighborhoodMapID() : 0;  
+                uint32 destMapId = nbhMapId ? sHousingMgr.GetWorldMapIdByNeighborhoodMapId(nbhMapId) : 0;  
+                if (destMapId == 0)  
+                    destMapId = 2735;  
+  
+                // Use TeleportPosition (the safe player spawn point above ground),  
+                // NOT HousePosition — HousePosition is where the house WMO root  
+                // sits, which is often at ground level or below, so teleporting  
+                // there drops the player under the map.  
+                std::vector<NeighborhoodPlotData const*> plots = sHousingMgr.GetPlotsForMap(nbhMapId);  
+                float exitX = 0, exitY = 0, exitZ = 0;  
+                bool plotFound = false;  
+                for (NeighborhoodPlotData const* plot : plots)  
+                {  
+                    if (plot->PlotIndex == static_cast<int32>(ownerPlotIndex))  
+                    {  
+                        exitX = plot->TeleportPosition[0];  
+                        exitY = plot->TeleportPosition[1];  
+                        exitZ = plot->TeleportPosition[2];  
+                        plotFound = true;  
+                        break;  
+                    }  
+                }  
+  
+                if (!plotFound)  
+                {  
+                    // No DB2 plot match — land at the neighborhood origin  
+                    // instead of world origin (0,0,0), which is water/void.  
+                    NeighborhoodMapData const* mapData = sHousingMgr.GetNeighborhoodMapData(nbhMapId);  
+                    if (!mapData)  
+                    {  
+                        TC_LOG_ERROR("housing", "go_housing_door: no plot {} in map {} and no map data — refusing teleport (player {})",  
+                            ownerPlotIndex, nbhMapId, player->GetGUID().ToString());  
+                        return true;  
+                    }  
+                    exitX = mapData->Origin[0];  
+                    exitY = mapData->Origin[1];  
+                    exitZ = mapData->Origin[2];  
+  
+                    TC_LOG_ERROR("housing", "go_housing_door: plot {} not found in map {} — teleporting {} to origin ({:.1f},{:.1f},{:.1f})",  
+                        ownerPlotIndex, nbhMapId, player->GetGUID().ToString(), exitX, exitY, exitZ);  
+                }  
+  
+                TC_LOG_DEBUG("housing", "go_housing_door: Teleporting {} from interior (owner {}) to map {} plot {} at ({:.1f},{:.1f},{:.1f})",  
+                    player->GetGUID().ToString(), houseOwner.ToString(), destMapId, ownerPlotIndex, exitX, exitY, exitZ);  
+  
+                player->TeleportTo(destMapId, exitX, exitY, exitZ, player->GetOrientation());  
                 return true;
             }
 

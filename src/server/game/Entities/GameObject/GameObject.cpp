@@ -3462,32 +3462,31 @@ void GameObject::Use(Unit* user, bool ignoreCastInProgress /*= false*/)
                 GetGOInfo()->UILink.spell,
                 player->GetGUID().ToString());
 
-            if (GetGOInfo()->UILink.PlayerInteractionType)
-            {
-                WorldPackets::NPC::NPCInteractionOpenResult npcInteraction;
-                npcInteraction.Npc = GetGUID();
-                npcInteraction.InteractionType = static_cast<PlayerInteractionType>(GetGOInfo()->UILink.PlayerInteractionType);
-                npcInteraction.Success = true;
-                player->SendDirectMessage(npcInteraction.Write());
-
-                TC_LOG_DEBUG("housing", "  -> Sent SMSG_NPC_INTERACTION_OPEN_RESULT: npc={} interactionType={} success=true",
-                    GetGUID().ToString(), GetGOInfo()->UILink.PlayerInteractionType);
-
-                uint32 spellId = GetGOInfo()->UILink.spell;
-
-                // Per-plot cornerstone GOs from DB2 CASC data have spell=0 in their
-                // template.  The master template (entry 457142) has Data8=1266097 but
-                // the actual per-plot entries do not.  Fall back to the known spell
-                // for CornerstoneInteraction (type 70).
-                if (!spellId && GetGOInfo()->UILink.PlayerInteractionType == 70)
-                    spellId = 1266097; // [DNT] Trigger Convo for Unowned Plot
-
-                if (spellId)
-                {
-                    TC_LOG_DEBUG("housing", "  -> Casting spell {} on player", spellId);
-                    player->CastSpell(player, spellId, true);
-                }
+            if (GetGOInfo()->UILink.PlayerInteractionType)  
+            {  
+               // CornerstoneInteraction (70): the client follows with  
+               // CMSG_NEIGHBORHOOD_OPEN_CORNERSTONE_UI and the handler sends  
+               // the interaction-open result. Sending it here too produces  
+               // duplicate FRAME_SHOW events and leaves the frame unanchored.  
+               if (GetGOInfo()->UILink.PlayerInteractionType != 70)  
+               {  
+                   WorldPackets::NPC::NPCInteractionOpenResult npcInteraction;  
+                   npcInteraction.Npc = GetGUID();  
+                   npcInteraction.InteractionType = static_cast<PlayerInteractionType>(GetGOInfo()->UILink.PlayerInteractionType);  
+                   npcInteraction.Success = true;  
+                   player->SendDirectMessage(npcInteraction.Write());  
+  
+                   TC_LOG_DEBUG("housing", "  -> Sent SMSG_NPC_INTERACTION_OPEN_RESULT: npc={} interactionType={} success=true",  
+                   GetGUID().ToString(), GetGOInfo()->UILink.PlayerInteractionType);  
+               }  
+  
+            uint32 spellId = GetGOInfo()->UILink.spell;  
+            if (!spellId && GetGOInfo()->UILink.PlayerInteractionType == 70)  
+               spellId = 1266097; // [DNT] Trigger Convo for Unowned Plot  
+            if (spellId)  
+               player->CastSpell(player, spellId, true);  
             }
+
             else
             {
 			    WorldPackets::GameObject::GameObjectInteraction gameObjectUILink;
