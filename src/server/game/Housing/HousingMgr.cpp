@@ -620,32 +620,26 @@ std::string HousingMgr::GenerateNeighborhoodName(uint32 neighborhoodMapId) const
     if (itr == _nameGenByMap.end() || itr->second.empty())  
         return "Unnamed Neighborhood";  
   
-    std::vector<NeighborhoodNameGenData> const& nameGens = itr->second;  
-  
     // Retail neighborhood names use hyphen-separated NeighborhoodNameGen entry IDs  
-    // (e.g., "75-78-61", "86-90-6"). The client resolves each token to a  
-    // positional field of the named row: token1 -> Prefix, token2 -> Middle,  
-    // token3 -> Suffix. Pick only rows whose field for that position is  
-    // populated, or the client renders '<?>' for that token.  
-    auto pickForField = [&nameGens](std::string NeighborhoodNameGenData::* field) -> uint32  
+    // (e.g., "75-78-61", "86-90-6"). The client resolves each token positionally:  
+    // token1 -> Prefix, token2 -> Middle, token3 -> Suffix. Build three separate  
+    // pools so every picked ID has the field its position requires — otherwise  
+    // the client renders '<?>' for that token.  
+    std::vector<uint32> prefixes, middles, suffixes;  
+    for (NeighborhoodNameGenData const& data : itr->second)  
     {  
-        for (uint32 i = 0; i < 64; ++i)  
-        {  
-            NeighborhoodNameGenData const& e = nameGens[urand(0, nameGens.size() - 1)];  
-            if (!(e.*field).empty())  
-                return e.ID;  
-        }  
-        return 0;  
-    };  
+        if (!data.Prefix.empty())  prefixes.push_back(data.ID);  
+        if (!data.Middle.empty())  middles.push_back(data.ID);  
+        if (!data.Suffix.empty())  suffixes.push_back(data.ID);  
+    }  
   
-    uint32 id1 = pickForField(&NeighborhoodNameGenData::Prefix);  
-    uint32 id2 = pickForField(&NeighborhoodNameGenData::Middle);  
-    uint32 id3 = pickForField(&NeighborhoodNameGenData::Suffix);  
-  
-    if (!id1 || !id2 || !id3)  
+    if (prefixes.empty() || middles.empty() || suffixes.empty())  
         return "Unnamed Neighborhood";  
   
-    return Trinity::StringFormat("{}-{}-{}", id1, id2, id3);  
+    return Trinity::StringFormat("{}-{}-{}",  
+        Trinity::Containers::SelectRandomContainerElement(prefixes),  
+        Trinity::Containers::SelectRandomContainerElement(middles),  
+        Trinity::Containers::SelectRandomContainerElement(suffixes));  
 }
 
 uint32 HousingMgr::GetMaxDecorForLevel(uint32 level) const

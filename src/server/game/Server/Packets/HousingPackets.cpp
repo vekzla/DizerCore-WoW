@@ -2353,59 +2353,55 @@ WorldPacket const* NeighborhoodMoveHouseResponse::Write()
 
 WorldPacket const* NeighborhoodOpenCornerstoneUIResponse::Write()  
 {  
-    // Wire format verified against retail 12.0.1 build 65940 packet captures (Alliance + Horde)  
-    // IDA deserializer sub_7FF6F6E3E200: uint32→+32, GUID→+40, GUID→+56, uint64→+72, uint8→+80, GUID→+128  
+    // Wire format from retail sniff (70-byte unowned packet, plot 15, "19-75-65"):  
+    //   uint32 PlotIndex          @ 0x00  
+    //   uint32 unk0 = 0           @ 0x04  
+    //   uint64 Cost               @ 0x08  
+    //   PackedGuid PlotOwnerGuid  @ 0x10 (empty = 00 00)  
+    //   uint8  PurchaseStatus     @ 0x12 (0 = purchasable; 73 = expansion-gate error)  
+    //   bits block                @ 0x13 (04 D0 in sniff)  
+    //   SizedCString name         @ 0x15  
+    //   5x PackedGuid (housing)   @ 0x1E - 0x41  
+    //   uint8  tailFlags = 0xFF   @ 0x41  
+    //   uint32 tail = 3           @ 0x42  
+    _worldPacket << uint32(PlotIndex);  
+    _worldPacket << uint32(0);  
+    _worldPacket << uint64(Cost);  
+    _worldPacket << PlotOwnerGuid;              // Empty for unclaimed  
+    _worldPacket << uint8(PurchaseStatus);  
   
-    // ------------------------------------------------------------------  
-    // Fixed fields — always present, order verified against retail sniff  
-    // ------------------------------------------------------------------  
-    _worldPacket << uint32(PlotIndex);          // →+32: echoed from CMSG (plot slot)  
-    _worldPacket << PlotOwnerGuid;              // →+40: player GUID when owned, Empty when unclaimed  
-    _worldPacket << NeighborhoodGuid;           // →+56: Housing GUID of the neighborhood  
-    _worldPacket << uint64(Cost);               // →+72: purchase price in copper  
-    _worldPacket << uint8(PurchaseStatus);      // →+80: HousingResult. 0 = success/purchasable,  
-                                                //       73 = MISSING_EXPANSION_ACCESS,  
-                                                //       94 = PLOT_RESERVED  
-    _worldPacket << CornerstoneGuid;            // →+128: cornerstone game object GUID  
-  
-    // ------------------------------------------------------------------  
-    // Flag section assembled manually — WriteBits emits misaligned bytes  
-    // after the packed CornerstoneGuid, desyncing the client reader.  
-    // bit0=IsPlotOwned, bits1-8=nameLen(incl NUL), bit9=HasAlternatePrice,  
-    // bit10=CanPurchase, bit11=HasExistingHouse, bit12=HasResidents,  
-    // bit13=HasStatus, bit14=IsInitiative  
-    // ------------------------------------------------------------------  
     bool const hasExistingHouse = ExistingHouse.has_value();  
-    std::size_t const nameLength = std::min<std::size_t>(NeighborhoodName.size(), 0xFE);  
+    _worldPacket << Bits<1>(IsPlotOwned);  
+    _worldPacket << SizedCString::BitsSize<8>(NeighborhoodName);  
+    _worldPacket << OptionalInit(AlternatePrice);  
+    _worldPacket << Bits<1>(CanPurchase);  
+    _worldPacket.WriteBit(hasExistingHouse);  
+    _worldPacket << Bits<1>(HasResidents);  
+    _worldPacket << OptionalInit(StatusValue);  
+    _worldPacket << Bits<1>(IsInitiative);  
+    _worldPacket.FlushBits();  
   
-    uint16 flags = 0;  
-    flags |= uint16(IsPlotOwned ? 1 : 0);  
-    flags |= uint16(nameLength + 1) << 1;  
-    flags |= uint16(AlternatePrice.has_value() ? 1 : 0) << 9;  
-    flags |= uint16(CanPurchase ? 1 : 0) << 10;  
-    flags |= uint16(hasExistingHouse ? 1 : 0) << 11;  
-    flags |= uint16(HasResidents ? 1 : 0) << 12;  
-    flags |= uint16(StatusValue.has_value() ? 1 : 0) << 13;  
-    flags |= uint16(IsInitiative ? 1 : 0) << 14;  
-    _worldPacket << uint16(flags); 
+    _worldPacket << SizedCString::Data(NeighborhoodName);  
   
-    // ------------------------------------------------------------------  
-    // Variable-length section, in decode order (12.1.0.69587 reader  
-    // 0x7FF7CD51B190): name + NUL, then AlternatePrice, then embedded  
-    // HouseInfo, then StatusValue. Order MUST match the bit flags above —  
-    // the reader consumes each optional only if its flag was set.  
-    // ------------------------------------------------------------------  
-    _worldPacket.WriteString(NeighborhoodName.substr(0, nameLength));  
-    _worldPacket << uint8(0);                   // explicit NUL terminator  
+    // Five packed GUIDs follow the name in the sniff (0x1E-0x41).  
+    // Two are known; the other three are unidentified housing-object GUIDs.  
+    // CornerstoneGuid: retail does NOT echo the GO GUID here — sniff contains  
+    // no cornerstone GUID bytes; these slots are neighborhood/plot/house GUIDs.  
+    _worldPacket << NeighborhoodGuid;  
+    _worldPacket << CornerstoneGuid;  
+    _worldPacket << ObjectGuid::Empty;          // TODO: identify (HouseGuid?)  
+    _worldPacket << ObjectGuid::Empty;          // TODO: identify (plot guid?)  
+    _worldPacket << ObjectGuid::Empty;          // TODO: identify  
   
     if (AlternatePrice)  
         _worldPacket << uint64(*AlternatePrice);  
-  
     if (hasExistingHouse)  
         WriteJamCliHouse(_worldPacket, *ExistingHouse);  
-  
     if (StatusValue)  
         _worldPacket << uint32(*StatusValue);  
+  
+    _worldPacket << uint8(0xFF);                // tail flags (FF in unowned sniff)  
+    _worldPacket << uint32(3);                  // tail uint32 (3 in sniff; semantics unknown)  
   
     TC_LOG_DEBUG("network.opcode",  
         "SMSG_NEIGHBORHOOD_OPEN_CORNERSTONE_UI_RESPONSE PlotIndex: {} Cost: {} PurchaseStatus: {} IsPlotOwned: {} CanPurchase: {} HasExistingHouse: {} Name: '{}'",  

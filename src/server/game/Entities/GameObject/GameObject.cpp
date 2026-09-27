@@ -3464,27 +3464,20 @@ void GameObject::Use(Unit* user, bool ignoreCastInProgress /*= false*/)
 
             if (GetGOInfo()->UILink.PlayerInteractionType)  
             {  
-               // CornerstoneInteraction (70): the client follows with  
-               // CMSG_NEIGHBORHOOD_OPEN_CORNERSTONE_UI and the handler sends  
-               // the interaction-open result. Sending it here too produces  
-               // duplicate FRAME_SHOW events and leaves the frame unanchored.  
-               if (GetGOInfo()->UILink.PlayerInteractionType != 70)  
-               {  
-                   WorldPackets::NPC::NPCInteractionOpenResult npcInteraction;  
-                   npcInteraction.Npc = GetGUID();  
-                   npcInteraction.InteractionType = static_cast<PlayerInteractionType>(GetGOInfo()->UILink.PlayerInteractionType);  
-                   npcInteraction.Success = true;  
-                   player->SendDirectMessage(npcInteraction.Write());  
+                // AFTER — use the gameobject interaction packet  
+                WorldPackets::GameObject::GameObjectInteraction goInteraction;  
+                goInteraction.ObjectGUID = GetGUID();  
+                goInteraction.InteractionType = static_cast<PlayerInteractionType>(GetGOInfo()->UILink.PlayerInteractionType);  
+                player->SendDirectMessage(goInteraction.Write());  
   
-                   TC_LOG_DEBUG("housing", "  -> Sent SMSG_NPC_INTERACTION_OPEN_RESULT: npc={} interactionType={} success=true",  
-                   GetGUID().ToString(), GetGOInfo()->UILink.PlayerInteractionType);  
-               }  
+                 TC_LOG_DEBUG("housing", "  -> Sent SMSG_GAME_OBJECT_INTERACTION: guid={} interactionType={}",  
+                 GetGUID().ToString(), GetGOInfo()->UILink.PlayerInteractionType);  
   
-            uint32 spellId = GetGOInfo()->UILink.spell;  
-            if (!spellId && GetGOInfo()->UILink.PlayerInteractionType == 70)  
-               spellId = 1266097; // [DNT] Trigger Convo for Unowned Plot  
-            if (spellId)  
-               player->CastSpell(player, spellId, true);  
+                uint32 spellId = GetGOInfo()->UILink.spell;  
+                if (!spellId && GetGOInfo()->UILink.PlayerInteractionType == 70)  
+                    spellId = 1266097; // [DNT] Trigger Convo for Unowned Plot  
+                if (spellId)  
+                    player->CastSpell(player, spellId, true);  
             }
 
             else

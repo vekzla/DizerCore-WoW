@@ -1952,30 +1952,6 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
         }  
     }  
 	
-	// Drive the UILink path ourselves — client sends this CMSG without  
-    // reporting GO use, so GameObject::Use never runs.  
-    if (GameObject* cornerstone = player->GetMap()->GetGameObject(neighborhoodOpenCornerstoneUI.NeighborhoodGuid))  
-    {  
-        GameObjectTemplate const* goInfo = cornerstone->GetGOInfo();  
-        uint32 spellId = goInfo->UILink.spell;   // field is 'spell', not 'SpellID'  
-
-        if (!spellId && goInfo->UILink.PlayerInteractionType == 70)  
-            spellId = 1266097; // [DNT] Trigger Convo for Unowned Plot  
-        if (spellId)  
-            player->CastSpell(player, spellId, true);    
-    }  
-  
-    // Fire PLAYER_INTERACTION_MANAGER_FRAME_SHOW (type 70) so the client opens  
-    // HousingCornerstonePurchaseFrame. This is the only send on the cornerstone  
-    // path now — GameObject::Use skips type 70.  
-    {  
-        WorldPackets::NPC::NPCInteractionOpenResult npcInteraction;  
-        npcInteraction.Npc = neighborhoodOpenCornerstoneUI.NeighborhoodGuid; // cornerstone GO GUID  
-        npcInteraction.InteractionType = static_cast<PlayerInteractionType>(70);  
-        npcInteraction.Success = true;  
-        SendPacket(npcInteraction.Write());  
-    }  
-  
     WorldPacket const* pkt = response.Write();  
     SendPacket(pkt);  
   
