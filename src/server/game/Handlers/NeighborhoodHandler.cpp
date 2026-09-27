@@ -41,6 +41,7 @@
 #include "GameTime.h"
 #include "UpdateData.h"
 #include "World.h"
+#include <unordered_map>
 
 namespace
 {
@@ -1747,45 +1748,76 @@ void WorldSession::HandleNeighborhoodMoveHouse(WorldPackets::Neighborhood::Neigh
 
 void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhood::NeighborhoodOpenCornerstoneUI const& neighborhoodOpenCornerstoneUI)  
 {  
+    // =========================================================================  
+    // CMSG_NEIGHBORHOOD_OPEN_CORNERSTONE_UI handler  
+    //  
+    // Sent by the client when the player interacts with a cornerstone GO.  
+    // Responds with SMSG_NEIGHBORHOOD_OPEN_CORNERSTONE_UI_RESPONSE, which the  
+    // client uses to populate the CornerstonePurchaseMode frame (Buy / Move /  
+    // reserved-state UI).  
+    //  
+    // NOTE: the field named "NeighborhoodGuid" in the CMSG packet is actually  
+    // the *cornerstone GameObject GUID* the client clicked — reused for both  
+    // neighborhood resolution and echoed back as response.CornerstoneGuid.  
+    // =========================================================================  
+  
     Player* player = GetPlayer();  
     if (!player)  
         return;  
   
+    // Throttle: the client retries this CMSG when its UI fails to open —  
+    // only process one request per second per player to avoid response spam.  
+    static std::unordered_map<ObjectGuid, uint32> sLastCornerstoneRequest;  
+    uint32 now = GameTime::GetGameTimeMS();  
+    uint32& last = sLastCornerstoneRequest[player->GetGUID()];  
+    if (now - last < 1000)  
+        return;  
+    last = now;  
+  
     TC_LOG_DEBUG("housing", "CMSG_NEIGHBORHOOD_OPEN_CORNERSTONE_UI PlotIndex(raw): {}, NeighborhoodGuid: {}",  
         neighborhoodOpenCornerstoneUI.PlotIndex, neighborhoodOpenCornerstoneUI.NeighborhoodGuid.ToString());  
   
+    // Resolve the Neighborhood object. The CMSG GUID is the cornerstone GO —  
+    // ResolveNeighborhood maps GO entry -> owning neighborhood.  
     Neighborhood* neighborhood = sNeighborhoodMgr.ResolveNeighborhood(neighborhoodOpenCornerstoneUI.NeighborhoodGuid, player);  
     if (!neighborhood)  
     {  
         TC_LOG_DEBUG("housing", "HandleNeighborhoodOpenCornerstoneUI: Neighborhood {} not found",  
             neighborhoodOpenCornerstoneUI.NeighborhoodGuid.ToString());  
+        // Minimal failure response: PlotIndex echoed, everything else defaults.  
         WorldPackets::Neighborhood::NeighborhoodOpenCornerstoneUIResponse response;  
         response.PlotIndex = neighborhoodOpenCornerstoneUI.PlotIndex;  
         SendPacket(response.Write());  
         return;  
     }  
   
-    // Use the client's PlotIndex directly — it may differ from our DB2 PlotIndex  
-    // values (our SQL has sequential 0-54; the client's actual DB2 may differ).  
-    // Also cache for the subsequent BuyHouse CMSG which doesn't include PlotIndex.  
+    // Use the client's PlotIndex directly — it may differ from our DB2  
+    // PlotIndex values (our SQL uses sequential 0-54; the client's real DB2  
+    // may number plots differently). Cache it for the follow-up BuyHouse CMSG,  
+    // which doesn't carry PlotIndex itself.  
     uint32 plotIndex = neighborhoodOpenCornerstoneUI.PlotIndex;  
     _lastClientPlotIndex = plotIndex;  
     _lastCornerstoneGuid = neighborhoodOpenCornerstoneUI.NeighborhoodGuid;  
   
-    // Also resolve via cornerstone GO entry for cost lookup (uses our DB2 internal index)  
+    // Also resolve via cornerstone GO entry for cost lookup against our  
+    // DB2 internal index.  
     int32 resolved = sHousingMgr.ResolvePlotIndex(neighborhoodOpenCornerstoneUI.NeighborhoodGuid, neighborhood);  
   
     TC_LOG_INFO("housing", "HandleNeighborhoodOpenCornerstoneUI: Client PlotIndex={}, DB2 resolved={}, CornerstoneGuid={}",  
         plotIndex, resolved, neighborhoodOpenCornerstoneUI.NeighborhoodGuid.ToString());  
   
-    // Look up cost from plot data — try both the client's PlotIndex and our DB2 PlotIndex  
+    // ---------------------------------------------------------------------  
+    // Cost resolution — three attempts:  
+    //   1) client's PlotIndex against our plot table  
+    //   2) DB2-resolved PlotIndex (when numbering differs)  
+    //   3) cornerstone GO entry -> plot lookup (last resort)  
+    // ---------------------------------------------------------------------  
     uint32 neighborhoodMapId = neighborhood->GetNeighborhoodMapID();  
     std::vector<NeighborhoodPlotData const*> plots = sHousingMgr.GetPlotsForMap(neighborhoodMapId);  
   
     uint64 plotCost = 0;  
     bool plotFound = false;  
   
-    // Try the client's PlotIndex first, then fall back to DB2 resolved index  
     for (NeighborhoodPlotData const* plot : plots)  
     {  
         if (plot->PlotIndex == static_cast<int32>(plotIndex))  
@@ -1796,7 +1828,6 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
         }  
     }  
   
-    // If client PlotIndex didn't match our DB2, try the resolved DB2 PlotIndex  
     if (!plotFound && resolved >= 0 && static_cast<uint32>(resolved) != plotIndex)  
     {  
         for (NeighborhoodPlotData const* plot : plots)  
@@ -1812,7 +1843,6 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
         }  
     }  
   
-    // Last resort: use the cornerstone GO entry to find the plot  
     if (!plotFound)  
     {  
         uint32 goEntry = neighborhoodOpenCornerstoneUI.NeighborhoodGuid.GetEntry();  
@@ -1832,8 +1862,7 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
     if (!plotFound)  
     {  
         TC_LOG_ERROR("housing", "HandleNeighborhoodOpenCornerstoneUI: PlotIndex {} (DB2: {}) not found in neighborhood map {}",  
-            plotIndex, resolved,  
-            plotIndex, neighborhoodMapId);  
+            plotIndex, resolved, neighborhoodMapId);  
         WorldPackets::Neighborhood::NeighborhoodOpenCornerstoneUIResponse response;  
         response.PlotIndex = plotIndex;  
         response.NeighborhoodName = neighborhood->GetName();  
@@ -1841,10 +1870,11 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
         return;  
     }  
   
-    // Pre-send neighborhood name response to populate the JamCliNeighborhoodName  
-    // DataCache. Flag +574 in the display function checks whether the TLS  
-    // NeighborhoodGuid is resolved in the DataCache. Sending this immediately  
-    // before the cornerstone response ensures the cache entry exists.  
+    // ---------------------------------------------------------------------  
+    // Pre-send the neighborhood name so the JamCliNeighborhoodName DataCache  
+    // entry exists when the cornerstone response arrives — the purchase UI  
+    // resolves the name through this cache (TLS +574 check).  
+    // ---------------------------------------------------------------------  
     {  
         WorldPackets::Housing::QueryNeighborhoodNameResponse nameResp;  
         nameResp.NeighborhoodGuid = neighborhood->GetGuid();  
@@ -1853,53 +1883,60 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
         SendPacket(nameResp.Write());  
     }  
   
-    // Look up ownership from the Neighborhood's plot info  
+    // Ownership lookup from the Neighborhood's plot info table.  
     uint8 plotIdx = static_cast<uint8>(plotIndex);  
     Neighborhood::PlotInfo const* plotInfo = neighborhood->GetPlotInfo(plotIdx);  
     bool isOwned = plotInfo && !plotInfo->OwnerGuid.IsEmpty();  
   
-    // Build cornerstone UI response — wire format verified against retail 12.0.1 build 65940.  
+    // ---------------------------------------------------------------------  
+    // Build response. PurchaseStatus is a HousingResult enum value:  
+    //   0 = success/purchasable, 73 = MISSING_EXPANSION_ACCESS (error),  
+    //   94 = PLOT_RESERVED. Default 0 — only changed for reservations below.  
+    // ---------------------------------------------------------------------  
     WorldPackets::Neighborhood::NeighborhoodOpenCornerstoneUIResponse response;  
     response.PlotIndex = plotIndex;  
-    response.PurchaseStatus = 73;  
+    response.PurchaseStatus = 0;  
     response.NeighborhoodGuid = neighborhood->GetGuid();  
-    response.CornerstoneGuid = neighborhoodOpenCornerstoneUI.NeighborhoodGuid; // GO GUID from CMSG  
+    response.CornerstoneGuid = neighborhoodOpenCornerstoneUI.NeighborhoodGuid; // cornerstone GO GUID  
     response.IsPlotOwned = isOwned;  
     response.CanPurchase = !isOwned;  
     response.NeighborhoodName = neighborhood->GetName();  
   
-    // Set IsInitiative when the neighborhood has an active initiative/endeavor  
+    // Flag the neighborhood's active initiative/endeavor for UI treatment.  
     uint64 nhLowGuid = neighborhood->GetGuid().GetCounter();  
-    response.IsInitiative = (sInitiativeManager.GetActiveInitiative(nhLowGuid) != nullptr);  
+    response.IsInitiative = false; // (sInitiativeManager.GetActiveInitiative(nhLowGuid) != nullptr);  
   
     if (isOwned)  
     {  
-        // Owned plot: show owner info, no purchase available  
+        // Owned plot: owner info, no purchase path, no cost.  
         response.PlotOwnerGuid = plotInfo->OwnerGuid;  
         response.Cost = 0;  
     }  
     else  
     {  
-        // Unclaimed plot: send cost so client can show purchase UI  
+        // Unclaimed plot: cost required for the purchase UI.  
         response.PlotOwnerGuid = ObjectGuid::Empty;  
         response.Cost = plotCost;  
-        response.AlternatePrice = static_cast<uint64>(GameTime::GetGameTime()) + 7 * DAY;  
   
-        // If another player currently holds the 5-min reservation, retail  
-        // marks the plot with PurchaseStatus = HOUSING_RESULT_PLOT_RESERVED (73).  
-        // The reserving player themselves still gets PurchaseStatus=0.  
+        // If another player holds the 5-min reservation, mark the plot  
+        // reserved. NOTE: the comment below previously said 73 — the enum  
+        // resolves to 94 (HousingDefines.h). The code is correct; the old  
+        // comment was wrong.  
         ObjectGuid otherReserver = neighborhood->GetPlotReserverOther(plotIdx, player->GetGUID());  
         if (!otherReserver.IsEmpty())  
         {  
-            response.PurchaseStatus = static_cast<uint8>(HOUSING_RESULT_PLOT_RESERVED);  
+            response.PurchaseStatus = static_cast<uint8>(HOUSING_RESULT_PLOT_RESERVED); // = 94  
             TC_LOG_INFO("housing",  
                 "OpenCornerstoneUI: plot {} is reserved by {}; marking PurchaseStatus=PLOT_RESERVED for viewer {}",  
                 plotIdx, otherReserver.ToString(), player->GetGUID().ToString());  
         }  
     }  
   
-    // If the player already owns a house in this neighborhood, embed it in the  
-    // response so the cornerstone flips the action button from Buy to Move.  
+    // ---------------------------------------------------------------------  
+    // If the player already owns a house in this neighborhood, embed it so  
+    // the cornerstone UI offers "Move" instead of "Buy". Only when the plot  
+    // is unowned AND purchasable (PurchaseStatus still 0).  
+    // ---------------------------------------------------------------------  
     if (!isOwned && response.PurchaseStatus == 0)  
     {  
         if (Housing const* myHousing = player->GetHousingForNeighborhood(neighborhood->GetGuid()))  
@@ -1914,17 +1951,25 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
             response.ExistingHouse = std::move(existingHouse);  
         }  
     }  
-  
-    // Retail cornerstone flow: open the CornerstoneInteraction frame BEFORE the  
-    // data packet so the frame exists when the response arrives.  
+	
+	// Drive the UILink path ourselves — client sends this CMSG without  
+    // reporting GO use, so GameObject::Use never runs.  
+    if (GameObject* cornerstone = player->GetMap()->GetGameObject(neighborhoodOpenCornerstoneUI.NeighborhoodGuid))  
     {  
-        WorldPackets::NPC::NPCInteractionOpenResult npcInteraction;  
-        npcInteraction.Npc = neighborhoodOpenCornerstoneUI.NeighborhoodGuid;  
-        npcInteraction.InteractionType = static_cast<PlayerInteractionType>(70); // CornerstoneInteraction  
-        npcInteraction.Success = true;  
-        SendPacket(npcInteraction.Write());  
-        TC_LOG_INFO("housing", "Sent SMSG_NPC_INTERACTION_OPEN_RESULT: Npc={} InteractionType=70 Success=true",  
-            npcInteraction.Npc.ToString());  
+        GameObjectTemplate const* goInfo = cornerstone->GetGOInfo();  
+        if (goInfo->UILink.PlayerInteractionType)  
+        {  
+            WorldPackets::NPC::NPCInteractionOpenResult npcInteraction;  
+            npcInteraction.Npc = cornerstone->GetGUID();  
+            npcInteraction.InteractionType = static_cast<PlayerInteractionType>(goInfo->UILink.PlayerInteractionType);  
+            npcInteraction.Success = true;  
+            SendPacket(npcInteraction.Write());  
+        }  
+        uint32 spellId = goInfo->UILink.spell;   // field is 'spell', not 'SpellID'  
+        if (!spellId && goInfo->UILink.PlayerInteractionType == 70)  
+            spellId = 1266097; // [DNT] Trigger Convo for Unowned Plot  
+        if (spellId)  
+            player->CastSpell(player, spellId, true);    
     }  
   
     WorldPacket const* pkt = response.Write();  

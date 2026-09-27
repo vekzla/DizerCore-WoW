@@ -1910,6 +1910,7 @@ void WorldSession::SendFeatureSystemStatus()
         { "bpayStoreEnable"sv, "0"sv },  
         { "recentAlliesEnabledClient"sv, "0"sv },  
         { "browserEnabled"sv, "0"sv },  
+		{ "performHousingExpansionCheckClient"sv, "1"sv }, 
         { "housingEnableCreateGuildNeighborhood"sv, "1"sv },  
         { "housingEnableDeleteHouse"sv, "1"sv },  
         { "housingServiceEnabled"sv, "1"sv },  

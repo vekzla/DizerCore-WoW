@@ -2351,53 +2351,67 @@ WorldPacket const* NeighborhoodMoveHouseResponse::Write()
     return &_worldPacket;
 }
 
-WorldPacket const* NeighborhoodOpenCornerstoneUIResponse::Write()
-{
-    // Wire format verified against retail 12.0.1 build 65940 packet captures (Alliance + Horde)
-    // IDA deserializer sub_7FF6F6E3E200: uint32→+32, GUID→+40, GUID→+56, uint64→+72, uint8→+80, GUID→+128
-    // Fixed fields
-    _worldPacket << uint32(PlotIndex);          // Echoed from CMSG (NOT a result code)
-    _worldPacket << PlotOwnerGuid;              // →+40: Player GUID when owned, Empty when unclaimed
-    _worldPacket << NeighborhoodGuid;           // →+56: Housing GUID when owned, Empty when unclaimed
-    _worldPacket << uint64(Cost);               // →+72: Purchase price
-    _worldPacket << uint8(PurchaseStatus);      // →+80: 73=purchasable, 0=not. Client checks ==73
-    _worldPacket << CornerstoneGuid;            // →+128: Cornerstone game object
-
-    // Bit-packed section: 1 bool + 8-bit nameLen + 6 bools = 15 bits = 2 bytes.
-    // Per IDA Housing_ParseCornerstoneHouseInfo, bit B.bit4 gates an embedded
-    // Housing_ParseHouseInfoStruct that the cornerstone Lua reads as "the player
-    // already has a current house" — used to flip the cornerstone button from Buy
-    // to Move.
-    bool const hasExistingHouse = ExistingHouse.has_value();
-    _worldPacket << Bits<1>(IsPlotOwned);
-    _worldPacket << SizedCString::BitsSize<8>(NeighborhoodName);
-    _worldPacket << OptionalInit(AlternatePrice);
-    _worldPacket << Bits<1>(CanPurchase);
-    _worldPacket.WriteBit(hasExistingHouse);    // B.bit4 — HasOptionalStruct
-    _worldPacket << Bits<1>(HasResidents);
-    _worldPacket << OptionalInit(StatusValue);
-    _worldPacket << Bits<1>(IsInitiative);
-    _worldPacket.FlushBits();
-
-    // Variable-length data, 12.1.0.69587 reader 0x7FF7CD51B190: name, then the optional price, then the optional
-    // embedded HouseInfo, then the optional status value. (The 12.0.x decode order put the house before the name;
-    // on 12.1 that shifted every byte of the response whenever the player already owned a house.)
-    _worldPacket << SizedCString::Data(NeighborhoodName);
-
-    if (AlternatePrice)
-        _worldPacket << uint64(*AlternatePrice);
-
-    if (hasExistingHouse)
-        WriteJamCliHouse(_worldPacket, *ExistingHouse);
-
-    if (StatusValue)
-        _worldPacket << uint32(*StatusValue);
-
-    TC_LOG_DEBUG("network.opcode",
-        "SMSG_NEIGHBORHOOD_OPEN_CORNERSTONE_UI_RESPONSE PlotIndex: {} Cost: {} PurchaseStatus: {} IsPlotOwned: {} CanPurchase: {} HasExistingHouse: {} Name: '{}'",
-        PlotIndex, Cost, PurchaseStatus, IsPlotOwned, CanPurchase, hasExistingHouse, NeighborhoodName);
-
-    return &_worldPacket;
+WorldPacket const* NeighborhoodOpenCornerstoneUIResponse::Write()  
+{  
+    // Wire format verified against retail 12.0.1 build 65940 packet captures (Alliance + Horde)  
+    // IDA deserializer sub_7FF6F6E3E200: uint32→+32, GUID→+40, GUID→+56, uint64→+72, uint8→+80, GUID→+128  
+  
+    // ------------------------------------------------------------------  
+    // Fixed fields — always present, order verified against retail sniff  
+    // ------------------------------------------------------------------  
+    _worldPacket << uint32(PlotIndex);          // →+32: echoed from CMSG (plot slot)  
+    _worldPacket << PlotOwnerGuid;              // →+40: player GUID when owned, Empty when unclaimed  
+    _worldPacket << NeighborhoodGuid;           // →+56: Housing GUID of the neighborhood  
+    _worldPacket << uint64(Cost);               // →+72: purchase price in copper  
+    _worldPacket << uint8(PurchaseStatus);      // →+80: HousingResult. 0 = success/purchasable,  
+                                                //       73 = MISSING_EXPANSION_ACCESS,  
+                                                //       94 = PLOT_RESERVED  
+    _worldPacket << CornerstoneGuid;            // →+128: cornerstone game object GUID  
+  
+    // ------------------------------------------------------------------  
+    // Flag section assembled manually — WriteBits emits misaligned bytes  
+    // after the packed CornerstoneGuid, desyncing the client reader.  
+    // bit0=IsPlotOwned, bits1-8=nameLen(incl NUL), bit9=HasAlternatePrice,  
+    // bit10=CanPurchase, bit11=HasExistingHouse, bit12=HasResidents,  
+    // bit13=HasStatus, bit14=IsInitiative  
+    // ------------------------------------------------------------------  
+    bool const hasExistingHouse = ExistingHouse.has_value();  
+    std::size_t const nameLength = std::min<std::size_t>(NeighborhoodName.size(), 0xFE);  
+  
+    uint16 flags = 0;  
+    flags |= uint16(IsPlotOwned ? 1 : 0);  
+    flags |= uint16(nameLength + 1) << 1;  
+    flags |= uint16(AlternatePrice.has_value() ? 1 : 0) << 9;  
+    flags |= uint16(CanPurchase ? 1 : 0) << 10;  
+    flags |= uint16(hasExistingHouse ? 1 : 0) << 11;  
+    flags |= uint16(HasResidents ? 1 : 0) << 12;  
+    flags |= uint16(StatusValue.has_value() ? 1 : 0) << 13;  
+    flags |= uint16(IsInitiative ? 1 : 0) << 14;  
+    _worldPacket << uint16(flags); 
+  
+    // ------------------------------------------------------------------  
+    // Variable-length section, in decode order (12.1.0.69587 reader  
+    // 0x7FF7CD51B190): name + NUL, then AlternatePrice, then embedded  
+    // HouseInfo, then StatusValue. Order MUST match the bit flags above —  
+    // the reader consumes each optional only if its flag was set.  
+    // ------------------------------------------------------------------  
+    _worldPacket.WriteString(NeighborhoodName.substr(0, nameLength));  
+    _worldPacket << uint8(0);                   // explicit NUL terminator  
+  
+    if (AlternatePrice)  
+        _worldPacket << uint64(*AlternatePrice);  
+  
+    if (hasExistingHouse)  
+        WriteJamCliHouse(_worldPacket, *ExistingHouse);  
+  
+    if (StatusValue)  
+        _worldPacket << uint32(*StatusValue);  
+  
+    TC_LOG_DEBUG("network.opcode",  
+        "SMSG_NEIGHBORHOOD_OPEN_CORNERSTONE_UI_RESPONSE PlotIndex: {} Cost: {} PurchaseStatus: {} IsPlotOwned: {} CanPurchase: {} HasExistingHouse: {} Name: '{}'",  
+        PlotIndex, Cost, PurchaseStatus, IsPlotOwned, CanPurchase, hasExistingHouse, NeighborhoodName);  
+  
+    return &_worldPacket;  
 }
 
 WorldPacket const* NeighborhoodInviteResidentResponse::Write()
