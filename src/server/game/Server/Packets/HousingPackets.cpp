@@ -2351,63 +2351,38 @@ WorldPacket const* NeighborhoodMoveHouseResponse::Write()
     return &_worldPacket;
 }
 
-WorldPacket const* NeighborhoodOpenCornerstoneUIResponse::Write()  
-{  
-    // Wire format from retail sniff (70-byte unowned packet, plot 15, "19-75-65"):  
-    //   uint32 PlotIndex          @ 0x00  
-    //   uint32 unk0 = 0           @ 0x04  
-    //   uint64 Cost               @ 0x08  
-    //   PackedGuid PlotOwnerGuid  @ 0x10 (empty = 00 00)  
-    //   uint8  PurchaseStatus     @ 0x12 (0 = purchasable; 73 = expansion-gate error)  
-    //   bits block                @ 0x13 (04 D0 in sniff)  
-    //   SizedCString name         @ 0x15  
-    //   5x PackedGuid (housing)   @ 0x1E - 0x41  
-    //   uint8  tailFlags = 0xFF   @ 0x41  
-    //   uint32 tail = 3           @ 0x42  
-    _worldPacket << uint32(PlotIndex);  
-    _worldPacket << uint32(0);  
-    _worldPacket << uint64(Cost);  
-    _worldPacket << PlotOwnerGuid;              // Empty for unclaimed  
-    _worldPacket << uint8(PurchaseStatus);  
-  
-    bool const hasExistingHouse = ExistingHouse.has_value();  
-    _worldPacket << Bits<1>(IsPlotOwned);  
-    _worldPacket << SizedCString::BitsSize<8>(NeighborhoodName);  
-    _worldPacket << OptionalInit(AlternatePrice);  
-    _worldPacket << Bits<1>(CanPurchase);  
-    _worldPacket.WriteBit(hasExistingHouse);  
-    _worldPacket << Bits<1>(HasResidents);  
-    _worldPacket << OptionalInit(StatusValue);  
-    _worldPacket << Bits<1>(IsInitiative);  
-    _worldPacket.FlushBits();  
-  
-    _worldPacket << SizedCString::Data(NeighborhoodName);  
-  
-    // Five packed GUIDs follow the name in the sniff (0x1E-0x41).  
-    // Two are known; the other three are unidentified housing-object GUIDs.  
-    // CornerstoneGuid: retail does NOT echo the GO GUID here — sniff contains  
-    // no cornerstone GUID bytes; these slots are neighborhood/plot/house GUIDs.  
-    _worldPacket << NeighborhoodGuid;  
-    _worldPacket << CornerstoneGuid;  
-    _worldPacket << ObjectGuid::Empty;          // TODO: identify (HouseGuid?)  
-    _worldPacket << ObjectGuid::Empty;          // TODO: identify (plot guid?)  
-    _worldPacket << ObjectGuid::Empty;          // TODO: identify  
-  
-    if (AlternatePrice)  
-        _worldPacket << uint64(*AlternatePrice);  
-    if (hasExistingHouse)  
-        WriteJamCliHouse(_worldPacket, *ExistingHouse);  
-    if (StatusValue)  
-        _worldPacket << uint32(*StatusValue);  
-  
-    _worldPacket << uint8(0xFF);                // tail flags (FF in unowned sniff)  
-    _worldPacket << uint32(3);                  // tail uint32 (3 in sniff; semantics unknown)  
-  
-    TC_LOG_DEBUG("network.opcode",  
-        "SMSG_NEIGHBORHOOD_OPEN_CORNERSTONE_UI_RESPONSE PlotIndex: {} Cost: {} PurchaseStatus: {} IsPlotOwned: {} CanPurchase: {} HasExistingHouse: {} Name: '{}'",  
-        PlotIndex, Cost, PurchaseStatus, IsPlotOwned, CanPurchase, hasExistingHouse, NeighborhoodName);  
-  
-    return &_worldPacket;  
+WorldPacket const* NeighborhoodOpenCornerstoneUIResponse::Write()    
+{    
+    // Repo A wire format — verified working. Order: PlotIndex, PlotOwnerGuid,    
+    // NeighborhoodGuid, Cost(uint64), PurchaseStatus(uint8), CornerstoneGuid.    
+    // PurchaseStatus: 73 = purchasable (client checks ==73 to show the buy UI).    
+    _worldPacket << uint32(PlotIndex);    
+    _worldPacket << PlotOwnerGuid;    
+    _worldPacket << NeighborhoodGuid;    
+    _worldPacket << uint64(Cost);    
+    _worldPacket << uint8(PurchaseStatus);    
+    _worldPacket << CornerstoneGuid;    
+    
+    _worldPacket.WriteBit(IsPlotOwned);    
+    _worldPacket.WriteBit(CanPurchase);    
+    _worldPacket.WriteBit(!NeighborhoodName.empty());    
+    _worldPacket.WriteBit(AlternatePrice.has_value());    
+    _worldPacket.WriteBit(ExistingHouse.has_value());    
+    _worldPacket.FlushBits();    
+    
+    _worldPacket << SizedCString::Data(NeighborhoodName);    
+    
+    if (AlternatePrice)    
+        _worldPacket << uint64(*AlternatePrice);    
+    if (ExistingHouse)    
+        WriteJamCliHouse(_worldPacket, *ExistingHouse);    
+    if (StatusValue)    
+        _worldPacket << uint32(*StatusValue);    
+    
+    _worldPacket << uint8(0xFF);    
+    _worldPacket << uint32(3);    
+    
+    return &_worldPacket;    
 }
 
 WorldPacket const* NeighborhoodInviteResidentResponse::Write()

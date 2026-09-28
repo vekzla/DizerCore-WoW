@@ -3874,7 +3874,7 @@ void WorldSession::HandleHousingSvcsGetPlayerHousesInfo(WorldPackets::Housing::H
     Player* player = GetPlayer();
     if (!player)
         return;
-
+		
     TC_LOG_INFO("housing", ">>> CMSG_HOUSING_SVCS_GET_PLAYER_HOUSES_INFO received (Player: {})", player->GetGUID().ToString());
 
     WorldPackets::Housing::HousingSvcsGetPlayerHousesInfoResponse response;

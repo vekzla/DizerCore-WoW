@@ -3454,7 +3454,7 @@ void GameObject::Use(Unit* user, bool ignoreCastInProgress /*= false*/)
             if (!player)
                 return;
 			
-            TC_LOG_DEBUG("housing", "GameObject::Use(GAMEOBJECT_TYPE_UI_LINK): entry={} guid={} "
+            TC_LOG_INFO("housing", "GameObject::Use(GAMEOBJECT_TYPE_UI_LINK): entry={} guid={} "
                 "UILinkType={} PlayerInteractionType={} spell={} player={}",
                 GetEntry(), GetGUID().ToString(),
                 GetGOInfo()->UILink.UILinkType,
@@ -3464,20 +3464,28 @@ void GameObject::Use(Unit* user, bool ignoreCastInProgress /*= false*/)
 
             if (GetGOInfo()->UILink.PlayerInteractionType)  
             {  
-                // AFTER — use the gameobject interaction packet  
-                WorldPackets::GameObject::GameObjectInteraction goInteraction;  
-                goInteraction.ObjectGUID = GetGUID();  
-                goInteraction.InteractionType = static_cast<PlayerInteractionType>(GetGOInfo()->UILink.PlayerInteractionType);  
-                player->SendDirectMessage(goInteraction.Write());  
+                // NPCInteractionOpenResult with Success=true is what puts the client  
+                // interaction manager into the interacting state, which is what anchors  
+                // and opens the cornerstone UI (verified working on StefalWoW branch).  
+                WorldPackets::NPC::NPCInteractionOpenResult npcInteraction;  
+                npcInteraction.Npc = GetGUID();  
+                npcInteraction.InteractionType = static_cast<PlayerInteractionType>(GetGOInfo()->UILink.PlayerInteractionType);  
+                npcInteraction.Success = true;  
+                player->SendDirectMessage(npcInteraction.Write());  
+                player->PlayerTalkClass->GetInteractionData().StartInteraction(GetGUID(), npcInteraction.InteractionType);  
   
-                 TC_LOG_DEBUG("housing", "  -> Sent SMSG_GAME_OBJECT_INTERACTION: guid={} interactionType={}",  
-                 GetGUID().ToString(), GetGOInfo()->UILink.PlayerInteractionType);  
+                TC_LOG_INFO("housing", "  -> Sent SMSG_NPC_INTERACTION_OPEN_RESULT: guid={} interactionType={}",  
+                    GetGUID().ToString(), GetGOInfo()->UILink.PlayerInteractionType);  
   
                 uint32 spellId = GetGOInfo()->UILink.spell;  
                 if (!spellId && GetGOInfo()->UILink.PlayerInteractionType == 70)  
                     spellId = 1266097; // [DNT] Trigger Convo for Unowned Plot  
                 if (spellId)  
+                {  
                     player->CastSpell(player, spellId, true);  
+                    TC_LOG_INFO("housing", "  -> CastSpell: spellId={} (PlayerInteractionType={})",  
+                        spellId, GetGOInfo()->UILink.PlayerInteractionType);  
+                }  
             }
 
             else

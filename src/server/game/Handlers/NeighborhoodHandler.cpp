@@ -1151,6 +1151,18 @@ void WorldSession::HandleNeighborhoodBuyHouse(WorldPackets::Neighborhood::Neighb
     if (!player)
         return;
 
+	// Extra Logging START  
+    static bool s_buyLogLive = false;  
+    if (!s_buyLogLive)  
+    {  
+        s_buyLogLive = true;  
+        TC_LOG_INFO("housing", ">>> CLICK-LOG LIVE: HandleNeighborhoodBuyHouse active <<<");  
+    }  
+  
+    TC_LOG_INFO("housing", ">>> CMSG RECEIVED HandleNeighborhoodBuyHouse: player={}",  
+        player->GetGUID().ToString());  
+    // Extra Logging END
+
     if (!sWorld->getBoolConfig(CONFIG_HOUSING_ENABLE_BUY_HOUSE))
     {
         WorldPackets::Neighborhood::NeighborhoodBuyHouseResponse response;
@@ -1765,15 +1777,6 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
     if (!player)  
         return;  
   
-    // Throttle: the client retries this CMSG when its UI fails to open —  
-    // only process one request per second per player to avoid response spam.  
-    static std::unordered_map<ObjectGuid, uint32> sLastCornerstoneRequest;  
-    uint32 now = GameTime::GetGameTimeMS();  
-    uint32& last = sLastCornerstoneRequest[player->GetGUID()];  
-    if (now - last < 1000)  
-        return;  
-    last = now;  
-  
     TC_LOG_DEBUG("housing", "CMSG_NEIGHBORHOOD_OPEN_CORNERSTONE_UI PlotIndex(raw): {}, NeighborhoodGuid: {}",  
         neighborhoodOpenCornerstoneUI.PlotIndex, neighborhoodOpenCornerstoneUI.NeighborhoodGuid.ToString());  
   
@@ -1895,7 +1898,7 @@ void WorldSession::HandleNeighborhoodOpenCornerstoneUI(WorldPackets::Neighborhoo
     // ---------------------------------------------------------------------  
     WorldPackets::Neighborhood::NeighborhoodOpenCornerstoneUIResponse response;  
     response.PlotIndex = plotIndex;  
-    response.PurchaseStatus = 0;  
+    response.PurchaseStatus = 73;  
     response.NeighborhoodGuid = neighborhood->GetGuid();  
     response.CornerstoneGuid = neighborhoodOpenCornerstoneUI.NeighborhoodGuid; // cornerstone GO GUID  
     response.IsPlotOwned = isOwned;  
