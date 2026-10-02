@@ -17,10 +17,12 @@
 
 #include "Account.h"
 #include "Map.h"
+#include "HousingDefines.h"
 #include "Player.h"
 #include "StringFormat.h"
 #include "UpdateData.h"
 #include "WorldSession.h"
+#include <algorithm>
 
 namespace Battlenet
 {
@@ -100,12 +102,34 @@ void Account::SendUpdateToPlayer(Player* player)
     ClearUpdateMask(true);
 }
 
-void Account::SetHousingDecorStorageEntry(ObjectGuid decorGuid, ObjectGuid houseGuid, uint8 sourceType, std::string sourceValue)
+void Account::SetHousingDecorStorageEntry(ObjectGuid decorGuid, ObjectGuid houseGuid, uint8 sourceType, std::string sourceValue, std::optional<uint8> placementStatus)
 {
+    auto setter = m_values.ModifyValue(&Account::m_housingStorageData).ModifyValue(&UF::HousingStorageData::Decor);
+    // Remove before re-inserting so identical values still mark the entry changed: the client
+    // dedupes on a same-value write otherwise and the budget readout stays stale.
+    RemoveMapUpdateFieldValue(setter, decorGuid);
+
+    // Retail 12.1.0.69933: 1 = placed inside the house, 2 = placed on the plot. The client sums
+    // the interior placement budget from status 1 records and the exterior budget from status 2.
+    uint8 const status = placementStatus.value_or(houseGuid.IsEmpty()
+        ? uint8(HOUSING_DECOR_IN_STORAGE)
+        : uint8(HOUSING_DECOR_PLACED_HOUSE));
+
     auto ref = m_values.ModifyValue(&Account::m_housingStorageData).ModifyValue(&UF::HousingStorageData::Decor, decorGuid);
     SetUpdateFieldValue(ref.ModifyValue(&UF::DecorStoragePersistedData::HouseGUID), houseGuid);
+    SetUpdateFieldValue(ref.ModifyValue(&UF::DecorStoragePersistedData::PlacementStatus), status);
     SetUpdateFieldValue(ref.ModifyValue(&UF::DecorStoragePersistedData::SourceType), sourceType);
     SetUpdateFieldValue(ref.ModifyValue(&UF::DecorStoragePersistedData::SourceValue), std::move(sourceValue));
+}
+
+void Account::SetHousingDecorDyeSlots(ObjectGuid decorGuid, std::array<uint32, 3> const& dyeSlots)
+{
+    auto ref = m_values.ModifyValue(&Account::m_housingStorageData).ModifyValue(&UF::HousingStorageData::Decor, decorGuid);
+    if (std::ranges::any_of(dyeSlots, [](uint32 dye) { return dye != 0; }))
+        SetUpdateFieldValue(ref.ModifyValue(&UF::DecorStoragePersistedData::DyeSlots, 0)
+            .ModifyValue(&UF::DecorDyeSlots::DyeColorID), { int32(dyeSlots[0]), int32(dyeSlots[1]), int32(dyeSlots[2]) });
+    else
+        RemoveOptionalUpdateFieldValue(ref.ModifyValue(&UF::DecorStoragePersistedData::DyeSlots));
 }
 
 void Account::RemoveHousingDecorStorageEntry(ObjectGuid decorGuid)

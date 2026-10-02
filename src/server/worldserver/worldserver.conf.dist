@@ -5041,5 +5041,21 @@ Housing.MaxHousesPerAccount = 2
 
 Housing.CharterFoundingCost = 0
 
+#    Housing.CharterRequiredSignatures
+#        Description: Signatures a neighborhood charter needs before it can be finalized, the
+#                      creator's own included. Sent to the client, which only enables founding
+#                      once they are collected. 1 = the creator alone can found.
+#        Default:     10 - (retail)
+
+Housing.CharterRequiredSignatures = 10
+
+#    Housing.GuildNeighborhoodMinAccounts
+#        Description: Distinct accounts a guild needs before it can found a guild neighborhood
+#                      (answered with HousingResult GuildMoreAccountsNeeded below it). The retail
+#                      minimum is not known. 1 = a single-account guild can found one.
+#        Default:     3
+
+Housing.GuildNeighborhoodMinAccounts = 3
+
 #
 ###################################################################################################

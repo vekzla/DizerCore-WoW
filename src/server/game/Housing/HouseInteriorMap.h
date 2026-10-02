@@ -44,12 +44,16 @@ public:
     void RemovePlayerFromMap(Player* player, bool remove) override;
 
     ObjectGuid GetOwnerGuid() const { return _owner; }
+    // The house moved to another character of the account (house settings owner change)
+    void SetOwnerGuid(ObjectGuid owner) { _owner = owner; }
     float GetOriginX() const { return _originX; }
     float GetOriginY() const { return _originY; }
     float GetOriginZ() const { return _originZ; }
 
     /// Get the Housing data for the owner (needed for room/decor state).
     Housing* GetOwnerHousing();
+    // The house belongs to the player's account (the owner or another character of the same account).
+    bool IsHouseOwnerAccount(Player const* player) const;
 
     /// The neighborhood map ID the owner came from (for exit teleport).
     uint32 GetSourceNeighborhoodMapId() const { return _sourceNeighborhoodMapId; }
@@ -113,6 +117,7 @@ public:
 
     /// Update position/rotation of a single interior decor item.
     void UpdateDecorPosition(ObjectGuid decorGuid, Position const& pos, QuaternionData const& rot, float scale = 1.0f);
+    void UpdateDecorDyes(ObjectGuid decorGuid, std::array<uint32, MAX_HOUSING_DYE_SLOTS> const& dyeSlots);
 
     /// Despawn a single decor item by its Housing decor GUID.
     void DespawnDecorItem(ObjectGuid decorGuid);

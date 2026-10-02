@@ -244,6 +244,16 @@ enum DecorSourceType : uint8
     DECOR_SOURCE_DEFERRED       = 3, // Redeemed from deferred reward queue
 };
 
+// DecorStoragePersistedData.PlacementStatus (retail 12.1.0.69933: the same decor record is 1
+// while placed inside the house and 2 while placed on the plot; 0 = back in storage). The client
+// sums the interior placement budget from status 1 records and the exterior budget from status 2.
+enum HousingDecorPlacementStatus : uint8
+{
+    HOUSING_DECOR_IN_STORAGE    = 0,
+    HOUSING_DECOR_PLACED_HOUSE  = 1,
+    HOUSING_DECOR_PLACED_PLOT   = 2,
+};
+
 // HousingCatalogEntryType enum - 3 values
 enum HousingCatalogEntryType : uint8
 {
@@ -333,7 +343,7 @@ enum BulkRefundResult : uint8
     BULK_REFUND_RESULT_TIMEOUT                  = 5
 };
 
-// HouseOwnerError enum - 4 values
+// HouseOwnerError enum - 4 values (JamPotentialCosmeticHouseOwner.Error: the house settings owner list greys the character out)
 enum HouseOwnerError : uint8
 {
     HOUSE_OWNER_ERROR_NONE                  = 0,
@@ -712,8 +722,8 @@ enum InvalidPlotScreenshotReason : uint8
     INVALID_PLOT_SCREENSHOT_NO_ACTIVE_PLAYER    = 4
 };
 
-// HouseFinderSuggestionReason enum - 7 values (bitmask)
-enum HouseFinderSuggestionReason : uint32
+// HouseFinderSuggestionReason enum - 9 values (Enum.HouseFinderSuggestionReason, 12.1.0.69933)
+enum HouseFinderSuggestionReason : uint8
 {
     HOUSE_FINDER_SUGGESTION_NONE            = 0x00,
     HOUSE_FINDER_SUGGESTION_OWNER           = 0x01,
@@ -721,7 +731,9 @@ enum HouseFinderSuggestionReason : uint32
     HOUSE_FINDER_SUGGESTION_GUILD           = 0x04,
     HOUSE_FINDER_SUGGESTION_BNET_FRIENDS    = 0x08,
     HOUSE_FINDER_SUGGESTION_PARTY_SYNC      = 0x10,
-    HOUSE_FINDER_SUGGESTION_RANDOM          = 0x20
+    HOUSE_FINDER_SUGGESTION_RANDOM          = 0x20,
+    HOUSE_FINDER_SUGGESTION_HOME_OWNER      = 0x40,
+    HOUSE_FINDER_SUGGESTION_RELINQUISHED    = 0x80
 };
 
 // CornerstonePurchaseMode enum - 3 values
@@ -822,11 +834,10 @@ static constexpr uint32 MAX_HOUSING_DYE_SLOTS           = 3;
 static constexpr uint32 MAX_NEIGHBORHOOD_PLOTS          = 55;
 static constexpr uint32 MAX_NEIGHBORHOOD_MANAGERS       = 5;
 static constexpr uint32 MAX_PENDING_INVITES             = 20;
-static constexpr uint32 MIN_CHARTER_SIGNATURES          = 4;
 static constexpr uint8  INVALID_PLOT_INDEX              = 255;
 static constexpr uint32 HOUSING_MAX_NAME_LENGTH         = 64;
 static constexpr uint64 HOUSE_MOVE_COST_COPPER          = 500ULL * 10000ULL;       // 500g move cost
-static constexpr uint32 MAX_HOUSE_LEVEL                 = 20;
+static constexpr uint32 MAX_HOUSE_LEVEL                 = 12;   // HouseLevelData.db2 levels 1-12
 
 // Starter favor granted on house purchase (sniff: ChangeAmount=910, NewFavorTotal=910 in the
 // post-purchase HousingSvcsUpdateHousesLevelFavor pair).
@@ -905,7 +916,7 @@ static constexpr uint32 QUEST_HOUSING_TUTORIAL_COMPLETE = 94455; // "Home at Las
 // "Create a Neighborhood" — retail wires charter founding to this quest: it provides the
 // Neighborhood Charter item (239098), whose use opens the charter UI, and the completed
 // charter is turned in to the steward. Blizzard support: charter neighborhoods require
-// 10 signatures on retail (MIN_CHARTER_SIGNATURES above is the current server policy).
+// 10 signatures on retail (Housing.CharterRequiredSignatures is the server policy).
 static constexpr uint32 QUEST_CREATE_A_NEIGHBORHOOD = 89450;
 // Neighborhood Charter — provided by quest 89450; re-obtainable from stewards on retail.
 static constexpr uint32 ITEM_NEIGHBORHOOD_CHARTER = 239098;
@@ -922,20 +933,17 @@ static constexpr uint32 SPELL_HOUSING_TUTORIAL_DONE_2   = 1285424;
 static constexpr uint32 SPELL_HOUSING_TUTORIAL_DONE_3   = 1266699;
 
 // WorldState IDs — continuous counters sent throughout the entire housing session.
-// Sniff-verified: 5 counters total, sent as individual SMSG_UPDATE_WORLD_STATE packets.
-// Counters 1-3 increment by ~1333 every ~300ms.
-// Counters 4-5 increment by ~7233 every ~300ms.
+// 12.1.0.69933 retail sends counters 1-3 as individual SMSG_UPDATE_WORLD_STATE packets every ~5 s
+// (+1333 each).
 static constexpr uint32 WORLDSTATE_HOUSING_COUNTER_1    = 13436;
 static constexpr uint32 WORLDSTATE_HOUSING_COUNTER_2    = 13437;
 static constexpr uint32 WORLDSTATE_HOUSING_COUNTER_3    = 13438;
-static constexpr uint32 WORLDSTATE_HOUSING_COUNTER_4    = 16035;
-static constexpr uint32 WORLDSTATE_HOUSING_COUNTER_5    = 16711;
 
 // WS[30906]: Toggled 1 when inside a house interior (MapID=2783), 0 when leaving.
 static constexpr uint32 WORLDSTATE_HOUSING_INTERIOR     = 30906;
 
 // Interval and increment for housing WorldState counter updates
-static constexpr uint32 HOUSING_WORLDSTATE_INTERVAL_MS  = 300;
+static constexpr uint32 HOUSING_WORLDSTATE_INTERVAL_MS  = 5000;  // 12.1.0.69933: counters 1-3 every ~5 s (+1333)
 static constexpr uint32 HOUSING_WORLDSTATE_INCREMENT    = 1333;
 static constexpr uint32 HOUSING_WORLDSTATE_INCREMENT_2  = 7233;
 
@@ -955,38 +963,6 @@ static constexpr uint32 HOUSING_COSMETIC_PHASE_DELAY_MS = 10000;
 
 // Room grid spacing for interior maps (sniff-verified: ~24 yards between room centers)
 static constexpr float HOUSING_ROOM_GRID_SPACING = 24.0f;
-
-// ------------------------------------------------------------------
-// Horde House Interior Mesh Data (from retail sniff, HouseExteriorWmoDataID=87)
-// ------------------------------------------------------------------
-// Attachment hierarchy:
-//   Root: House GO (spawned at plot position, e.g. entry 582075)
-//     └── Building shell WMO (FileDataID 6322976, attached to house GO)
-//           ├── Interior room WMOs (6426xxx, attached to building shell)
-//           └── Exterior fixture M2s (attached to building shell)
-//
-// The client uses the house GO as the root anchor. MeshObjects carry
-// FHousingFixture_C fragment data (ExteriorComponentID, HouseExteriorWmoDataID)
-// that the client uses to resolve which art assets to render.
-
-// Main building shell WMO (approx bounding box: ±35x30x126)
-static constexpr int32 HORDE_HOUSE_BUILDING_SHELL_FDI = 6322976;
-
-// Interior room WMOs — each approximately 24x24 unit rooms arranged on a 24-unit grid
-// Vertical floor height: 7.0 units between stacked rooms
-static constexpr int32 HORDE_HOUSE_INTERIOR_ROOM_FDIS[] = {
-    6426613,    // Main room / wall section (also used as corner)
-    6426431,    // Small room variant
-    6426641,    // Small room variant
-    6426647,    // Small room variant
-    6426665,    // Large room corner
-    6426605,    // Room ceiling
-    6426671,    // Room wall with door opening
-    6426452,    // Small room with specific configuration
-    6426672     // Room section variant
-};
-static constexpr uint32 HORDE_HOUSE_INTERIOR_ROOM_COUNT = sizeof(HORDE_HOUSE_INTERIOR_ROOM_FDIS) / sizeof(HORDE_HOUSE_INTERIOR_ROOM_FDIS[0]);
-static constexpr float  HORDE_HOUSE_FLOOR_HEIGHT = 7.0f;  // Vertical spacing between stacked rooms
 
 // HouseExteriorWmoDataID for Horde theme (from sniff)
 static constexpr int32 HORDE_HOUSE_EXTERIOR_WMO_DATA_ID = 87;
@@ -1093,21 +1069,9 @@ static constexpr uint32 HOUSING_BLUEPRINTS_MAX_BACKUPS_PER_BNET_ACCOUNT = 10;
 static constexpr uint32 HOUSING_BLUEPRINT_NAME_MIN_CHARACTERS           = 3;
 static constexpr uint32 HOUSING_BLUEPRINT_NAME_MAX_CHARACTERS           = 50;
 
-// Pet beds (12.1): decor items with their own placement budget. Caps come from client
-// config globals housingMaxPetBedsInterior@0x127F60 / housingMaxPetBedsExterior@0x127FD0
-// [BIN symbols]. Default caps are placeholders until a value capture/DB confirms. [INF]
-static constexpr uint32 HOUSING_MAX_PET_BEDS_INTERIOR = 6;
-static constexpr uint32 HOUSING_MAX_PET_BEDS_EXTERIOR = 6;
-
-// 12.1 raised the displayed house level cap to 12 (patch notes). MAX_HOUSE_LEVEL above is
-// already 20 (headroom); levels 11-12 are HouseLevelData.db2 rows + larger budgets +
-// large-exterior unlock — a DATA change, not a code cap. [data]
-static constexpr uint32 HOUSING_DISPLAY_LEVEL_CAP_12_1 = 12;
-
 // The three post-tutorial auras (slots 8, 9, 50) are re-sent whenever the player enters either
 // housing map, so the sequence lives in one place instead of being carried by both map classes.
 class Player;
 TC_GAME_API void SendHousingPostTutorialAuras(Player* player);
-
 
 #endif // TRINITYCORE_HOUSING_DEFINES_H

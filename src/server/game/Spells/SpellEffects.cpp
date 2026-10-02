@@ -452,7 +452,7 @@ NonDefaultConstructible<SpellEffectHandlerFn> SpellEffectHandlers[TOTAL_SPELL_EF
     &Spell::EffectLearnHouseRoomComponentTexture,            //352 SPELL_EFFECT_LEARN_HOUSE_ROOM_COMPONENT_TEXTURE
     &Spell::EffectCreateAreaTrigger,                        //353 SPELL_EFFECT_CREATE_AREATRIGGER_2
     &Spell::EffectSetNeighborhoodInitiative,                 //354 SPELL_EFFECT_SET_NEIGHBORHOOD_INITIATIVE
-    &Spell::EffectNULL,                                     //355 SPELL_EFFECT_LEARN_HOUSE_TYPE
+    &Spell::EffectLearnHouseType,                            //355 SPELL_EFFECT_LEARN_HOUSE_TYPE
     &Spell::EffectNULL,                                     //356 SPELL_EFFECT_356
     &Spell::EffectNULL,                                     //357 SPELL_EFFECT_357
     &Spell::EffectNULL,                                     //358 SPELL_EFFECT_358
@@ -7380,10 +7380,11 @@ void Spell::EffectCollectHousingDecor()
         return;
     }
 
-    // Notify client of the new decor acquisition
-    WorldPackets::Housing::HousingFirstTimeDecorAcquisition decorAcq;
-    decorAcq.DecorEntryID = decorEntryId;
-    player->SendDirectMessage(decorAcq.Write());
+    // NO HousingFirstTimeDecorAcquisition here: the client credits that packet as a
+    // "redeemable" copy on top of the FHousingStorage_C instance entries (see the
+    // house-purchase note in NeighborhoodHandler), which double-counts the chest and
+    // later drives a REDEEM that our handler would grant as a duplicate catalog copy.
+    // The spell's copy is delivered as a storage instance below / by the next populate.
 
     // If the Account entity's FHousingStorage_C has already been populated (player opened
     // edit mode), add the new catalog entry directly and send a VALUES_UPDATE so the client's
@@ -7450,10 +7451,7 @@ void Spell::EffectLearnHouseRoom()
     TC_LOG_DEBUG("spells", "Spell::EffectLearnHouseRoom: Player {} learned house room '{}' (ID: {})",
         player->GetName(), roomData->Name, houseRoomId);
 
-    // Send collection update to the client
-    WorldPackets::Housing::AccountRoomCollectionUpdate collectionUpdate;
-    collectionUpdate.AddSingle(houseRoomId);
-    player->SendDirectMessage(collectionUpdate.Write());
+    player->LearnHouseRoom(houseRoomId);
 }
 
 void Spell::EffectLearnHouseExteriorComponent()
@@ -7480,6 +7478,29 @@ void Spell::EffectLearnHouseExteriorComponent()
     WorldPackets::Housing::AccountExteriorFixtureCollectionUpdate collectionUpdate;
     collectionUpdate.AddSingle(exteriorComponentId);
     player->SendDirectMessage(collectionUpdate.Write());
+}
+
+void Spell::EffectLearnHouseType()
+{
+    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
+        return;
+
+    Player* player = Object::ToPlayer(unitTarget);
+    if (!player)
+        return;
+
+    uint32 houseExteriorWmoDataId = effectInfo->MiscValue;
+    if (!sHousingMgr.GetHouseExteriorWmoData(houseExteriorWmoDataId))
+    {
+        TC_LOG_ERROR("spells", "Spell::EffectLearnHouseType: Invalid HouseExteriorWmoData ID {} from spell {}",
+            houseExteriorWmoDataId, m_spellInfo->Id);
+        return;
+    }
+
+    TC_LOG_DEBUG("spells", "Spell::EffectLearnHouseType: Player {} learned house type {} from spell {}",
+        player->GetName(), houseExteriorWmoDataId, m_spellInfo->Id);
+
+    player->LearnHouseType(houseExteriorWmoDataId);
 }
 
 void Spell::EffectLearnHouseTheme()

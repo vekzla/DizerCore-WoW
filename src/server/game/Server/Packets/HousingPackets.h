@@ -222,8 +222,8 @@ namespace WorldPackets::Housing
         // housingfull12.1.0.69587 a yaw of 1.5708 travels with quaternion (0, 0, 0.7071, 0.7071). Reading seven took the
         // quaternion's x as Scale and misread every guid behind it.
         ObjectGuid DecorGuid;
-        TaggedPosition<Position::XYZ> Position;
-        TaggedPosition<Position::XYZ> Rotation;
+        TaggedPosition<::Position::XYZ> Position;
+        TaggedPosition<::Position::XYZ> Rotation;
         std::array<float, 4> Quaternion = { };
         float Scale = 1.0f;
         ObjectGuid AttachParentGuid;
@@ -244,8 +244,8 @@ namespace WorldPackets::Housing
         // housingfull12.1.0.69587 a yaw of 1.5708 travels with quaternion (0, 0, 0.7071, 0.7071). Reading seven took the
         // quaternion's x as Scale and misread every guid behind it.
         ObjectGuid DecorGuid;
-        TaggedPosition<Position::XYZ> Position;
-        TaggedPosition<Position::XYZ> Rotation;
+        TaggedPosition<::Position::XYZ> Position;
+        TaggedPosition<::Position::XYZ> Rotation;
         std::array<float, 4> Quaternion = { };
         float Scale = 1.0f;
         ObjectGuid AttachParentGuid;
@@ -654,7 +654,7 @@ namespace WorldPackets::Housing
 
         ObjectGuid HouseGuid;
         Optional<uint32> PlotSettingsID;
-        Optional<ObjectGuid> VisitorPermissionGuid;
+        Optional<ObjectGuid> NewOwnerGuid; // C_Housing.SaveHouseSettings(playerGUID, ...): only sent when the owner changes
     };
 
     class HousingSvcsPlayerViewHousesByPlayer final : public ClientPacket
@@ -1270,9 +1270,9 @@ namespace WorldPackets::Housing
     public:
         HousingRoomRemoveResponse() : ServerPacket(SMSG_HOUSING_ROOM_REMOVE_RESPONSE) { }
         WorldPacket const* Write() override;
-        // IDA case 5439490: PackedGUID + PackedGUID + uint8(Result)
+        // IDA case 5439490: PackedGUID + PackedGUID + uint8(Result); retail 12.1.0.69933 sends the editing player
         ObjectGuid RoomGuid;
-        ObjectGuid SecondGuid;
+        ObjectGuid PlayerGuid;
         uint8 Result = 0;
     };
 

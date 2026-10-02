@@ -19,6 +19,7 @@
 #include "HousingNeighborhoodMirrorEntity.h"
 #include "BattlenetAccountMgr.h"
 #include "DatabaseEnv.h"
+#include "HousingMap.h"
 #include "HousingPackets.h"
 #include "GameTime.h"
 #include "Log.h"
@@ -59,9 +60,6 @@ bool Neighborhood::LoadFromDB(PreparedQueryResult neighborhood, PreparedQueryRes
     // M8: guild→neighborhood link (0 = not a guild neighborhood). Without this
     // load GetNeighborhoodByGuildId always returned nullptr after a restart.
     _guildId            = fields[7].GetUInt32();
-
-    TC_LOG_DEBUG("housing", "Neighborhood::LoadFromDB: Loaded neighborhood '{}' (guid: {}), owner: {}, mapId: {}, members: loading...",
-        _name, _guid.ToString(), _ownerGuid.ToString(), _neighborhoodMapID);
 
     // Load members
     if (members)
@@ -128,19 +126,9 @@ bool Neighborhood::LoadFromDB(PreparedQueryResult neighborhood, PreparedQueryRes
                         _plots[member.PlotIndex].HousePosition = housePos;
                 }
 
-                TC_LOG_INFO("housing", "Neighborhood::LoadFromDB plot[{}] owner={} lvl={} favor={} name='{}' "
-                    "(ch.houseLevel.IsNull={} ch.favor.IsNull={} ch.houseName.IsNull={})",
-                    member.PlotIndex, member.PlayerGuid.ToString(),
-                    _plots[member.PlotIndex].HouseLevel,
-                    _plots[member.PlotIndex].HouseFavor,
-                    _plots[member.PlotIndex].HouseName,
-                    memberFields[6].IsNull(), memberFields[7].IsNull(), memberFields[8].IsNull());
             }
         } while (members->NextRow());
     }
-
-    TC_LOG_DEBUG("housing", "Neighborhood::LoadFromDB: Loaded {} members for neighborhood '{}'",
-        _members.size(), _name);
 
     // Load pending invites
     if (invites)
@@ -161,9 +149,6 @@ bool Neighborhood::LoadFromDB(PreparedQueryResult neighborhood, PreparedQueryRes
             _pendingInvites.push_back(invite);
         } while (invites->NextRow());
     }
-
-    TC_LOG_DEBUG("housing", "Neighborhood::LoadFromDB: Loaded {} pending invites for neighborhood '{}'",
-        _pendingInvites.size(), _name);
 
     // Resolve an owner's GUID to the matching plot index (for the JOIN-by-ownerGuid
     // fixture/decor result sets below). Linear scan over _members — tiny constant
@@ -195,8 +180,6 @@ bool Neighborhood::LoadFromDB(PreparedQueryResult neighborhood, PreparedQueryRes
             ++fixtureCount;
         } while (memberFixtures->NextRow());
     }
-    TC_LOG_DEBUG("housing", "Neighborhood::LoadFromDB: Loaded {} fixture overrides across neighborhood '{}'",
-        fixtureCount, _name);
 
     // Load placed decor for every occupied plot's owner. SpawnPlotGameObjects
     // only spawns exterior entries (RoomGuid.IsEmpty()); interior entries are
@@ -247,8 +230,6 @@ bool Neighborhood::LoadFromDB(PreparedQueryResult neighborhood, PreparedQueryRes
             ++decorCount;
         } while (memberDecor->NextRow());
     }
-    TC_LOG_DEBUG("housing", "Neighborhood::LoadFromDB: Loaded {} placed decor items across neighborhood '{}'",
-        decorCount, _name);
 
     // Load interior room layout per owner so HouseInteriorMap can spawn
     // neighbours' actual rooms (not the default base layout) when a visitor
@@ -293,8 +274,6 @@ bool Neighborhood::LoadFromDB(PreparedQueryResult neighborhood, PreparedQueryRes
             ++roomCount;
         } while (memberRooms->NextRow());
     }
-    TC_LOG_DEBUG("housing", "Neighborhood::LoadFromDB: Loaded {} placed rooms across neighborhood '{}'",
-        roomCount, _name);
 
     return true;
 }
@@ -347,8 +326,6 @@ void Neighborhood::SaveToDB(CharacterDatabaseTransaction trans)
         trans->Append(stmt);
     }
 
-    TC_LOG_DEBUG("housing", "Neighborhood::SaveToDB: Saved neighborhood '{}' with {} members and {} invites",
-        _name, _members.size(), _pendingInvites.size());
 }
 
 /*static*/ void Neighborhood::DeleteFromDB(ObjectGuid::LowType guid, CharacterDatabaseTransaction trans)
@@ -365,7 +342,6 @@ void Neighborhood::SaveToDB(CharacterDatabaseTransaction trans)
     stmt->setUInt64(0, guid);
     trans->Append(stmt);
 
-    TC_LOG_DEBUG("housing", "Neighborhood::DeleteFromDB: Deleted neighborhood guid {}", guid);
 }
 
 void Neighborhood::SetName(std::string const& name)
@@ -377,8 +353,6 @@ void Neighborhood::SetName(std::string const& name)
     stmt->setUInt64(1, _guid.GetCounter());
     CharacterDatabase.Execute(stmt);
 
-    TC_LOG_DEBUG("housing", "Neighborhood::SetName: Neighborhood {} renamed to '{}'",
-        _guid.ToString(), _name);
 }
 
 void Neighborhood::SetPublic(bool isPublic)
@@ -390,8 +364,6 @@ void Neighborhood::SetPublic(bool isPublic)
     stmt->setUInt64(1, _guid.GetCounter());
     CharacterDatabase.Execute(stmt);
 
-    TC_LOG_DEBUG("housing", "Neighborhood::SetPublic: Neighborhood '{}' public status set to {}",
-        _name, _isPublic);
 }
 
 HousingResult Neighborhood::AddManager(ObjectGuid playerGuid)
@@ -411,29 +383,21 @@ HousingResult Neighborhood::AddManager(ObjectGuid playerGuid)
 
     if (!targetMember)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::AddManager: Player {} is not a member of neighborhood '{}'",
-            playerGuid.ToString(), _name);
         return HOUSING_RESULT_NEIGHBORHOOD_NOT_FOUND;
     }
 
     if (targetMember->Role == NEIGHBORHOOD_ROLE_OWNER)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::AddManager: Player {} is already owner of neighborhood '{}'",
-            playerGuid.ToString(), _name);
         return HOUSING_RESULT_PERMISSION_DENIED;
     }
 
     if (targetMember->Role == NEIGHBORHOOD_ROLE_MANAGER)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::AddManager: Player {} is already a manager in neighborhood '{}'",
-            playerGuid.ToString(), _name);
         return HOUSING_RESULT_SUCCESS;
     }
 
     if (managerCount >= MAX_NEIGHBORHOOD_MANAGERS)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::AddManager: Neighborhood '{}' has reached max managers ({})",
-            _name, MAX_NEIGHBORHOOD_MANAGERS);
         // m7: was PLOT_NOT_VACANT, which the client rendered as a spurious plot
         // error. HousingResult (build 68275) has no dedicated "too many managers"
         // value, so use PERMISSION_DENIED (the promotion is refused) until a
@@ -450,9 +414,6 @@ HousingResult Neighborhood::AddManager(ObjectGuid playerGuid)
     stmt->setUInt64(2, playerGuid.GetCounter());
     CharacterDatabase.Execute(stmt);
 
-    TC_LOG_DEBUG("housing", "Neighborhood::AddManager: Player {} promoted to manager in neighborhood '{}'",
-        playerGuid.ToString(), _name);
-
     // m4: roster broadcast happens in the handler layer
     // (HandleNeighborhoodAddSecondaryOwner), which also refreshes mirror data.
     // Broadcasting here too produced two deltas per promote.
@@ -467,15 +428,11 @@ HousingResult Neighborhood::RemoveManager(ObjectGuid playerGuid)
         {
             if (member.Role == NEIGHBORHOOD_ROLE_OWNER)
             {
-                TC_LOG_DEBUG("housing", "Neighborhood::RemoveManager: Cannot demote owner {} in neighborhood '{}'",
-                    playerGuid.ToString(), _name);
                 return HOUSING_RESULT_PERMISSION_DENIED;
             }
 
             if (member.Role != NEIGHBORHOOD_ROLE_MANAGER)
             {
-                TC_LOG_DEBUG("housing", "Neighborhood::RemoveManager: Player {} is not a manager in neighborhood '{}'",
-                    playerGuid.ToString(), _name);
                 return HOUSING_RESULT_PERMISSION_DENIED;
             }
 
@@ -488,9 +445,6 @@ HousingResult Neighborhood::RemoveManager(ObjectGuid playerGuid)
             stmt->setUInt64(2, playerGuid.GetCounter());
             CharacterDatabase.Execute(stmt);
 
-            TC_LOG_DEBUG("housing", "Neighborhood::RemoveManager: Player {} demoted to resident in neighborhood '{}'",
-                playerGuid.ToString(), _name);
-
             // m4: roster broadcast happens in the handler layer
             // (HandleNeighborhoodRemoveSecondaryOwner), which also refreshes
             // mirror data. Broadcasting here too produced two deltas per demote.
@@ -498,8 +452,6 @@ HousingResult Neighborhood::RemoveManager(ObjectGuid playerGuid)
         }
     }
 
-    TC_LOG_DEBUG("housing", "Neighborhood::RemoveManager: Player {} is not a member of neighborhood '{}'",
-        playerGuid.ToString(), _name);
     return HOUSING_RESULT_NEIGHBORHOOD_NOT_FOUND;
 }
 
@@ -519,24 +471,18 @@ HousingResult Neighborhood::InviteResident(ObjectGuid inviterGuid, ObjectGuid in
 
     if (!inviterHasPermission)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::InviteResident: Inviter {} lacks permission in neighborhood '{}'",
-            inviterGuid.ToString(), _name);
         return HOUSING_RESULT_PERMISSION_DENIED;
     }
 
     // Check invite limit
     if (_pendingInvites.size() >= MAX_PENDING_INVITES)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::InviteResident: Neighborhood '{}' has reached max pending invites ({})",
-            _name, MAX_PENDING_INVITES);
         return HOUSING_RESULT_TOO_MANY_REQUESTS;
     }
 
     // Check if neighborhood has available plots (rough check: members + pending >= totalPlots)
     if (GetOccupiedPlotCount() + _pendingInvites.size() >= MAX_NEIGHBORHOOD_PLOTS)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::InviteResident: Neighborhood '{}' has no available plots",
-            _name);
         return HOUSING_RESULT_PLOT_NOT_VACANT;
     }
 
@@ -545,8 +491,6 @@ HousingResult Neighborhood::InviteResident(ObjectGuid inviterGuid, ObjectGuid in
     {
         if (member.PlayerGuid == inviteeGuid)
         {
-            TC_LOG_DEBUG("housing", "Neighborhood::InviteResident: Player {} is already a member of neighborhood '{}'",
-                inviteeGuid.ToString(), _name);
             return HOUSING_RESULT_GENERIC_FAILURE;
         }
     }
@@ -556,8 +500,6 @@ HousingResult Neighborhood::InviteResident(ObjectGuid inviterGuid, ObjectGuid in
     {
         if (invite.InviteeGuid == inviteeGuid)
         {
-            TC_LOG_DEBUG("housing", "Neighborhood::InviteResident: Player {} already has a pending invite to neighborhood '{}'",
-                inviteeGuid.ToString(), _name);
             return HOUSING_RESULT_GENERIC_FAILURE;
         }
     }
@@ -572,8 +514,6 @@ HousingResult Neighborhood::InviteResident(ObjectGuid inviterGuid, ObjectGuid in
             if ((_factionRestriction == NEIGHBORHOOD_FACTION_HORDE && team != HORDE) ||
                 (_factionRestriction == NEIGHBORHOOD_FACTION_ALLIANCE && team != ALLIANCE))
             {
-                TC_LOG_DEBUG("housing", "Neighborhood::InviteResident: Player {} faction mismatch for neighborhood '{}'",
-                    inviteeGuid.ToString(), _name);
                 return HOUSING_RESULT_INCORRECT_FACTION;
             }
         }
@@ -589,8 +529,6 @@ HousingResult Neighborhood::InviteResident(ObjectGuid inviterGuid, ObjectGuid in
     {
         if (invitee->HasPlayerFlagEx(PLAYER_FLAGS_EX_AUTO_DECLINE_NEIGHBORHOOD))
         {
-            TC_LOG_DEBUG("housing", "Neighborhood::InviteResident: Player {} auto-declines neighborhood invites; invite to '{}' suppressed",
-                inviteeGuid.ToString(), _name);
             return HOUSING_RESULT_FILTER_REJECTED;
         }
     }
@@ -613,9 +551,6 @@ HousingResult Neighborhood::InviteResident(ObjectGuid inviterGuid, ObjectGuid in
     trans->Append(stmt);
     CharacterDatabase.CommitTransaction(trans);
 
-    TC_LOG_DEBUG("housing", "Neighborhood::InviteResident: Player {} invited to neighborhood '{}' by {}",
-        inviteeGuid.ToString(), _name, inviterGuid.ToString());
-
     return HOUSING_RESULT_SUCCESS;
 }
 
@@ -626,8 +561,6 @@ HousingResult Neighborhood::CancelInvitation(ObjectGuid inviteeGuid)
 
     if (it == _pendingInvites.end())
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::CancelInvitation: No pending invite for {} in neighborhood '{}'",
-            inviteeGuid.ToString(), _name);
         return HOUSING_RESULT_PLAYER_NOT_FOUND;
     }
 
@@ -641,9 +574,6 @@ HousingResult Neighborhood::CancelInvitation(ObjectGuid inviteeGuid)
     trans->Append(stmt);
     CharacterDatabase.CommitTransaction(trans);
 
-    TC_LOG_DEBUG("housing", "Neighborhood::CancelInvitation: Invitation for {} cancelled in neighborhood '{}'",
-        inviteeGuid.ToString(), _name);
-
     return HOUSING_RESULT_SUCCESS;
 }
 
@@ -654,16 +584,12 @@ HousingResult Neighborhood::AcceptInvitation(ObjectGuid playerGuid)
 
     if (it == _pendingInvites.end())
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::AcceptInvitation: No pending invite for {} in neighborhood '{}'",
-            playerGuid.ToString(), _name);
         return HOUSING_RESULT_PLAYER_NOT_FOUND;
     }
 
     // Check neighborhood not full
     if (_members.size() >= MAX_NEIGHBORHOOD_PLOTS)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::AcceptInvitation: Neighborhood '{}' is full ({} members)",
-            _name, _members.size());
         return HOUSING_RESULT_PLOT_NOT_VACANT;
     }
 
@@ -697,9 +623,6 @@ HousingResult Neighborhood::AcceptInvitation(ObjectGuid playerGuid)
 
     CharacterDatabase.CommitTransaction(trans);
 
-    TC_LOG_DEBUG("housing", "Neighborhood::AcceptInvitation: Player {} joined neighborhood '{}' as resident",
-        playerGuid.ToString(), _name);
-
     // A new resident: every online member's bulletin board gets the whole roster again.
     BroadcastRoster();
 
@@ -715,8 +638,6 @@ HousingResult Neighborhood::AddResident(ObjectGuid playerGuid)
     // Check neighborhood not full
     if (_members.size() >= MAX_NEIGHBORHOOD_PLOTS)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::AddResident: Neighborhood '{}' is full ({} members)",
-            _name, _members.size());
         return HOUSING_RESULT_PLOT_NOT_VACANT;
     }
 
@@ -749,9 +670,6 @@ HousingResult Neighborhood::AddResident(ObjectGuid playerGuid)
         _pendingInvites.erase(inviteIt);
     }
 
-    TC_LOG_DEBUG("housing", "Neighborhood::AddResident: Player {} joined neighborhood '{}' as resident",
-        playerGuid.ToString(), _name);
-
     // A new resident: every online member's bulletin board gets the whole roster again.
     BroadcastRoster();
 
@@ -765,8 +683,6 @@ HousingResult Neighborhood::DeclineInvitation(ObjectGuid playerGuid)
 
     if (it == _pendingInvites.end())
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::DeclineInvitation: No pending invite for {} in neighborhood '{}'",
-            playerGuid.ToString(), _name);
         return HOUSING_RESULT_PLAYER_NOT_FOUND;
     }
 
@@ -779,9 +695,6 @@ HousingResult Neighborhood::DeclineInvitation(ObjectGuid playerGuid)
     stmt->setUInt64(1, playerGuid.GetCounter());
     trans->Append(stmt);
     CharacterDatabase.CommitTransaction(trans);
-
-    TC_LOG_DEBUG("housing", "Neighborhood::DeclineInvitation: Player {} declined invite to neighborhood '{}'",
-        playerGuid.ToString(), _name);
 
     // M7: the invite was successfully erased — return SUCCESS. The response
     // Result byte is a HousingResult enum (uint8) the client compares against
@@ -798,15 +711,11 @@ HousingResult Neighborhood::EvictPlayer(ObjectGuid playerGuid)
 
     if (it == _members.end())
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::EvictPlayer: Player {} is not in neighborhood '{}'",
-            playerGuid.ToString(), _name);
         return HOUSING_RESULT_NEIGHBORHOOD_NOT_FOUND;
     }
 
     if (it->Role == NEIGHBORHOOD_ROLE_OWNER)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::EvictPlayer: Cannot evict owner {} from neighborhood '{}'",
-            playerGuid.ToString(), _name);
         return HOUSING_RESULT_PERMISSION_DENIED;
     }
 
@@ -823,9 +732,6 @@ HousingResult Neighborhood::EvictPlayer(ObjectGuid playerGuid)
     stmt->setUInt64(1, playerGuid.GetCounter());
     trans->Append(stmt);
     CharacterDatabase.CommitTransaction(trans);
-
-    TC_LOG_DEBUG("housing", "Neighborhood::EvictPlayer: Player {} evicted from neighborhood '{}'",
-        playerGuid.ToString(), _name);
 
     // The evicted player is gone from the roster: every remaining member gets it again.
     BroadcastRoster();
@@ -862,10 +768,6 @@ bool Neighborhood::ReleasePlot(ObjectGuid ownerGuid)
         freed = true;
     }
 
-    if (freed)
-        TC_LOG_DEBUG("housing", "Neighborhood::ReleasePlot: Freed plot(s) owned by {} in neighborhood '{}'",
-            ownerGuid.ToString(), _name);
-
     return freed;
 }
 
@@ -884,15 +786,11 @@ HousingResult Neighborhood::TransferOwnership(ObjectGuid newOwnerGuid)
 
     if (!newOwner)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::TransferOwnership: New owner {} is not a member of neighborhood '{}'",
-            newOwnerGuid.ToString(), _name);
         return HOUSING_RESULT_NEIGHBORHOOD_NOT_FOUND;
     }
 
     if (!oldOwner)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::TransferOwnership: Current owner {} not found in member list of neighborhood '{}'",
-            _ownerGuid.ToString(), _name);
         return HOUSING_RESULT_RPC_FAILURE;
     }
 
@@ -927,9 +825,6 @@ HousingResult Neighborhood::TransferOwnership(ObjectGuid newOwnerGuid)
 
     CharacterDatabase.CommitTransaction(trans);
 
-    TC_LOG_DEBUG("housing", "Neighborhood::TransferOwnership: Ownership of neighborhood '{}' transferred from {} to {}",
-        _name, previousOwnerGuid.ToString(), newOwnerGuid.ToString());
-
     // Both resident types changed.
     BroadcastMemberStatus(previousOwnerGuid);
     BroadcastMemberStatus(newOwnerGuid);
@@ -941,15 +836,11 @@ HousingResult Neighborhood::OfferOwnership(ObjectGuid targetGuid)
 {
     if (_pendingTransfer.has_value())
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::OfferOwnership: Ownership transfer already pending in neighborhood '{}'",
-            _name);
         return HOUSING_RESULT_GENERIC_FAILURE;
     }
 
     if (!IsMember(targetGuid))
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::OfferOwnership: Target {} is not a member of neighborhood '{}'",
-            targetGuid.ToString(), _name);
         return HOUSING_RESULT_NEIGHBORHOOD_NOT_FOUND;
     }
 
@@ -958,9 +849,6 @@ HousingResult Neighborhood::OfferOwnership(ObjectGuid targetGuid)
     transfer.OfferTime = static_cast<uint32>(GameTime::GetGameTime());
     _pendingTransfer = transfer;
 
-    TC_LOG_DEBUG("housing", "Neighborhood::OfferOwnership: Ownership offered to {} in neighborhood '{}'",
-        targetGuid.ToString(), _name);
-
     return HOUSING_RESULT_SUCCESS;
 }
 
@@ -968,15 +856,11 @@ HousingResult Neighborhood::AcceptOwnershipTransfer(ObjectGuid acceptorGuid)
 {
     if (!_pendingTransfer.has_value())
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::AcceptOwnershipTransfer: No pending transfer in neighborhood '{}'",
-            _name);
         return HOUSING_RESULT_NO_NEIGHBORHOOD_OWNERSHIP_REQUESTS;
     }
 
     if (_pendingTransfer->TargetGuid != acceptorGuid)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::AcceptOwnershipTransfer: Player {} is not the transfer target in neighborhood '{}'",
-            acceptorGuid.ToString(), _name);
         return HOUSING_RESULT_PERMISSION_DENIED;
     }
 
@@ -984,8 +868,6 @@ HousingResult Neighborhood::AcceptOwnershipTransfer(ObjectGuid acceptorGuid)
     uint32 now = static_cast<uint32>(GameTime::GetGameTime());
     if (now - _pendingTransfer->OfferTime > 300)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::AcceptOwnershipTransfer: Transfer expired in neighborhood '{}'",
-            _name);
         _pendingTransfer.reset();
         return HOUSING_RESULT_TIMEOUT_LIMIT;
     }
@@ -998,22 +880,15 @@ HousingResult Neighborhood::RejectOwnershipTransfer(ObjectGuid rejectorGuid)
 {
     if (!_pendingTransfer.has_value())
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::RejectOwnershipTransfer: No pending transfer in neighborhood '{}'",
-            _name);
         return HOUSING_RESULT_NO_NEIGHBORHOOD_OWNERSHIP_REQUESTS;
     }
 
     if (_pendingTransfer->TargetGuid != rejectorGuid)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::RejectOwnershipTransfer: Player {} is not the transfer target in neighborhood '{}'",
-            rejectorGuid.ToString(), _name);
         return HOUSING_RESULT_PERMISSION_DENIED;
     }
 
     _pendingTransfer.reset();
-
-    TC_LOG_DEBUG("housing", "Neighborhood::RejectOwnershipTransfer: Transfer rejected by {} in neighborhood '{}'",
-        rejectorGuid.ToString(), _name);
 
     return HOUSING_RESULT_SUCCESS;
 }
@@ -1022,8 +897,6 @@ HousingResult Neighborhood::PurchasePlot(ObjectGuid playerGuid, uint8 plotIndex)
 {
     if (plotIndex >= MAX_NEIGHBORHOOD_PLOTS)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::PurchasePlot: Invalid plot index {} in neighborhood '{}'",
-            plotIndex, _name);
         return HOUSING_RESULT_PLOT_NOT_FOUND;
     }
 
@@ -1040,31 +913,18 @@ HousingResult Neighborhood::PurchasePlot(ObjectGuid playerGuid, uint8 plotIndex)
 
     if (!buyer)
     {
-        TC_LOG_INFO("housing", "Neighborhood::PurchasePlot REJECT: Player {} is not a member of neighborhood '{}' (guid {})",
-            playerGuid.ToString(), _name, _guid.ToString());
         return HOUSING_RESULT_NEIGHBORHOOD_NOT_FOUND;
     }
 
     // Check if player already has a plot
     if (buyer->PlotIndex != INVALID_PLOT_INDEX)
     {
-        TC_LOG_INFO("housing",
-            "Neighborhood::PurchasePlot REJECT (PLOT_NOT_VACANT, path 1/2): Player {} already owns plot {} "
-            "in neighborhood '{}' (guid {}); requested plot {}. _plots[{}].HouseGuid={}",
-            playerGuid.ToString(), buyer->PlotIndex, _name, _guid.ToString(), plotIndex,
-            buyer->PlotIndex, _plots[buyer->PlotIndex].HouseGuid.ToString());
         return HOUSING_RESULT_PLOT_NOT_VACANT;
     }
 
     // Check if plot is already occupied
     if (_plots[plotIndex].IsOccupied())
     {
-        TC_LOG_INFO("housing",
-            "Neighborhood::PurchasePlot REJECT (PLOT_NOT_VACANT, path 2/2): Plot {} is already occupied "
-            "in neighborhood '{}' (guid {}). Owner={}, HouseGuid={}",
-            plotIndex, _name, _guid.ToString(),
-            _plots[plotIndex].OwnerGuid.ToString(),
-            _plots[plotIndex].HouseGuid.ToString());
         return HOUSING_RESULT_PLOT_NOT_VACANT;
     }
 
@@ -1091,16 +951,12 @@ void Neighborhood::UpdatePlotHouseInfo(uint8 plotIndex, ObjectGuid houseGuid, Ob
 {
     if (plotIndex >= MAX_NEIGHBORHOOD_PLOTS || !_plots[plotIndex].IsOccupied())
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::UpdatePlotHouseInfo: Plot {} not found in neighborhood '{}'",
-            plotIndex, _name);
         return;
     }
 
     _plots[plotIndex].HouseGuid = houseGuid;
     _plots[plotIndex].OwnerBnetGuid = ownerBnetGuid;
 
-    TC_LOG_DEBUG("housing", "Neighborhood::UpdatePlotHouseInfo: Plot {} updated with HouseGuid {} and BnetGuid {} in neighborhood '{}'",
-        plotIndex, houseGuid.ToString(), ownerBnetGuid.ToString(), _name);
 }
 
 void Neighborhood::UpdatePlotHousePosition(ObjectGuid ownerGuid, Optional<Position> const& housePosition)
@@ -1115,6 +971,18 @@ void Neighborhood::UpdatePlotHousePosition(ObjectGuid ownerGuid, Optional<Positi
     }
 }
 
+void Neighborhood::UpdatePlotHouseType(ObjectGuid ownerGuid, uint32 houseType)
+{
+    for (PlotInfo& plot : _plots)
+    {
+        if (plot.IsOccupied() && plot.OwnerGuid == ownerGuid)
+        {
+            plot.HouseType = houseType;
+            return;
+        }
+    }
+}
+
 void Neighborhood::UpdatePlotSettingsFlags(ObjectGuid ownerGuid, uint32 settingsFlags)
 {
     for (PlotInfo& plot : _plots)
@@ -1122,8 +990,6 @@ void Neighborhood::UpdatePlotSettingsFlags(ObjectGuid ownerGuid, uint32 settings
         if (plot.IsOccupied() && plot.OwnerGuid == ownerGuid)
         {
             plot.HouseSettingsFlags = settingsFlags;
-            TC_LOG_DEBUG("housing", "Neighborhood::UpdatePlotSettingsFlags: plot {} owner {} settings=0x{:X} in '{}'",
-                plot.PlotIndex, ownerGuid.ToString(), settingsFlags, _name);
             return;
         }
     }
@@ -1133,16 +999,12 @@ HousingResult Neighborhood::MoveHouse(ObjectGuid sourcePlotOwner, uint8 newPlotI
 {
     if (newPlotIndex >= MAX_NEIGHBORHOOD_PLOTS)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::MoveHouse: Invalid target plot index {} in neighborhood '{}'",
-            newPlotIndex, _name);
         return HOUSING_RESULT_PLOT_NOT_FOUND;
     }
 
     // Check destination is not occupied
     if (_plots[newPlotIndex].IsOccupied())
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::MoveHouse: Target plot {} is occupied in neighborhood '{}'",
-            newPlotIndex, _name);
         return HOUSING_RESULT_PLOT_NOT_VACANT;
     }
 
@@ -1159,8 +1021,6 @@ HousingResult Neighborhood::MoveHouse(ObjectGuid sourcePlotOwner, uint8 newPlotI
 
     if (oldPlotIndex == INVALID_PLOT_INDEX)
     {
-        TC_LOG_DEBUG("housing", "Neighborhood::MoveHouse: Player {} has no plot in neighborhood '{}'",
-            sourcePlotOwner.ToString(), _name);
         return HOUSING_RESULT_PLOT_NOT_FOUND;
     }
 
@@ -1186,9 +1046,6 @@ HousingResult Neighborhood::MoveHouse(ObjectGuid sourcePlotOwner, uint8 newPlotI
     stmt->setUInt64(2, sourcePlotOwner.GetCounter());
     CharacterDatabase.Execute(stmt);
 
-    TC_LOG_DEBUG("housing", "Neighborhood::MoveHouse: Player {} moved house from plot {} to plot {} in neighborhood '{}'",
-        sourcePlotOwner.ToString(), oldPlotIndex, newPlotIndex, _name);
-
     return HOUSING_RESULT_SUCCESS;
 }
 
@@ -1199,6 +1056,97 @@ uint32 Neighborhood::GetOccupiedPlotCount() const
         if (plot.IsOccupied())
             ++count;
     return count;
+}
+
+bool Neighborhood::TransferPlot(ObjectGuid oldOwnerGuid, ObjectGuid newOwnerGuid, CharacterDatabaseTransaction trans)
+{
+    auto findMember = [this](ObjectGuid guid)
+    {
+        return std::find_if(_members.begin(), _members.end(), [guid](Member const& member) { return member.PlayerGuid == guid; });
+    };
+
+    auto oldItr = findMember(oldOwnerGuid);
+    if (oldItr == _members.end() || oldItr->PlotIndex == INVALID_PLOT_INDEX)
+        return false;
+
+    auto newItr = findMember(newOwnerGuid);
+    if (newItr != _members.end() && newItr->PlotIndex != INVALID_PLOT_INDEX)
+        return false;
+
+    uint8 const plotIndex = oldItr->PlotIndex;
+    ObjectGuid const houseGuid = oldItr->HouseGuid;
+    uint32 const joinTime = oldItr->JoinTime;
+    bool const oldIsResident = oldItr->Role == NEIGHBORHOOD_ROLE_RESIDENT;
+
+    if (oldIsResident && newItr == _members.end())
+    {
+        oldItr->PlayerGuid = newOwnerGuid;
+
+        CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_NEIGHBORHOOD_MEMBER_PLAYER);
+        stmt->setUInt64(0, newOwnerGuid.GetCounter());
+        stmt->setUInt64(1, _guid.GetCounter());
+        stmt->setUInt64(2, oldOwnerGuid.GetCounter());
+        trans->Append(stmt);
+    }
+    else
+    {
+        if (newItr != _members.end())
+        {
+            newItr->PlotIndex = plotIndex;
+            newItr->HouseGuid = houseGuid;
+
+            CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_NEIGHBORHOOD_MEMBER_PLOT);
+            stmt->setUInt8(0, plotIndex);
+            stmt->setUInt64(1, _guid.GetCounter());
+            stmt->setUInt64(2, newOwnerGuid.GetCounter());
+            trans->Append(stmt);
+        }
+        else
+        {
+            Member newMember;
+            newMember.PlayerGuid = newOwnerGuid;
+            newMember.HouseGuid = houseGuid;
+            newMember.Role = NEIGHBORHOOD_ROLE_RESIDENT;
+            newMember.JoinTime = joinTime;
+            newMember.PlotIndex = plotIndex;
+
+            CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_NEIGHBORHOOD_MEMBER);
+            stmt->setUInt64(0, _guid.GetCounter());
+            stmt->setUInt64(1, newOwnerGuid.GetCounter());
+            stmt->setUInt8(2, newMember.Role);
+            stmt->setUInt32(3, newMember.JoinTime);
+            stmt->setUInt8(4, newMember.PlotIndex);
+            trans->Append(stmt);
+
+            _members.push_back(newMember);
+        }
+
+        // push_back may have moved the members
+        oldItr = findMember(oldOwnerGuid);
+        if (oldIsResident)
+        {
+            CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_NEIGHBORHOOD_MEMBER);
+            stmt->setUInt64(0, _guid.GetCounter());
+            stmt->setUInt64(1, oldOwnerGuid.GetCounter());
+            trans->Append(stmt);
+            _members.erase(oldItr);
+        }
+        else
+        {
+            oldItr->PlotIndex = INVALID_PLOT_INDEX;
+            oldItr->HouseGuid.Clear();
+
+            CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_NEIGHBORHOOD_MEMBER_PLOT);
+            stmt->setUInt8(0, INVALID_PLOT_INDEX);
+            stmt->setUInt64(1, _guid.GetCounter());
+            stmt->setUInt64(2, oldOwnerGuid.GetCounter());
+            trans->Append(stmt);
+        }
+    }
+
+    _plots[plotIndex].OwnerGuid = newOwnerGuid;
+
+    return true;
 }
 
 void Neighborhood::SetPlotAreaTriggerGuid(uint8 plotIndex, ObjectGuid atGuid)
@@ -1255,7 +1203,7 @@ void Neighborhood::BuildRosterResponse(WorldPackets::Neighborhood::NeighborhoodG
 {
     response.Result = static_cast<uint8>(HOUSING_RESULT_SUCCESS);
     response.GroupNeighborhoodGuid = GetGuid();
-    response.GroupOwnerGuid = GetOwnerGuid();
+    response.GroupOwnerGuid = GetClientOwnerGuid();
     response.NeighborhoodName = GetName();
     response.Members.reserve(_members.size());
     for (Member const& member : _members)
@@ -1312,7 +1260,7 @@ void Neighborhood::RebuildMirrorDataFor(Player* player) const
 
     // Name + Owner
     mirrorEntity.SetName(_name);
-    mirrorEntity.SetOwnerGUID(_ownerGuid);
+    mirrorEntity.SetOwnerGUID(GetClientOwnerGuid());
 
     // Houses — rebuild from plots. Add ALL 55 entries so Houses[i] = PlotIndex i.
     // The client uses the array index as the plot identifier; skipping empty slots
@@ -1359,9 +1307,11 @@ void Neighborhood::RefreshMirrorDataForPlayer(Player* player) const
 
 void Neighborhood::RefreshMirrorDataForOnlineMembers() const
 {
+    // The mirror is the neighborhood the player stands in (the map pins come from it): a member elsewhere keeps theirs.
     for (auto const& member : _members)
         if (Player* player = ObjectAccessor::FindPlayer(member.PlayerGuid))
-            RefreshMirrorDataForPlayer(player);
+            if (HousingMap const* housingMap = dynamic_cast<HousingMap const*>(player->GetMap()); housingMap && housingMap->GetNeighborhood() == this)
+                RefreshMirrorDataForPlayer(player);
 }
 
 // --- Plot Reservation System ---
@@ -1383,8 +1333,6 @@ bool Neighborhood::ReservePlot(ObjectGuid playerGuid, uint8 plotIndex)
     {
         if (now >= it->second.ReserveTime + RESERVATION_EXPIRY_SECONDS)
         {
-            TC_LOG_INFO("housing", "Neighborhood::ReservePlot: expired reservation by {} on plot {} cleared",
-                it->first.ToString(), it->second.PlotIndex);
             it = _plotReservations.erase(it);
         }
         else
@@ -1404,9 +1352,6 @@ bool Neighborhood::ReservePlot(ObjectGuid playerGuid, uint8 plotIndex)
     reservation.PlotIndex = plotIndex;
     reservation.ReserveTime = now;
 
-    TC_LOG_INFO("housing",
-        "Neighborhood::ReservePlot: Player {} reserved plot {} in neighborhood '{}' (guid {}, expires in {}s)",
-        playerGuid.ToString(), plotIndex, _name, _guid.ToString(), RESERVATION_EXPIRY_SECONDS);
     return true;
 }
 
@@ -1416,8 +1361,6 @@ bool Neighborhood::ClearReservation(ObjectGuid playerGuid)
     if (it == _plotReservations.end())
         return false;
 
-    TC_LOG_DEBUG("housing", "Neighborhood::ClearReservation: Player {} cleared reservation for plot {} in neighborhood {}",
-        playerGuid.ToString(), it->second.PlotIndex, _guid.ToString());
     _plotReservations.erase(it);
     return true;
 }

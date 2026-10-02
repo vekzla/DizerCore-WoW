@@ -249,6 +249,26 @@ void MapManager::PreloadHousingMaps()
     TC_LOG_INFO("server.loading", ">> Pre-loaded {} housing neighborhood maps in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 
+HousingMap* MapManager::FindOrCreateHousingMap(uint32 mapId, uint32 neighborhoodId)
+{
+    std::scoped_lock lock(_mapsLock);
+    if (Map* map = FindMap_i(mapId, neighborhoodId))
+        return dynamic_cast<HousingMap*>(map);
+
+    MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
+    if (!mapEntry || mapEntry->InstanceType != MAP_HOUSE_NEIGHBORHOOD)
+        return nullptr;
+
+    HousingMap* map = CreateHousing(mapId, neighborhoodId, neighborhoodId);
+
+    Trinity::unique_trackable_ptr<Map>& ptr = i_maps[{ map->GetId(), map->GetInstanceId() }];
+    ptr.reset(map);
+    map->SetWeakPtr(ptr);
+
+    sScriptMgr->OnCreateMap(map);
+    return map;
+}
+
 HouseInteriorMap* MapManager::CreateHouseInterior(uint32 mapId, uint32 instanceId, Player* creator, ObjectGuid houseOwner)
 {
     // When `houseOwner` is empty the creator is entering their own interior;
@@ -288,6 +308,8 @@ HouseInteriorMap* MapManager::CreateHouseInterior(uint32 mapId, uint32 instanceI
         if (Housing* housing = creator->GetHousing())
             sourcePlotIndex = housing->GetPlotIndex();
     }
+    else if (Housing* accountHousing = creator->GetHousingByOwner(houseOwner))
+        sourcePlotIndex = accountHousing->GetPlotIndex();
     else
     {
         for (Neighborhood* nbh : sNeighborhoodMgr.GetNeighborhoodsForPlayer(houseOwner))
@@ -417,7 +439,8 @@ Map* MapManager::CreateMap(uint32 mapId, Player* player, Optional<uint32> lfgDun
         // own house (visit target empty).
         ObjectGuid visitTarget = player->GetHouseVisitTarget();
         ObjectGuid effectiveOwner = !visitTarget.IsEmpty() ? visitTarget : player->GetGUID();
-        bool isVisit = !visitTarget.IsEmpty();
+        // A house bought by another character of the account is the player's own house (retail 12.1.0.69933).
+        bool isVisit = !visitTarget.IsEmpty() && !player->GetHousingByOwner(visitTarget);
         player->ClearHouseVisitTarget();
         newInstanceId = effectiveOwner.GetCounter();
         map = FindMap_i(mapId, newInstanceId);
@@ -432,7 +455,7 @@ Map* MapManager::CreateMap(uint32 mapId, Player* player, Optional<uint32> lfgDun
             // different neighborhood map entirely.
             if (HouseInteriorMap* interiorMap = dynamic_cast<HouseInteriorMap*>(map); interiorMap && !isVisit)
             {
-                if (Housing* housing = player->GetHousing())
+                if (Housing* housing = player->GetHousingByOwner(effectiveOwner))
                 {
                     // FindMap(), not GetMap() - same reason as in CreateHouseInterior: this also
                     // runs from Player::LoadFromDB, before the player is on any map.
@@ -457,7 +480,7 @@ Map* MapManager::CreateMap(uint32 mapId, Player* player, Optional<uint32> lfgDun
         }
         else
         {
-            map = CreateHouseInterior(mapId, newInstanceId, player, isVisit ? effectiveOwner : ObjectGuid::Empty);
+            map = CreateHouseInterior(mapId, newInstanceId, player, effectiveOwner == player->GetGUID() ? ObjectGuid::Empty : effectiveOwner);
             TC_LOG_ERROR("housing", "MapManager::CreateMap: CREATED NEW HouseInteriorMap mapId={} instanceId={} "
                 "for player {} (visit={} owner={} map ptr={})",
                 mapId, newInstanceId, player->GetGUID().ToString(), isVisit, effectiveOwner.ToString(), (void*)map);
@@ -471,6 +494,18 @@ Map* MapManager::CreateMap(uint32 mapId, Player* player, Optional<uint32> lfgDun
 
         Neighborhood* neighborhood = nullptr;
 
+        // The neighborhood of a house the account owns on this map comes first: houses belong to the
+        // Battle.net account, so another character of the account lands in that house's neighborhood.
+        for (Housing const* accountHousing : player->GetAllHousings())
+        {
+            Neighborhood* housingNeighborhood = sNeighborhoodMgr.GetNeighborhood(accountHousing->GetNeighborhoodGuid());
+            if (housingNeighborhood && housingNeighborhood->GetNeighborhoodMapID() == neighborhoodMapId)
+            {
+                neighborhood = housingNeighborhood;
+                break;
+            }
+        }
+
         // Check existing membership first
         auto playerNeighborhoods = sNeighborhoodMgr.GetNeighborhoodsForPlayer(player->GetGUID());
         TC_LOG_DEBUG("housing", "MapManager::CreateMap: Player {} has {} neighborhood memberships",
@@ -480,7 +515,7 @@ Map* MapManager::CreateMap(uint32 mapId, Player* player, Optional<uint32> lfgDun
         {
             TC_LOG_DEBUG("housing", "MapManager::CreateMap:   - Neighborhood '{}' guid={} neighborhoodMapId={} (looking for {})",
                 n->GetName(), n->GetGuid().ToString(), n->GetNeighborhoodMapID(), neighborhoodMapId);
-            if (n->GetNeighborhoodMapID() == neighborhoodMapId)
+            if (!neighborhood && n->GetNeighborhoodMapID() == neighborhoodMapId)
             {
                 neighborhood = n;
                 break;

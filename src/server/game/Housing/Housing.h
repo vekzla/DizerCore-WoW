@@ -24,10 +24,11 @@
 #include "ObjectGuid.h"
 #include "Optional.h"
 #include "Position.h"
+#include "QuaternionData.h"
 #include <array>
 #include <atomic>
-#include <map>
 #include <cmath>
+#include <map>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -125,7 +126,10 @@ public:
         std::string SourceValue;
     };
 
-    explicit Housing(Player* owner);
+    // owner: the player the house is loaded on (packets, money, criteria). ownerGuid: the character that bought
+    // the house and keys its rows (retail CosmeticOwner) - another character of the same account on retail
+    // 12.1.0.69933 houses, which belong to the Battle.net account. Defaults to the player.
+    explicit Housing(Player* owner, ObjectGuid ownerGuid = ObjectGuid::Empty);
 
     // Global DB ID generators — must be called once during server startup
     // before any Housing objects are loaded, to prevent cross-player ID collisions.
@@ -141,8 +145,15 @@ public:
 
     // Getters
     Player* GetOwner() const { return _owner; }
+    // Character that bought the house (row key, retail CosmeticOwner).
+    ObjectGuid GetOwnerGuid() const { return _ownerGuid; }
+    // House settings owner change: the house, its rows and its plot move to another character of the account.
+    HousingResult ChangeOwner(ObjectGuid newOwnerGuid);
     ObjectGuid GetHouseGuid() const { return _houseGuid; }
     ObjectGuid GetNeighborhoodGuid() const { return _neighborhoodGuid; }
+    // NEIGHBORHOOD_FACTION_* of the neighborhood the house stands in; its rooms and exterior follow it, not the
+    // faction of whoever is looking or editing. The owner's team only when the neighborhood is unknown.
+    int32 GetNeighborhoodFaction() const;
     void SetNeighborhoodGuid(ObjectGuid guid) { _neighborhoodGuid = guid; }
     ObjectGuid GetPlotGuid() const;
     uint8 GetPlotIndex() const { return _plotIndex; }
@@ -211,7 +222,8 @@ public:
     // Interior decor must end up inside one of the house's rooms (RoomWmoData bounding box). The client lets a
     // player push an item through a wall with collision disabled; without this it was saved outside every room.
     HousingResult CheckInteriorDecorBounds(ObjectGuid roomGuid, float x, float y, float z) const;
-    HousingResult CommitDecorDyes(ObjectGuid decorGuid, std::array<uint32, MAX_HOUSING_DYE_SLOTS> const& dyeSlots);
+    // consumeDyes: take one DyeColor.ItemID per newly dyed slot (player dyeing; blueprint imports pass false).
+    HousingResult CommitDecorDyes(ObjectGuid decorGuid, std::array<uint32, MAX_HOUSING_DYE_SLOTS> const& dyeSlots, bool consumeDyes = true);
     HousingResult SetDecorLocked(ObjectGuid decorGuid, bool locked);
     // Bind (or, with an empty petGuid, clear) a battle pet on a placed decor slot.
     HousingResult SetDecorPet(ObjectGuid decorGuid, ObjectGuid petGuid, uint8 petFlag);
@@ -308,6 +320,11 @@ public:
     HousingResult AddToCatalog(uint32 decorEntryId, uint8 sourceType = DECOR_SOURCE_STANDARD, std::string sourceValue = {});
     HousingResult RemoveFromCatalog(uint32 decorEntryId);
     HousingResult DestroyAllCopies(uint32 decorEntryId);
+    // Resolves an unplaced catalog copy to its synthetic storage GUID (the same band
+    // PopulateOwnStorageEntries emits) WITHOUT touching the catalog or the DB.
+    // REDEEM_DEFERRED_DECOR grants no new copies: the client polls it after every
+    // placement, so minting here duplicated each acquisition.
+    ObjectGuid MintStorageDecorInstance(uint32 decorEntryId, HousingResult& result);
     std::vector<CatalogEntry const*> GetCatalogEntries() const;
 
     // House level and favor
@@ -327,8 +344,10 @@ public:
     uint32 GetMaxFixtureBudget() const;
     void RecalculateBudgets();
 
-    // Level progression (QuestID-based)
-    void OnQuestCompleted(uint32 questId);
+    // Rewards of HouseLevelData levels fromLevel..toLevel not granted yet (award quest RewardSpell).
+    void GrantLevelAwards(uint32 fromLevel, uint32 toLevel);
+    // SMSG_HOUSING_SVCS_UPDATE_HOUSES_LEVEL_FAVOR for this house; -1 = unchanged (retail 12.1.0.69933).
+    void SendLevelFavorUpdate(int32 level, int32 favor) const;
 
     // UpdateField synchronization
     void SyncUpdateFields();
@@ -352,6 +371,10 @@ public:
     // House size (HousingFixtureSize enum)
     void SetHouseSize(uint8 size);
     uint8 GetHouseSize() const { return _houseSize; }
+    // Size the player picked in the exterior editor: a style without it (the Small-only item facades) builds the house
+    // smaller, switching back to a style that has it restores it. Not stored: after a relog it is the current size.
+    uint8 GetPreferredHouseSize() const { return _preferredHouseSize ? _preferredHouseSize : _houseSize; }
+    void SetPreferredHouseSize(uint8 size) { _preferredHouseSize = size; }
 
     // House type (HouseExteriorWmoData ID)
     void SetHouseType(uint32 typeId);
@@ -375,7 +398,10 @@ public:
     // Populate ALL decor entries (placed + catalog) into the Account entity's FHousingStorage_C.
     // Called on-demand by REQUEST_STORAGE handler. Retail does NOT populate storage at login —
     // FHousingStorage_C is only sent when the player enters edit mode or requests storage.
+    // Fills the account's FHousingStorage_C with the decor of every house of the account (retail 12.1.0.69933
+    // storage holds decor of both houses).
     void PopulateCatalogStorageEntries();
+    void PopulateOwnStorageEntries();
 
 private:
     uint64 GenerateDecorDbId();
@@ -410,6 +436,7 @@ private:
         bool isExterior, ObjectGuid excludeGuid = ObjectGuid::Empty) const;
 
     Player* _owner;
+    ObjectGuid _ownerGuid;
     ObjectGuid _houseGuid;
     ObjectGuid _neighborhoodGuid;
     uint8 _plotIndex;
@@ -421,6 +448,7 @@ private:
     bool _exteriorLocked = false;
     bool _isInInterior = false;
     uint8 _houseSize = HOUSING_FIXTURE_SIZE_SMALL;
+    uint8 _preferredHouseSize = HOUSING_FIXTURE_SIZE_NONE;
     uint32 _houseType = 0;
     uint32 _createTime = 0;
     std::string _houseName;

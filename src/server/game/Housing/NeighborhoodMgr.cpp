@@ -90,8 +90,9 @@ void NeighborhoodMgr::LoadFromDB()
         if (guidLow >= _nextGuid)
             _nextGuid = guidLow + 1;
 
-        // Rebuild exactly what GenerateNeighborhoodGuid minted: arg1 = neighborhoodMapID (fields[2]).
-        ObjectGuid neighborhoodGuid = ObjectGuid::Create<HighGuid::Housing>(/*subType*/ 4, /*arg1*/ fields[2].GetUInt32(), /*arg2*/ 0, guidLow);
+        // Rebuild exactly what GenerateNeighborhoodGuid minted: arg1 = neighborhoodMapID (fields[2]), arg2 = a player
+        // owner (fields[3]; system neighborhoods store 0) names the neighborhood itself.
+        ObjectGuid neighborhoodGuid = MakeNeighborhoodGuid(fields[2].GetUInt32(), fields[3].GetUInt64() != 0, guidLow);
 
         auto neighborhood = std::make_unique<Neighborhood>(neighborhoodGuid);
 
@@ -133,8 +134,9 @@ void NeighborhoodMgr::LoadFromDB()
             continue;
         }
 
-        ObjectGuid ownerGuid = neighborhood->GetOwnerGuid();
-        _ownerToNeighborhood[ownerGuid] = neighborhoodGuid;
+        // One charter neighborhood per character; a guild neighborhood belongs to its guild (GetNeighborhoodByGuildId).
+        if (!neighborhood->GetGuildId())
+            _ownerToNeighborhood[neighborhood->GetOwnerGuid()] = neighborhoodGuid;
         _neighborhoods[neighborhoodGuid] = std::move(neighborhood);
         _neighborhoodsByCounter[guidLow] = _neighborhoods[neighborhoodGuid].get();
         ++count;
@@ -142,46 +144,18 @@ void NeighborhoodMgr::LoadFromDB()
     } while (result->NextRow());
 
     TC_LOG_INFO("server.loading", ">> Loaded {} neighborhoods in {} ms", count, GetMSTimeDiffToNow(oldMSTime));
-
-    // Debug dump all neighborhoods and their plot states
-    for (auto const& [guid, neighborhood] : _neighborhoods)
-    {
-        TC_LOG_INFO("housing", "NEIGHBORHOOD_DUMP: guid={} name='{}' mapId={} faction={} public={} "
-            "members={} occupiedPlots={} owner={}",
-            guid.ToString(), neighborhood->GetName(), neighborhood->GetNeighborhoodMapID(),
-            neighborhood->GetFactionRestriction(), neighborhood->IsPublic(),
-            neighborhood->GetMemberCount(), neighborhood->GetOccupiedPlotCount(),
-            neighborhood->GetOwnerGuid().ToString());
-
-        for (auto const& member : neighborhood->GetMembers())
-        {
-            TC_LOG_INFO("housing", "  MEMBER: player={} role={} plotIndex={} houseGuid={}",
-                member.PlayerGuid.ToString(), member.Role, member.PlotIndex, member.HouseGuid.ToString());
-        }
-
-        for (uint8 i = 0; i < MAX_NEIGHBORHOOD_PLOTS; ++i)
-        {
-            auto const& plot = neighborhood->GetPlots()[i];
-            if (plot.IsOccupied())
-            {
-                TC_LOG_INFO("housing", "  PLOT[{}]: owner={} house={} bnet={}",
-                    i, plot.OwnerGuid.ToString(), plot.HouseGuid.ToString(), plot.OwnerBnetGuid.ToString());
-            }
-        }
-    }
 }
 
 Neighborhood* NeighborhoodMgr::CreateNeighborhood(ObjectGuid ownerGuid, std::string const& name, uint32 neighborhoodMapID, int32 factionRestriction, bool isPublic /*= false*/, uint32 guildId /*= 0*/)
 {
-    // Check if owner already has a neighborhood
-    if (_ownerToNeighborhood.find(ownerGuid) != _ownerToNeighborhood.end())
+    // One charter neighborhood per character; a guild neighborhood belongs to its guild, one per guild.
+    if (guildId ? GetNeighborhoodByGuildId(guildId) != nullptr : _ownerToNeighborhood.contains(ownerGuid))
     {
-        TC_LOG_DEBUG("housing", "NeighborhoodMgr::CreateNeighborhood: Owner {} already has a neighborhood",
-            ownerGuid.ToString());
         return nullptr;
     }
 
-    ObjectGuid neighborhoodGuid = GenerateNeighborhoodGuid(neighborhoodMapID);
+    // System neighborhoods are owned by a HighGuid::Housing placeholder and keep a NeighborhoodNameGen name.
+    ObjectGuid neighborhoodGuid = GenerateNeighborhoodGuid(neighborhoodMapID, ownerGuid.IsPlayer());
 
     auto neighborhood = std::make_unique<Neighborhood>(neighborhoodGuid);
 
@@ -238,12 +212,10 @@ Neighborhood* NeighborhoodMgr::CreateNeighborhood(ObjectGuid ownerGuid, std::str
     }
 
     Neighborhood* result = neighborhood.get();
-    _ownerToNeighborhood[ownerGuid] = neighborhoodGuid;
+    if (!guildId)
+        _ownerToNeighborhood[ownerGuid] = neighborhoodGuid;
     _neighborhoods[neighborhoodGuid] = std::move(neighborhood);
     _neighborhoodsByCounter[neighborhoodGuid.GetCounter()] = result;
-
-    TC_LOG_DEBUG("housing", "NeighborhoodMgr::CreateNeighborhood: Created neighborhood '{}' (guid: {}) for owner {}",
-        name, neighborhoodGuid.ToString(), ownerGuid.ToString());
 
     return result;
 }
@@ -269,8 +241,6 @@ void NeighborhoodMgr::DeleteNeighborhood(ObjectGuid neighborhoodGuid)
     auto it = _neighborhoods.find(neighborhoodGuid);
     if (it == _neighborhoods.end())
     {
-        TC_LOG_DEBUG("housing", "NeighborhoodMgr::DeleteNeighborhood: Neighborhood {} not found",
-            neighborhoodGuid.ToString());
         return;
     }
 
@@ -281,13 +251,12 @@ void NeighborhoodMgr::DeleteNeighborhood(ObjectGuid neighborhoodGuid)
     Neighborhood::DeleteFromDB(neighborhoodGuid.GetCounter(), trans);
     CharacterDatabase.CommitTransaction(trans);
 
-    // Remove from maps
-    _ownerToNeighborhood.erase(ownerGuid);
+    // Remove from maps (a guild neighborhood was never registered under its founder)
+    if (auto ownerItr = _ownerToNeighborhood.find(ownerGuid); ownerItr != _ownerToNeighborhood.end() && ownerItr->second == neighborhoodGuid)
+        _ownerToNeighborhood.erase(ownerItr);
     _neighborhoodsByCounter.erase(it->first.GetCounter());
     _neighborhoods.erase(it);
 
-    TC_LOG_DEBUG("housing", "NeighborhoodMgr::DeleteNeighborhood: Deleted neighborhood {}",
-        neighborhoodGuid.ToString());
 }
 
 Neighborhood* NeighborhoodMgr::GetNeighborhood(ObjectGuid neighborhoodGuid)
@@ -322,8 +291,6 @@ Neighborhood* NeighborhoodMgr::ResolveNeighborhood(ObjectGuid guid, Player* play
         {
             if (Neighborhood* neighborhood = housingMap->GetNeighborhood())
             {
-                TC_LOG_DEBUG("housing", "NeighborhoodMgr::ResolveNeighborhood: Resolved client GUID {} to neighborhood '{}' via housing map fallback",
-                    guid.ToString(), neighborhood->GetName());
                 return neighborhood;
             }
         }
@@ -957,13 +924,16 @@ void NeighborhoodMgr::CheckAndExpandNeighborhoods()
         Neighborhood* newNeighborhood = CreateNeighborhood(systemOwner, name, targetMapId, faction, /*isPublic*/ true);
         if (newNeighborhood)
         {
-            TC_LOG_INFO("housing", "CheckAndExpandNeighborhoods: Created new {} neighborhood '{}' (all existing at 50%+ capacity)",
-                faction == NEIGHBORHOOD_FACTION_ALLIANCE ? "Alliance" : "Horde", name);
         }
     }
 }
 
-ObjectGuid NeighborhoodMgr::GenerateNeighborhoodGuid(uint32 neighborhoodMapID)
+ObjectGuid NeighborhoodMgr::MakeNeighborhoodGuid(uint32 neighborhoodMapID, bool hasCustomName, uint64 counter)
+{
+    return ObjectGuid::Create<HighGuid::Housing>(/*subType*/ 4, /*arg1*/ neighborhoodMapID, /*arg2*/ hasCustomName ? 1 : 0, counter);
+}
+
+ObjectGuid NeighborhoodMgr::GenerateNeighborhoodGuid(uint32 neighborhoodMapID, bool hasCustomName)
 {
     if (_nextGuid >= 0xFFFFFFFFFFFFFFFE)
     {
@@ -979,5 +949,5 @@ ObjectGuid NeighborhoodMgr::GenerateNeighborhoodGuid(uint32 neighborhoodMapID)
     // it and spins forever. Realm 3 made this visible; a realm whose id happened to equal a real
     // NeighborhoodMap id (e.g. 1 = the Alliance map) masked it for Alliance characters and would still have
     // failed for Horde.
-    return ObjectGuid::Create<HighGuid::Housing>(/*subType*/ 4, /*arg1*/ neighborhoodMapID, /*arg2*/ 0, counter);
+    return MakeNeighborhoodGuid(neighborhoodMapID, hasCustomName, counter);
 }

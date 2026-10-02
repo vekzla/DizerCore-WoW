@@ -71,8 +71,6 @@ enum HousingResult : uint8;
 enum class TabardVendorType : int32;
 
 class Housing;
-class HousingNeighborhoodMirrorEntity;
-class HousingPlayerHouseEntity;
 
 namespace Battlenet
 {
@@ -542,9 +540,6 @@ namespace WorldPackets
         class HousingDecorStartPlacingFromSource;
         class HousingDecorBatchOperation;
         class HousingDecorPlacementPreview;
-        // Retired 2026-05-12 (batch 2): 8 fake SVCS CMSG class forward decls deleted.
-        // Retired 2026-05-12: group 0x35 system CMSG classes (HouseStatusQuery, GetHouseInfoAlt,
-        // HouseSnapshot, ExportHouse, UpdateHouseInfo) � no client senders in build 67186.
     }
 
     namespace Neighborhood
@@ -1200,12 +1195,20 @@ class TC_GAME_API WorldSession
         ObjectGuid GetBattlenetAccountGUID() const;
         Battlenet::Account& GetBattlenetAccount() const { return *_battlenetAccount; }
         bool HasHousingPlayerHouseEntity() const { return _housingPlayerHouseEntity != nullptr; }
+        /// Whether the client may hold the Housing/3 entity of the player's own house right now. Retail 12.1.0.69933
+        /// (sniff 09-29 13-25-41) never sends it in a neighborhood where the account has no house: the client marks
+        /// the entity's PlotIndex as the player's own plot in whatever neighborhood the player stands in.
+        bool CanSeeHousingPlayerHouseEntity() const;
         bool HasHousingNeighborhoodMirrorEntity() const { return _housingNeighborhoodMirrorEntity != nullptr; }
         HousingPlayerHouseEntity& GetHousingPlayerHouseEntity() const { return *_housingPlayerHouseEntity; }
         HousingNeighborhoodMirrorEntity& GetHousingNeighborhoodMirrorEntity() const { return *_housingNeighborhoodMirrorEntity; }
         // Appends the Account (FHousingStorage_C) and HousingPlayerHouseEntity blocks for `player`:
         // a values update when the client already holds the entity, a CREATE otherwise.
-        void BuildHousingAccountEntitiesUpdate(UpdateData* data, Player* player);
+        // accountAsCreate forces a full CREATE even when the client already holds the entities:
+        // retail re-issues CreateObject1 for the BNetAccount entity on every storage ingest point
+        // (storage request response, editor open) — a values-only re-send of the Decor map is not
+        // re-ingested by the client, which left the budgets at 0 after a relog.
+        void BuildHousingAccountEntitiesUpdate(UpdateData* data, Player* player, bool accountAsCreate = false);
         // Re-primes the neighborhood map state on every map entry: re-sends the roster (the
         // client's HousingNeighborhoodState singleton is only filled by the roster response and
         // is not re-requested on mid-session re-entry), feeds the JamCliNeighborhoodName
@@ -1214,6 +1217,8 @@ class TC_GAME_API WorldSession
         // map pins lose their name prefix and ownership state after leaving and re-opening
         // the neighborhood map.
         void SendNeighborhoodMapRefresh();
+        // SMSG_NEIGHBORHOOD_CHARTER_OPEN_UI_RESPONSE with the player's pending charter (charter item use).
+        void SendNeighborhoodCharterOpenUI();
         Player* GetPlayer() const { return _player; }
         std::string const& GetPlayerName() const;
         std::string GetPlayerInfo() const;
@@ -1723,10 +1728,8 @@ class TC_GAME_API WorldSession
         void HandleHousingDecorSetPet(WorldPackets::Housing::HousingDecorSetPet const& housingDecorSetPet);
         void HandleHousingDecorSetDyeSlots(WorldPackets::Housing::HousingDecorSetDyeSlots const& housingDecorSetDyeSlots);
         void HandleHousingDecorDeleteFromStorage(WorldPackets::Housing::HousingDecorDeleteFromStorage const& housingDecorDeleteFromStorage);
-        // Retired 2026-05-12: HandleHousingDecorDeleteFromStorageById (fake CMSG 0x30000A).
         void HandleHousingDecorRequestStorage(WorldPackets::Housing::HousingDecorRequestStorage const& housingDecorRequestStorage);
         void HandleHousingDecorRedeemDeferredDecor(WorldPackets::Housing::HousingDecorRedeemDeferredDecor const& housingDecorRedeemDeferredDecor);
-        // Retired 2026-05-11: HandleHousingDecorStartPlacingNewDecor + CatalogCreateSearcher (TC-CUSTOM CMSGs).
         void HandleGetLastCatalogFetch(WorldPackets::Housing::GetLastCatalogFetch const& getLastCatalogFetch);
         void HandleUpdateLastCatalogFetch(WorldPackets::Housing::UpdateLastCatalogFetch const& updateLastCatalogFetch);
 
@@ -1775,7 +1778,6 @@ class TC_GAME_API WorldSession
         void HandleHousingSvcsStartTutorial(WorldPackets::Housing::HousingSvcsStartTutorial const& housingSvcsStartTutorial);
         // Removed 2026-04-24: HandleHousingSvcsSetTutorialState / CompleteTutorialStep /
         // SkipTutorial / QueryPendingInvites � no matching 12.0.5 Lua API exists.
-        // Retired 2026-05-12: HandleHousingDecorConfirmPreviewPlacement (fake CMSG 0x300011).
         void HandleHousingSvcsAcceptNeighborhoodOwnership(WorldPackets::Housing::HousingSvcsAcceptNeighborhoodOwnership const& housingSvcsAcceptNeighborhoodOwnership);
         void HandleHousingSvcsRejectNeighborhoodOwnership(WorldPackets::Housing::HousingSvcsRejectNeighborhoodOwnership const& housingSvcsRejectNeighborhoodOwnership);
         void HandleHousingSvcsGetPotentialHouseOwners(WorldPackets::Housing::HousingSvcsGetPotentialHouseOwners const& housingSvcsGetPotentialHouseOwners);
@@ -1784,8 +1786,6 @@ class TC_GAME_API WorldSession
         void HandleHousingSvcsHouseFinderIgnoreNeighborhood(WorldPackets::Housing::HousingSvcsHouseFinderIgnoreNeighborhood const& housingSvcsHouseFinderIgnoreNeighborhood);
         void HandleHousingSvcsGetBnetFriendNeighborhoods(WorldPackets::Housing::HousingSvcsGetBnetFriendNeighborhoods const& housingSvcsGetBnetFriendNeighborhoods);
         void HandleHousingSvcsDeleteAllNeighborhoodInvites(WorldPackets::Housing::HousingSvcsDeleteAllNeighborhoodInvites const& housingSvcsDeleteAllNeighborhoodInvites);
-
-        // Retired 2026-05-11: HandleHousingRequestEditorAvailability (sync Lua API in retail).
 
         // Housing - Decor Licensing / Refund
         void HandleGetAllLicensedDecorQuantities(WorldPackets::Housing::GetAllLicensedDecorQuantities const& getAllLicensedDecorQuantities);
@@ -1834,7 +1834,6 @@ class TC_GAME_API WorldSession
         void HandleNeighborhoodEvictPlot(WorldPackets::Neighborhood::NeighborhoodEvictPlot const& neighborhoodEvictPlot);
 
         // Phase 7 Neighborhood Charter handlers
-        // Retired 2026-05-12: HandleNeighborhoodCharterSignResponse + HandleNeighborhoodCharterRemoveSignature
         // (fake CMSGs 0x370002 + 0x370005 � STUB-OK only, no client senders).
 
         // Phase 7 Neighborhood handlers
@@ -2471,7 +2470,6 @@ class TC_GAME_API WorldSession
         // cached for the subsequent BuyHouse CMSG which doesn't include it.
         // The client's PlotIndex may differ from our DB2 PlotIndex values.
         uint32 _lastClientPlotIndex = 0;
-        ObjectGuid _lastCornerstoneGuid;
 
         // m3/A6 per-session decoration throttle. Each decor place/move/remove is
         // an AddToMap + synchronous DB write; without a limit a scripted client
