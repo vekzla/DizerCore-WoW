@@ -231,6 +231,8 @@ namespace Scripts::Custom::Mardum
         static constexpr uint32 QueensBite                     = 197486;
         static constexpr uint32 BroodSwarm                     = 197627;
         static constexpr uint32 IntoTheShadows                 = 197414;
+        static constexpr uint32 DevastatorBombardment          = 191666;
+        static constexpr uint32 DevastatorBombardmentPlayer    = 191669; // player-targeted variant (volleys of ~8 shots)
     }
 
     namespace Conversations
@@ -365,6 +367,8 @@ namespace Scripts::Custom::Mardum
         // Legion Devastator (100161) - EventMap IDs
         static constexpr int8 DevastatorBombardment             = 1;
         static constexpr int8 DevastatorBombardmentConversation = 2;
+        static constexpr int8 DevastatorVolley                  = 3;
+        static constexpr int8 DevastatorVolleyCooldown          = 4;
 
         // Legion Command Center (98191) - EventMap IDs
         static constexpr int8 CommandCenterBombardment     = 1;
@@ -414,6 +418,7 @@ namespace Scripts::Custom::Mardum
         static constexpr float  SthenoAttackerSpawnRange = 5.0f;
         static constexpr float TalkDistance        = 5.0f;
         static constexpr float DevastatorStandoff  = 5.0f;
+        static constexpr uint8 DevastatorVolleyShots   = 8; // sniff: ~8 player-targeted shots per volley
         static constexpr uint32 BannerTriggered    = 1; // SetData id: banner used -> trigger npc
         static constexpr uint32 WellOfSoulsOpened  = 1; // SetData id: well of souls opened -> count nefarious
         static constexpr float CaptiveGreetingRange = 10.0f;

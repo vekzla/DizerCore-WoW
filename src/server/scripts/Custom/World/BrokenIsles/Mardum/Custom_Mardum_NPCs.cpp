@@ -631,7 +631,11 @@ namespace Scripts::Custom::Mardum
         void Reset() override
         {
             _events.Reset();
-            _bombardmentActive = false;
+            _volleyShotsLeft = 0;
+            _volleyOnCooldown = false;
+            // sniff: ambient bombardment runs continuously (~4.8s median cast-to-cast),
+            // not gated on player presence
+            _events.ScheduleEvent(Events::DevastatorBombardment, 5s);
         }
 
         void MoveInLineOfSight(Unit* who) override
@@ -640,11 +644,13 @@ namespace Scripts::Custom::Mardum
                 if (player->GetQuestStatus(Quests::EnterTheIllidariShivarra) == QUEST_STATUS_COMPLETE)
                     if (me->IsWithinDist(player, Misc::BombardmentRange, true, false))
                     {
-                        if (!_bombardmentActive)
+                        // sniff: qualifying player entering range triggers a volley of
+                        // ~8 player-targeted 191669 shots at ~2.5s intervals
+                        if (!_volleyShotsLeft && !_volleyOnCooldown)
                         {
-                            _bombardmentActive = true;
                             _bombardingPlayer = player->GetGUID();
-                            _events.ScheduleEvent(Events::DevastatorBombardment, 0s);
+                            _volleyShotsLeft = Misc::DevastatorVolleyShots;
+                            _events.ScheduleEvent(Events::DevastatorVolley, 0s);
                         }
                         if (_conversedPlayers.insert(player->GetGUID()).second)
                             _events.ScheduleEvent(Events::DevastatorBombardmentConversation, 5s);
@@ -662,17 +668,29 @@ namespace Scripts::Custom::Mardum
                 switch (eventId)
                 {
                     case Events::DevastatorBombardment:
+                        me->CastSpell(nullptr, Spells::DevastatorBombardment);
+                        _events.Repeat(4s, 5s); // sniff: median ~4.8s cast-to-cast
+                        break;
+                    case Events::DevastatorVolley:
                     {
                         Player* player = ObjectAccessor::GetPlayer(*me, _bombardingPlayer);
-                        if (player && me->IsWithinDist(player, Misc::BombardmentRange, true, false))
+                        if (player && me->IsWithinDist(player, Misc::BombardmentRange, true, false) && _volleyShotsLeft)
                         {
-                            me->CastSpell(nullptr, Spells::FelBombardment);
-                            _events.Repeat(3s);
+                            me->CastSpell(player, Spells::DevastatorBombardmentPlayer);
+                            --_volleyShotsLeft;
+                            _events.Repeat(2s, 3s); // sniff: ~2.5s between volley shots
                         }
                         else
-                            _bombardmentActive = false;
+                        {
+                            _volleyShotsLeft = 0;
+                            _volleyOnCooldown = true;
+                            _events.ScheduleEvent(Events::DevastatorVolleyCooldown, 5min);
+                        }
                         break;
                     }
+                    case Events::DevastatorVolleyCooldown:
+                        _volleyOnCooldown = false;
+                        break;
                     case Events::DevastatorBombardmentConversation:
                         if (Player* player = ObjectAccessor::GetPlayer(*me, _bombardingPlayer))
                             Conversation::CreateConversation(Conversations::FelBombardments, player, player->GetPosition(), { player->GetGUID() });
@@ -687,7 +705,8 @@ namespace Scripts::Custom::Mardum
         EventMap _events;
         ObjectGuid _bombardingPlayer;
         GuidUnorderedSet _conversedPlayers;
-        bool _bombardmentActive = false;
+        uint8 _volleyShotsLeft = 0;
+        bool _volleyOnCooldown = false;
     };
 
     // 98191 - Legion Command Center
