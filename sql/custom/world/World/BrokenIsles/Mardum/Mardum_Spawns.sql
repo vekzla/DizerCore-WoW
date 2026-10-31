@@ -828,6 +828,33 @@ INSERT INTO `spawn_tracking_state` (`SpawnType`, `SpawnId`, `State`, `Visible`, 
 (1, @OGUID+5, 2, 0, NULL, NULL, NULL, NULL), -- Legion Portal
 (1, @OGUID+6, 2, 0, NULL, NULL, NULL, NULL); -- Legion Portal
 
+-- Legion Communicators (quest 39279) - spawn tracking, retail ids from sniff:
+--   1053491 -> objective 279935 (244439, Communicator #1)
+--   1053492 -> objective 279936 (244440, Communicator #2)
+--   1053493 -> objective 279937 (244441, Communicator #3)
+-- spawn_tracking_template + spawn_tracking_quest_objective rows already exist in TDB
+-- (PhaseUseFlags=0 matching the spawn rows) - only member + state rows are needed.
+DELETE FROM `spawn_tracking` WHERE (`SpawnType`=1 AND `SpawnId` IN (6000168, 6000170, 6000171));
+INSERT INTO `spawn_tracking` (`SpawnTrackingId`, `SpawnType`, `SpawnId`, `QuestObjectiveIds`) VALUES
+(1053491, 1, 6000170, '279935'), -- 244439 Legion Communicator #1
+(1053492, 1, 6000168, '279936'), -- 244440 Legion Communicator #2
+(1053493, 1, 6000171, '279937'); -- 244441 Legion Communicator #3
+
+DELETE FROM `spawn_tracking_state` WHERE (`SpawnType`=1 AND `SpawnId` IN (6000168, 6000170, 6000171));
+INSERT INTO `spawn_tracking_state` (`SpawnType`, `SpawnId`, `State`, `Visible`, `StateSpellVisualId`, `StateAnimId`, `StateAnimKitId`, `StateWorldEffects`) VALUES
+-- State 0 (None - quest not taken): visible + anim + usable world effect 2100
+(1, 6000168, 0, 1, NULL, 1866, NULL, '2100'), -- Legion Communicator
+(1, 6000170, 0, 1, NULL, 1866, NULL, '2100'), -- Legion Communicator
+(1, 6000171, 0, 1, NULL, 1866, NULL, '2100'), -- Legion Communicator
+-- State 1 (Active - quest in progress): same visuals
+(1, 6000168, 1, 1, NULL, 1866, NULL, '2100'), -- Legion Communicator
+(1, 6000170, 1, 1, NULL, 1866, NULL, '2100'), -- Legion Communicator
+(1, 6000171, 1, 1, NULL, 1866, NULL, '2100'), -- Legion Communicator
+-- State 2 (Complete - used): stays VISIBLE in "used" state (ACTIVE+IN_USE+TAPPED in sniff), glow removed
+(1, 6000168, 2, 1, NULL, 1866, NULL, NULL), -- Legion Communicator
+(1, 6000170, 2, 1, NULL, 1866, NULL, NULL), -- Legion Communicator
+(1, 6000171, 2, 1, NULL, 1866, NULL, NULL); -- Legion Communicator
+
 -- Updates to spawns
 -- Some creatures are forced always visible due to missing/unknown phase ids.
 -- Area 7749 is skipped since it is fully managed via 2 custom phases
