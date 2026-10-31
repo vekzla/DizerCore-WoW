@@ -610,6 +610,22 @@ public:
     }
 };
 
+// Spawn-tracked multi-interact GOOBERs keep their per-player "used" state on retail;
+// m_perPlayerState is memory-only, so reconstruct it from persisted tracking state
+inline bool IsSpawnTrackedGooberUsedBy(GameObject const* gameObject, Player const* receiver)
+{
+    if (receiver->IsGameMaster() || gameObject->GetGoType() != GAMEOBJECT_TYPE_GOOBER)
+        return false;
+
+    GameObjectTemplate const* goInfo = gameObject->GetGOInfo();
+    if (!goInfo->goober.AllowMultiInteract || goInfo->IsDespawnAtAction())
+        return false;
+
+    SpawnMetadata const* data = sObjectMgr->GetSpawnMetadata(SPAWN_TYPE_GAMEOBJECT, gameObject->GetSpawnId());
+    return data && data->spawnTrackingData && !data->spawnTrackingQuestObjectives.empty()
+        && receiver->GetSpawnTrackingStateByObjectives(data->spawnTrackingData->SpawnTrackingId, data->spawnTrackingQuestObjectives) == SpawnTrackingState::Complete;
+}
+
 template<>
 class ViewerDependentValue<UF::GameObjectData::FlagsTag>
 {
@@ -623,6 +639,9 @@ public:
             if (gameObject->GetGOInfo()->IsUsingGroupLootRules() && !gameObject->IsLootAllowedFor(receiver))
                 flags |= GO_FLAG_LOCKED | GO_FLAG_NOT_SELECTABLE;
 
+        if (IsSpawnTrackedGooberUsedBy(gameObject, receiver))
+            flags |= GO_FLAG_IN_USE;
+
         return flags;
     }
 };
@@ -635,7 +654,11 @@ public:
 
     static value_type GetValue(UF::GameObjectData const* /*gameObjectData*/, Player const* receiver, GameObject const* gameObject)
     {
-        return gameObject->GetGoStateFor(receiver->GetGUID());
+        value_type state = gameObject->GetGoStateFor(receiver->GetGUID());
+        if (state != GO_STATE_ACTIVE && IsSpawnTrackedGooberUsedBy(gameObject, receiver))
+            state = GO_STATE_ACTIVE;
+
+        return state;
     }
 };
 
