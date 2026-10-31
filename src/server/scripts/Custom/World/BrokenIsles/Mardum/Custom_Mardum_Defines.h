@@ -100,6 +100,9 @@ namespace Scripts::Custom::Mardum
         static constexpr uint32 KaynKeystone        = 97303;
         static constexpr uint32 KeystoneFelBeamBunny    = 23837;  // ELM General Purpose Bunny (phase 0 pair beside the keystone)
         static constexpr uint32 KeystoneActivatedCredit = 100651;
+        // "Assault on Mardum" (39279) - Eredar Summoner portal mechanic
+        static constexpr uint32 EredarSummoner       = 95046;
+        static constexpr uint32 EredarSummonerFemale = 102714;
     }
 
     namespace Factions
@@ -130,6 +133,7 @@ namespace Scripts::Custom::Mardum
         static constexpr uint32 SecretTome              = 245169;
         static constexpr uint32 SargeriteKeystone       = 245728;
         static constexpr uint32 FelPortal               = 244466;
+        static constexpr uint32 LegionPortal            = 243873; // "Assault on Mardum" portal GO
     }
 
     namespace Positions
@@ -233,6 +237,7 @@ namespace Scripts::Custom::Mardum
         static constexpr uint32 IntoTheShadows                 = 197414;
         static constexpr uint32 DevastatorBombardment          = 191666;
         static constexpr uint32 DevastatorBombardmentPlayer    = 191669; // player-targeted variant (volleys of ~8 shots)
+        static constexpr uint32 LegionPortalUse                = 190610; // cast by the player on Legion Portal use
     }
 
     namespace Conversations
@@ -447,5 +452,7 @@ namespace Scripts::Custom::Mardum
         static constexpr float  KeystoneKillCreditRange  = 10.0f;
         static constexpr float  KeystoneBunnySearchRange = 30.0f;
         static constexpr uint32 KeystoneReturnBindArea   = 7873;
+        static constexpr float  PortalSearchRange        = 15.0f;  // player -> used Legion Portal GO
+        static constexpr float  PortalSummonerSearchRange = 10.0f; // portal -> Eredar Summoners to engage
     }
 }

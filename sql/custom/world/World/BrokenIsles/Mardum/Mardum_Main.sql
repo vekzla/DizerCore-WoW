@@ -48,6 +48,17 @@ DELETE FROM `spell_script_names` WHERE `spell_id` = 191466;
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (191466, 'spell_illidari_reinforcements');
 
+-- Spell: 200596 Open Portal -> spell_mardum_open_portal C++ spell script
+-- SCRIPT(200597 -> Fel Portal 101692) + DUMMY(200603 -> Shadow Portal 101696)
+DELETE FROM `spell_script_names` WHERE `spell_id` = 200596;
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(200596, 'spell_mardum_open_portal');
+
+-- Spell: 190610 (Legion Portal use spell, player-cast by GO 243873) -> spell_legion_portal_use C++ spell script
+DELETE FROM `spell_script_names` WHERE `spell_id` = 190610;
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(190610, 'spell_legion_portal_use');
+
 -- Spell: 191466 Illidari Reinforcements - active in Mardum (area 7705) while quest 40379 is taken,
 -- until quest 39663 On Felbat Wings is complete/rewarded
 DELETE FROM `spell_area` WHERE `spell` = 191466 AND `area` = 7705;
@@ -485,7 +496,9 @@ INSERT INTO smart_scripts (entryorguid, source_type, id, link, Difficulties, eve
 (98483, 0, 2, 0, '', 4, 0, 30, 1, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Hellish Imp - On Aggro - Talk (No Repeat)'),
 
 (95046, 0, 2, 0, '', 4, 0, 30, 1, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Eredar Summoner - On Aggro - Talk (No Repeat)'),
+(95046, 0, 3, 0, '', 4, 0, 100, 1, 0, 0, 0, 0, 0, '', 11, 200596, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Eredar Summoner - On Aggro - Cast Open Portal (200596)'),
 (102714, 0, 2, 0, '', 4, 0, 30, 1, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Eredar Summoner - On Aggro - Talk (No Repeat)'),
+(102714, 0, 3, 0, '', 4, 0, 100, 1, 0, 0, 0, 0, 0, '', 11, 200596, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Eredar Summoner - On Aggro - Cast Open Portal (200596)'),
 
 (93127, 0, 6, 0, '', 19, 0, 100, 0, 39515, 0, 0, 0, 0, '', 1, 3, 0, 0, 0, 0, 0, 0, '', 7, 0, 0, 0, 0, '', 0, 0, 0, 0, 'On player accepted quest (39515) - Player who accepted quest: Talk 3 to invoker'),
 (93127, 0, 7, 0, '', 19, 0, 100, 0, 39516, 0, 0, 0, 0, '', 1, 3, 0, 0, 0, 0, 0, 0, '', 7, 0, 0, 0, 0, '', 0, 0, 0, 0, 'On player accepted quest (39516) - Player who accepted quest: Talk 3 to invoker'),
