@@ -274,7 +274,10 @@ namespace Scripts::Custom::Mardum
     // in case the spell never produces a unit-target hit on the creature.
     struct npc_fel_spreader : public ScriptedAI
     {
-        npc_fel_spreader(Creature* creature) : ScriptedAI(creature) { }
+        npc_fel_spreader(Creature* creature) : ScriptedAI(creature)
+        {
+            me->SetReactState(REACT_PASSIVE);
+        }
 
         void OnSpellClick(Unit* clicker, bool spellClickHandled) override
         {
