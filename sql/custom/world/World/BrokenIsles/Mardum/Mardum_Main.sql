@@ -1811,3 +1811,41 @@ INSERT INTO `creature_template_addon` (`entry`, `PathId`, `mount`, `StandState`,
 (99735, 0, 0, 0, 0, 4, 1, 0, 0, 0, 0, 0, 0, '159474 198294'), -- 99735 (Horned Minion) - Permanent Feign Death (NO Stun, Untrackable, Immune), Valid Target
 (100504, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3, ''), -- 100504 (Aranasi Maiden)
 (96884, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, '198294'); -- 96884 (Coilskar Sea-Caller) - Valid Target
+
+DELETE FROM `scene_template` WHERE `SceneId`=1178;
+INSERT INTO `scene_template` (`SceneId`, `Flags`, `ScriptPackageID`, `Encrypted`) VALUES
+(1178, 0, 1542, 0);
+
+DELETE FROM `quest_offer_reward` WHERE `ID` IN (38729 /*Return to the Black Temple*/, 38728 /*The Keystone*/, 39663 /*On Felbat Wings*/, 39515 /*Vengeance Will Be Mine!*/, 40051 /*Fel Secrets*/, 40222 /*The Imp Mother's Tome*/, 38727 /*Stop the Bombardment*/, 38819 /*Their Numbers Are Legion*/, 38725 /*Into the Foul Creche*/);
+INSERT INTO `quest_offer_reward` (`ID`, `Emote1`, `Emote2`, `Emote3`, `Emote4`, `EmoteDelay1`, `EmoteDelay2`, `EmoteDelay3`, `EmoteDelay4`, `RewardText`, `VerifiedBuild`) VALUES
+(38729, 0, 0, 0, 0, 0, 0, 0, 0, '<As you invoke the power of the Sargerite Keystone, the fel portal is suffused with an otherworldly energy.\n\nIt is time to return triumphant to the Black Temple and aid Lord Illidan in repelling the invading forces from Azeroth and Shattrath City.>', 70575), -- Return to the Black Temple
+(38728, 1, 0, 0, 0, 0, 0, 0, 0, 'Now that we have the keystone in our possession, there is just one last thing left to do...', 70575), -- The Keystone
+(39663, 6, 0, 0, 0, 0, 0, 0, 0, 'Can you sense her power? It will take all of you combined.\n\nEven so... I better go secure our way out of here.', 70575), -- On Felbat Wings
+(39515, 1, 274, 0, 0, 0, 0, 0, 0, 'I blame myself, $n. Mannethrel was already struggling. It is a never-ending battle we all must endure... to control the fel energies that we have taken in.\n\nMaybe it would be best if you held off teaching the others for now. We can not afford to lose anyone else.', 70575), -- Vengeance Will Be Mine!
+(40051, 273, 0, 0, 0, 0, 0, 0, 0, 'Surprising. I agree. Well chosen, $n.\n\nNow, you must teach the rest of us.', 70575), -- Fel Secrets
+(40222, 6, 0, 0, 0, 0, 0, 0, 0, 'Can you feel the power emanating from the book? I cannot wait to learn its secrets.', 70575), -- The Imp Mother's Tome
+(38727, 1, 0, 0, 0, 0, 0, 0, 0, 'True leadership is hard to come by. Leading from the front is an even rarer trait.\n\nWe are just about ready to assail Brood Queen Tyranna\'s command center.', 70575), -- Stop the Bombardment
+(38819, 273, 6, 0, 0, 0, 0, 0, 0, 'I am in complete agreement. From where I\'m standing, you utterly decimated their forces.\n\nWhat do you think? Are we ready to fly up to that command center and take the Sargerite Keystone?', 70575), -- Their Numbers Are Legion
+(38725, 273, 0, 0, 0, 0, 0, 0, 0, '$n. I\'ve found her.', 70575); -- Into the Foul Creche
+
+UPDATE `quest_poi` SET `VerifiedBuild`=70575 WHERE (`QuestID`=38729 AND `BlobIndex`=0 AND `Idx1`=4) OR (`QuestID`=38729 AND `BlobIndex`=1 AND `Idx1`=3) OR (`QuestID`=38729 AND `BlobIndex`=0 AND `Idx1`=2) OR (`QuestID`=38729 AND `BlobIndex`=1 AND `Idx1`=1) OR (`QuestID`=38729 AND `BlobIndex`=0 AND `Idx1`=0) OR (`QuestID`=38728 AND `BlobIndex`=0 AND `Idx1`=11) OR (`QuestID`=38728 AND `BlobIndex`=4 AND `Idx1`=10) OR (`QuestID`=38728 AND `BlobIndex`=3 AND `Idx1`=9) OR (`QuestID`=38728 AND `BlobIndex`=2 AND `Idx1`=8) OR (`QuestID`=38728 AND `BlobIndex`=1 AND `Idx1`=7) OR (`QuestID`=38728 AND `BlobIndex`=0 AND `Idx1`=6) OR (`QuestID`=38728 AND `BlobIndex`=1 AND `Idx1`=5) OR (`QuestID`=38728 AND `BlobIndex`=0 AND `Idx1`=4) OR (`QuestID`=38728 AND `BlobIndex`=1 AND `Idx1`=3) OR (`QuestID`=38728 AND `BlobIndex`=0 AND `Idx1`=2) OR (`QuestID`=38728 AND `BlobIndex`=1 AND `Idx1`=1) OR (`QuestID`=38728 AND `BlobIndex`=0 AND `Idx1`=0) OR (`QuestID`=39663 AND `BlobIndex`=0 AND `Idx1`=2) OR (`QuestID`=39663 AND `BlobIndex`=0 AND `Idx1`=1) OR (`QuestID`=39663 AND `BlobIndex`=0 AND `Idx1`=0) OR (`QuestID`=39515 AND `BlobIndex`=0 AND `Idx1`=6) OR (`QuestID`=39515 AND `BlobIndex`=0 AND `Idx1`=5) OR (`QuestID`=39515 AND `BlobIndex`=0 AND `Idx1`=4) OR (`QuestID`=39515 AND `BlobIndex`=0 AND `Idx1`=3) OR (`QuestID`=39515 AND `BlobIndex`=0 AND `Idx1`=2) OR (`QuestID`=39515 AND `BlobIndex`=0 AND `Idx1`=1) OR (`QuestID`=39515 AND `BlobIndex`=0 AND `Idx1`=0) OR (`QuestID`=40051 AND `BlobIndex`=0 AND `Idx1`=1) OR (`QuestID`=40051 AND `BlobIndex`=0 AND `Idx1`=0) OR (`QuestID`=40222 AND `BlobIndex`=1 AND `Idx1`=4) OR (`QuestID`=40222 AND `BlobIndex`=0 AND `Idx1`=3) OR (`QuestID`=40222 AND `BlobIndex`=1 AND `Idx1`=2) OR (`QuestID`=40222 AND `BlobIndex`=0 AND `Idx1`=1) OR (`QuestID`=40222 AND `BlobIndex`=0 AND `Idx1`=0);
+UPDATE `quest_poi_points` SET `VerifiedBuild`=70575 WHERE (`QuestID`=38729 AND `Idx1`=4 AND `Idx2`=0) OR (`QuestID`=38729 AND `Idx1`=3 AND `Idx2`=0) OR (`QuestID`=38729 AND `Idx1`=2 AND `Idx2`=0) OR (`QuestID`=38729 AND `Idx1`=1 AND `Idx2`=0) OR (`QuestID`=38729 AND `Idx1`=0 AND `Idx2`=0) OR (`QuestID`=38728 AND `Idx1`=11 AND `Idx2`=0) OR (`QuestID`=38728 AND `Idx1`=10 AND `Idx2`=0) OR (`QuestID`=38728 AND `Idx1`=9 AND `Idx2`=0) OR (`QuestID`=38728 AND `Idx1`=8 AND `Idx2`=0) OR (`QuestID`=38728 AND `Idx1`=7 AND `Idx2`=0) OR (`QuestID`=38728 AND `Idx1`=6 AND `Idx2`=0) OR (`QuestID`=38728 AND `Idx1`=5 AND `Idx2`=0) OR (`QuestID`=38728 AND `Idx1`=4 AND `Idx2`=0) OR (`QuestID`=38728 AND `Idx1`=3 AND `Idx2`=0) OR (`QuestID`=38728 AND `Idx1`=2 AND `Idx2`=0) OR (`QuestID`=38728 AND `Idx1`=1 AND `Idx2`=0) OR (`QuestID`=38728 AND `Idx1`=0 AND `Idx2`=0) OR (`QuestID`=39663 AND `Idx1`=2 AND `Idx2`=0) OR (`QuestID`=39663 AND `Idx1`=1 AND `Idx2`=0) OR (`QuestID`=39663 AND `Idx1`=0 AND `Idx2`=0) OR (`QuestID`=39515 AND `Idx1`=6 AND `Idx2`=0) OR (`QuestID`=39515 AND `Idx1`=5 AND `Idx2`=0) OR (`QuestID`=39515 AND `Idx1`=4 AND `Idx2`=0) OR (`QuestID`=39515 AND `Idx1`=3 AND `Idx2`=0) OR (`QuestID`=39515 AND `Idx1`=2 AND `Idx2`=0) OR (`QuestID`=39515 AND `Idx1`=1 AND `Idx2`=0) OR (`QuestID`=39515 AND `Idx1`=0 AND `Idx2`=0) OR (`QuestID`=40051 AND `Idx1`=1 AND `Idx2`=0) OR (`QuestID`=40051 AND `Idx1`=0 AND `Idx2`=0) OR (`QuestID`=40222 AND `Idx1`=4 AND `Idx2`=0) OR (`QuestID`=40222 AND `Idx1`=3 AND `Idx2`=0) OR (`QuestID`=40222 AND `Idx1`=2 AND `Idx2`=0) OR (`QuestID`=40222 AND `Idx1`=1 AND `Idx2`=0) OR (`QuestID`=40222 AND `Idx1`=0 AND `Idx2`=0);
+
+DELETE FROM `quest_details` WHERE `ID` IN (38729 /*Return to the Black Temple*/, 38728 /*The Keystone*/, 39663 /*On Felbat Wings*/, 39515 /*Vengeance Will Be Mine!*/, 40051 /*Fel Secrets*/);
+INSERT INTO `quest_details` (`ID`, `Emote1`, `Emote2`, `Emote3`, `Emote4`, `EmoteDelay1`, `EmoteDelay2`, `EmoteDelay3`, `EmoteDelay4`, `VerifiedBuild`) VALUES
+(38729, 5, 0, 0, 0, 0, 0, 0, 0, 70575), -- Return to the Black Temple
+(38728, 396, 0, 0, 0, 0, 0, 0, 0, 70575), -- The Keystone
+(39663, 1, 0, 0, 0, 0, 0, 0, 0, 70575), -- On Felbat Wings
+(39515, 273, 0, 0, 0, 0, 0, 0, 0, 70575), -- Vengeance Will Be Mine!
+(40051, 1, 0, 0, 0, 0, 0, 0, 0, 70575); -- Fel Secrets
+
+UPDATE `quest_details` SET `VerifiedBuild`=70575 WHERE `ID`=40222;
+
+DELETE FROM `quest_request_items` WHERE `ID` IN (38728 /*The Keystone*/, 40222 /*The Imp Mother's Tome*/);
+INSERT INTO `quest_request_items` (`ID`, `EmoteOnComplete`, `EmoteOnIncomplete`, `EmoteOnCompleteDelay`, `EmoteOnIncompleteDelay`, `CompletionText`, `VerifiedBuild`) VALUES
+(38728, 6, 0, 0, 0, '$n, are you ready?', 0), -- The Keystone
+(40222, 6, 0, 0, 0, 'Do you have it?', 0); -- The Imp Mother's Tome
+
+UPDATE `creature_queststarter` SET `VerifiedBuild`=70575 WHERE (`id`=97303 AND `quest`=38729) OR (`id`=97297 AND `quest`=38728) OR (`id`=93127 AND `quest` IN (39663,39515)) OR (`id`=99045 AND `quest`=40051) OR (`id`=98711 AND `quest`=40222);
+UPDATE `creature_questender` SET `VerifiedBuild`=70575 WHERE (`id`=97303 AND `quest`=38728) OR (`id`=97297 AND `quest`=39663) OR (`id`=93127 AND `quest` IN (39515,40051,38727,38819)) OR (`id`=99045 AND `quest`=40222) OR (`id`=98711 AND `quest`=38725);
+UPDATE `gameobject_questender` SET `VerifiedBuild`=70575 WHERE (`id`=244466 AND `quest`=38729);

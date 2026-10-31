@@ -652,13 +652,13 @@ INSERT INTO `gameobject_addon` (`guid`, `parent_rotation0`, `parent_rotation1`, 
 SET @OGUID := 70012795;
 DELETE FROM `gameobject` WHERE `guid` BETWEEN @OGUID+0 AND @OGUID+14;
 INSERT INTO `gameobject` (`guid`, `id`, `map`, `zoneId`, `areaId`, `phaseUseFlags`, `PhaseId`, `PhaseGroup`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`, `VerifiedBuild`) VALUES
-(@OGUID+0, 243873, 1481, 7705, 7705, 1, 0, 0, 1289.4288330078125, 2591.5322265625, 9.881704330444335937, 5.069375514984130859, -0.00106096267700195, 0.001128196716308593, -0.57032680511474609, 0.821416437625885009, 120, 255, 0, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1 - !!! already present in database !!!
-(@OGUID+1, 243873, 1481, 7705, 7705, 1, 0, 0, 1411.2430419921875, 2444.3125, 43.73992156982421875, 4.922633647918701171, -0.01573133468627929, -0.08640289306640625, -0.62404060363769531, 0.776440858840942382, 120, 255, 0, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1
-(@OGUID+2, 243873, 1481, 7705, 7705, 1, 0, 0, 1508.5989990234375, 2613.663330078125, 31.72713661193847656, 3.475528240203857421, 0.003919601440429687, -0.0996713638305664, -0.98096466064453125, 0.166609123349189758, 120, 255, 0, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1
-(@OGUID+3, 243873, 1481, 7705, 7705, 1, 0, 0, 1549.265625, 2419.439208984375, 73.9239654541015625, 4.467868328094482421, 0.03841400146484375, -0.13198566436767578, -0.77652168273925781, 0.614913165569305419, 120, 255, 0, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1
-(@OGUID+4, 243873, 1481, 7705, 7705, 1, 0, 0, 1331.564208984375, 2522.943603515625, 27.49843788146972656, 5.842062950134277343, 0.048191070556640625, -0.08407878875732421, -0.21315956115722656, 0.97219926118850708, 120, 255, 0, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1
-(@OGUID+5, 243873, 1481, 7705, 7705, 1, 0, 0, 1422.96533203125, 2538.471435546875, 31.34757232666015625, 6.074859142303466796, 0.004082679748535156, 0.0009002685546875, -0.10397911071777343, 0.994570672512054443, 120, 255, 0, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1 - !!! already present in database !!!
-(@OGUID+6, 243873, 1481, 7705, 7705, 1, 0, 0, 1403.7291259765625, 2638.296875, 26.27418327331542968, 0.557506561279296875, 0.005254745483398437, -0.0095834732055664, 0.275165557861328125, 0.961334764957427978, 120, 255, 0, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1 - !!! already present in database !!!
+(@OGUID+0, 243873, 1481, 7705, 7705, 1, 0, 0, 1289.4288330078125, 2591.5322265625, 9.881704330444335937, 5.069375514984130859, -0.00106096267700195, 0.001128196716308593, -0.57032680511474609, 0.821416437625885009, 120, 255, 1, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1 - !!! already present in database !!!
+(@OGUID+1, 243873, 1481, 7705, 7705, 1, 0, 0, 1411.2430419921875, 2444.3125, 43.73992156982421875, 4.922633647918701171, -0.01573133468627929, -0.08640289306640625, -0.62404060363769531, 0.776440858840942382, 120, 255, 1, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1
+(@OGUID+2, 243873, 1481, 7705, 7705, 1, 0, 0, 1508.5989990234375, 2613.663330078125, 31.72713661193847656, 3.475528240203857421, 0.003919601440429687, -0.0996713638305664, -0.98096466064453125, 0.166609123349189758, 120, 255, 1, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1
+(@OGUID+3, 243873, 1481, 7705, 7705, 1, 0, 0, 1549.265625, 2419.439208984375, 73.9239654541015625, 4.467868328094482421, 0.03841400146484375, -0.13198566436767578, -0.77652168273925781, 0.614913165569305419, 120, 255, 1, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1
+(@OGUID+4, 243873, 1481, 7705, 7705, 1, 0, 0, 1331.564208984375, 2522.943603515625, 27.49843788146972656, 5.842062950134277343, 0.048191070556640625, -0.08407878875732421, -0.21315956115722656, 0.97219926118850708, 120, 255, 1, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1
+(@OGUID+5, 243873, 1481, 7705, 7705, 1, 0, 0, 1422.96533203125, 2538.471435546875, 31.34757232666015625, 6.074859142303466796, 0.004082679748535156, 0.0009002685546875, -0.10397911071777343, 0.994570672512054443, 120, 255, 1, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1 - !!! already present in database !!!
+(@OGUID+6, 243873, 1481, 7705, 7705, 1, 0, 0, 1403.7291259765625, 2638.296875, 26.27418327331542968, 0.557506561279296875, 0.005254745483398437, -0.0095834732055664, 0.275165557861328125, 0.961334764957427978, 120, 255, 1, 70575), -- Legion Portal (Area: Mardum, the Shattered Abyss - Difficulty: 0) CreateObject1 - !!! already present in database !!!
 (@OGUID+7, 246356, 1481, 7705, 7740, 1, 0, 0, 1289.421875, 2591.6015625, 10.11504077911376953, 4.287647247314453125, -0.005828857421875, 0.008223533630371093, -0.84022331237792968, 0.542146801948547363, 120, 255, 1, 70575), -- 7LG_Legion_FloorRune02 (Purple) [Large] (Area: Molten Shore - Difficulty: 0) CreateObject1 - !!! already present in database !!!
 (@OGUID+8, 246356, 1481, 7705, 7826, 1, 0, 0, 1331.2222900390625, 2523.08935546875, 27.34009552001953125, 1.909345984458923339, -0.10946035385131835, 0.000473976135253906, 0.814482688903808593, 0.569768488407135009, 120, 255, 1, 70575), -- 7LG_Legion_FloorRune02 (Purple) [Large] (Area: Twisting Nether - Difficulty: 0) CreateObject1
 (@OGUID+9, 246356, 1481, 7705, 7742, 1, 0, 0, 1422.859375, 2538.741455078125, 31.29653358459472656, 2.230317115783691406, -0.00403738021850585, -0.00923633575439453, 0.897933006286621093, 0.44001665711402893, 120, 255, 1, 70575), -- 7LG_Legion_FloorRune02 (Purple) [Large] (Area: Seat of Command - Difficulty: 0) CreateObject1 - !!! already present in database !!!
@@ -763,6 +763,70 @@ INSERT INTO `spawn_tracking_state` (`SpawnType`, `SpawnId`, `State`, `Visible`, 
 (0, @CGUID+7, 2, 0, NULL, NULL, NULL, NULL), -- Fel Spreader
 (0, @CGUID+8, 2, 0, NULL, NULL, NULL, NULL), -- Fel Spreader
 (0, @CGUID+9, 2, 0, NULL, NULL, NULL, NULL); -- Fel Spreader
+
+-- =====================================================
+-- Legion Portal (gameobject 243873) spawn tracking
+-- =====================================================
+-- One SpawnTrackingId per portal: completion is stored per (objective, trackingId),
+-- so a shared id would hide every portal after the first one is used.
+-- Sniff data for 243873: SpawnTrackingStateAnimID 1866, SpawnTrackingStateAnimKitID 0,
+-- StateWorldEffectsQuestObjectiveID 279741 (auto-set by core from the objective link).
+DELETE FROM `spawn_tracking_template` WHERE `SpawnTrackingId` BETWEEN 1046044 AND 1046050;
+INSERT INTO `spawn_tracking_template` (`SpawnTrackingId`, `MapId`, `PhaseId`, `PhaseGroup`, `PhaseUseFlags`, `VerifiedBuild`) VALUES
+(1046044, 1481, 0, 0, 1, 70575), -- Map: 1481 (Mardum) - PhaseUseFlags must match the gameobject rows (1 = always visible)
+(1046045, 1481, 0, 0, 1, 70575),
+(1046046, 1481, 0, 0, 1, 70575),
+(1046047, 1481, 0, 0, 1, 70575),
+(1046048, 1481, 0, 0, 1, 70575),
+(1046049, 1481, 0, 0, 1, 70575),
+(1046050, 1481, 0, 0, 1, 70575);
+
+DELETE FROM `spawn_tracking_quest_objective` WHERE `SpawnTrackingId` BETWEEN 1046044 AND 1046050;
+INSERT INTO `spawn_tracking_quest_objective` (`SpawnTrackingId`, `QuestObjectiveId`, `VerifiedBuild`) VALUES
+(1046044, 279741, 70575), -- quest 39279 Assault On Mardum: Legion Portal
+(1046045, 279741, 70575),
+(1046046, 279741, 70575),
+(1046047, 279741, 70575),
+(1046048, 279741, 70575),
+(1046049, 279741, 70575),
+(1046050, 279741, 70575);
+
+DELETE FROM `spawn_tracking` WHERE (`SpawnType`=1 AND `SpawnId` BETWEEN @OGUID+0 AND @OGUID+6);
+INSERT INTO `spawn_tracking` (`SpawnTrackingId`, `SpawnType`, `SpawnId`, `QuestObjectiveIds`) VALUES
+(1046044, 1, @OGUID+0, '279741'), -- Legion Portal
+(1046045, 1, @OGUID+1, '279741'), -- Legion Portal
+(1046046, 1, @OGUID+2, '279741'), -- Legion Portal
+(1046047, 1, @OGUID+3, '279741'), -- Legion Portal
+(1046048, 1, @OGUID+4, '279741'), -- Legion Portal
+(1046049, 1, @OGUID+5, '279741'), -- Legion Portal
+(1046050, 1, @OGUID+6, '279741'); -- Legion Portal
+
+DELETE FROM `spawn_tracking_state` WHERE (`SpawnType`=1 AND `SpawnId` BETWEEN @OGUID+0 AND @OGUID+6);
+INSERT INTO `spawn_tracking_state` (`SpawnType`, `SpawnId`, `State`, `Visible`, `StateSpellVisualId`, `StateAnimId`, `StateAnimKitId`, `StateWorldEffects`) VALUES
+-- State 0 (None - quest not taken): visible + open portal anim
+(1, @OGUID+0, 0, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+(1, @OGUID+1, 0, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+(1, @OGUID+2, 0, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+(1, @OGUID+3, 0, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+(1, @OGUID+4, 0, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+(1, @OGUID+5, 0, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+(1, @OGUID+6, 0, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+-- State 1 (Active - quest in progress): same visuals
+(1, @OGUID+0, 1, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+(1, @OGUID+1, 1, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+(1, @OGUID+2, 1, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+(1, @OGUID+3, 1, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+(1, @OGUID+4, 1, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+(1, @OGUID+5, 1, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+(1, @OGUID+6, 1, 1, NULL, 1866, NULL, NULL), -- Legion Portal
+-- State 2 (Complete - portal used / objective done / quest rewarded): hidden
+(1, @OGUID+0, 2, 0, NULL, NULL, NULL, NULL), -- Legion Portal
+(1, @OGUID+1, 2, 0, NULL, NULL, NULL, NULL), -- Legion Portal
+(1, @OGUID+2, 2, 0, NULL, NULL, NULL, NULL), -- Legion Portal
+(1, @OGUID+3, 2, 0, NULL, NULL, NULL, NULL), -- Legion Portal
+(1, @OGUID+4, 2, 0, NULL, NULL, NULL, NULL), -- Legion Portal
+(1, @OGUID+5, 2, 0, NULL, NULL, NULL, NULL), -- Legion Portal
+(1, @OGUID+6, 2, 0, NULL, NULL, NULL, NULL); -- Legion Portal
 
 -- Updates to spawns
 -- Some creatures are forced always visible due to missing/unknown phase ids.
