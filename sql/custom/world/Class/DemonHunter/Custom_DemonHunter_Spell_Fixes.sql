@@ -276,9 +276,7 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES (203650, 'spe
 DELETE FROM `spell_script_names` WHERE `spell_id` = 228532 AND `ScriptName` = 'spell_dh_soul_fragment_heals';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES (228532, 'spell_dh_soul_fragment_heals');
 
--- 205411 - Desperate Instincts
-DELETE FROM `spell_script_names` WHERE `spell_id` = 205411 AND `ScriptName` = 'spell_dh_desperate_instincts';
-INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES (205411, 'spell_dh_desperate_instincts');
+-- 205411 - Desperate Instincts (native upstream script + binding since commit dad1e0efd3)
 
 -- 209795 - Fracture (script dropped: spell removed in 12.x DB2)
 DELETE FROM `spell_script_names` WHERE `spell_id` = 209795 AND `ScriptName` = 'spell_dh_fracture';
@@ -291,6 +289,12 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES (247456, 'spe
 -- 204598 - Sigil of Flame damage -> applies Frailty 247456 per target (talent 389958)
 DELETE FROM `spell_script_names` WHERE `spell_id` = 204598 AND `ScriptName` = 'spell_dh_sigil_of_flame_frailty';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES (204598, 'spell_dh_sigil_of_flame_frailty');
+
+-- 207744/207771 - Fiery Brand debuffs: Burning Alive spread via empty periodic-trigger tick
+DELETE FROM `spell_script_names` WHERE `spell_id` IN (207744, 207771) AND `ScriptName` = 'spell_dh_fiery_brand_spread';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(207744, 'spell_dh_fiery_brand_spread'),
+(207771, 'spell_dh_fiery_brand_spread');
 
 -- 247454 - Spirit Bomb
 DELETE FROM `spell_script_names` WHERE `spell_id` = 247454 AND `ScriptName` = 'spell_dh_spirit_bomb';

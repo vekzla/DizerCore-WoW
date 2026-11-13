@@ -800,33 +800,6 @@ namespace Scripts::Custom::DemonHunter
         }
     };
 
-    // 205411 - Desperate Instincts
-    // 12.x: Blur's extra DR is native (EFFECT_2 ADD_FLAT_MODIFIER). Scripted part:
-    // damage taken below 35% health is reduced by 10% via the EFFECT_3 absorb aura.
-    class spell_dh_desperate_instincts : public AuraScript
-    {
-        void HandleAbsorb(AuraEffect* /*aurEff*/, DamageInfo& dmgInfo, uint32& absorbAmount)
-        {
-            // The absorb aura has 0 amount ? prevent default or it would deplete and self-remove
-            PreventDefaultAction();
-
-            Unit* target = GetTarget();
-            if (!target || !dmgInfo.GetDamage())
-                return;
-
-            if (!target->HealthBelowPct(GetEffect(EFFECT_0)->GetAmountAsInt()))
-                return;
-
-            absorbAmount = CalculatePct(dmgInfo.GetDamage(), GetEffect(EFFECT_1)->GetAmountAsInt());
-            dmgInfo.AbsorbDamage(absorbAmount);
-        }
-
-        void Register() override
-        {
-            OnEffectAbsorb += AuraEffectAbsorbFn(spell_dh_desperate_instincts::HandleAbsorb, EFFECT_3);
-        }
-    };
-
     // 1217610 - Devour (enhanced Consume during Void Metamorphosis)
     class spell_dh_devour : public SpellScript
     {
@@ -1495,6 +1468,67 @@ namespace Scripts::Custom::DemonHunter
             DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_dh_fel_rush_dash_ground::CalcSpeed, EFFECT_1, SPELL_AURA_MOD_INCREASE_SPEED_NO_CONTROL);
             DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_dh_fel_rush_dash_ground::CalcSpeed, EFFECT_3, SPELL_AURA_SPEED_LIMIT_MIN_PCT);
             AfterEffectRemove += AuraEffectRemoveFn(spell_dh_fel_rush_dash_ground::AfterRemove, EFFECT_6, SPELL_AURA_SET_SPEED, AURA_EFFECT_HANDLE_SEND_FOR_CLIENT_MASK);
+        }
+    };
+
+    // 207744, 207771 - Fiery Brand debuffs (Burning Alive spread)
+    // EffectTriggerSpell is intentionally empty in db2 data - the Burning Alive talent drives this tick serverside
+    class spell_dh_fiery_brand_spread : public AuraScript
+    {
+        static constexpr float SpreadRadius = 8.0f;
+
+        bool Validate(SpellInfo const* /*spellInfo*/) override
+        {
+            return ValidateSpellInfo({
+                Spells::spell_dh_burning_alive,
+                Spells::spell_dh_fiery_brand_rank_2,
+                Spells::spell_dh_fiery_brand_debuff_rank_1,
+                Spells::spell_dh_fiery_brand_debuff_rank_2
+            });
+        }
+
+        void HandlePeriodic(AuraEffect const* aurEff)
+        {
+            PreventDefaultAction();
+
+            Unit* caster = GetCaster();
+            if (!caster || !caster->HasAura(Spells::spell_dh_burning_alive))
+                return;
+
+            Unit* brandedTarget = GetTarget();
+            if (!brandedTarget)
+                return;
+
+            std::list<Unit*> enemies;
+            Trinity::AnyUnfriendlyUnitInObjectRangeCheck check(brandedTarget, caster, SpreadRadius);
+            Trinity::UnitListSearcher<Trinity::AnyUnfriendlyUnitInObjectRangeCheck> searcher(brandedTarget, enemies, check);
+            Cell::VisitAllObjects(brandedTarget, searcher, SpreadRadius);
+
+            ObjectGuid casterGuid = caster->GetGUID();
+            enemies.remove(brandedTarget);
+            enemies.remove_if([casterGuid](Unit* unit)
+                {
+                    return unit->HasAura(Spells::spell_dh_fiery_brand_debuff_rank_1, casterGuid)
+                        || unit->HasAura(Spells::spell_dh_fiery_brand_debuff_rank_2, casterGuid);
+                });
+
+            if (enemies.empty())
+                return;
+
+            caster->CastSpell(Trinity::Containers::SelectRandomContainerElement(enemies),
+                caster->HasAura(Spells::spell_dh_fiery_brand_rank_2)
+                    ? Spells::spell_dh_fiery_brand_debuff_rank_2
+                    : Spells::spell_dh_fiery_brand_debuff_rank_1,
+                CastSpellExtraArgsInit{
+                    .TriggerFlags = TRIGGERED_FULL_MASK,
+                    .TriggeringAura = aurEff
+                });
+        }
+
+        void Register() override
+        {
+            OnEffectPeriodic += AuraEffectPeriodicFn(spell_dh_fiery_brand_spread::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+            OnEffectPeriodic += AuraEffectPeriodicFn(spell_dh_fiery_brand_spread::HandlePeriodic, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
         }
     };
 
@@ -2458,71 +2492,87 @@ namespace Scripts::Custom::DemonHunter
         }
     };
 
+    // Soul-fragment area triggers -> the consume spell their AT AI casts on walk-over,
+    // keyed by areatrigger_create_properties id. Creator-spell ids shift whenever
+    // Blizzard reshuffles the trigger chains; create-properties ids are what spell
+    // data and the AT AI bindings actually reference.
+    static constexpr std::pair<uint32, uint32> SoulFragmentConsumeSpells[] =
+    {
+        { 3680,  Spells::spell_dh_consume_soul_havoc_shattered     },
+        { 6659,  Spells::spell_dh_consume_soul_havoc_demon         },
+        { 8867,  Spells::spell_dh_consume_soul_havoc_lesser        },
+        { 6710,  Spells::spell_dh_consume_soul_vengeance_shattered },
+        { 6711,  Spells::spell_dh_consume_soul_vengeance_demon     },
+        { 5977,  Spells::spell_dh_consume_soul_vengeance_lesser    },
+        { 36671, Spells::spell_dh_consume_soul_devourer            }
+    };
+
+    static uint32 GetConsumeSpellForAreaTrigger(AreaTrigger const* at)
+    {
+        AreaTriggerCreateProperties const* props = at->GetCreateProperties();
+        if (!props)
+            return 0;
+        for (auto const& [propsId, consumeSpell] : SoulFragmentConsumeSpells)
+            if (props->Id.Id == propsId)
+                return consumeSpell;
+        return 0;
+    }
+
+    static bool IsSoulFragmentAreaTrigger(AreaTrigger const* at)
+    {
+        return GetConsumeSpellForAreaTrigger(at) != 0;
+    }
+
     // Consumes up to maxCount nearby soul-fragment area triggers within range, running the
-    // standard consume chain (consume heal, demon bonus, feed-the-demon, painbringer).
-    // Returns the number of fragments consumed. Shared by Soul Cleave and Spirit Bomb.
+    // standard consume chain (fragment-specific consume spell, demon bonus, feed-the-demon,
+    // painbringer). Returns the number of fragments consumed. Shared by Soul Cleave and Spirit Bomb.
     static int32 ConsumeSoulFragments(Unit* caster, float range, int32 maxCount)
     {
-        std::vector<std::vector<AreaTrigger*>> fragments;
-        fragments.push_back(caster->GetAreaTriggers(Spells::spell_dh_shattered_souls_havoc));
-        fragments.push_back(caster->GetAreaTriggers(Spells::spell_dh_shattered_souls_demon));
-        fragments.push_back(caster->GetAreaTriggers(Spells::spell_dh_lesser_soul_shard));
-
         int32 consumed = 0;
-        for (auto vec : fragments)
+        for (AreaTrigger* at : caster->GetAreaTriggers(IsSoulFragmentAreaTrigger))
         {
-            for (AreaTrigger* at : vec)
+            if (consumed >= maxCount)
+                break;
+
+            if (!caster->IsWithinDist(at, range))
+                continue;
+
+            if (TempSummon* tempSumm = caster->SummonCreature(WORLD_TRIGGER,
+                at->GetPositionX(), at->GetPositionY(), at->GetPositionZ(),
+                0, TEMPSUMMON_TIMED_DESPAWN, 100ms))
             {
-                if (consumed >= maxCount)
-                    return consumed;
+                tempSumm->SetFaction(caster->GetFaction());
+                tempSumm->SetCreatorGUID(caster->GetGUID());
 
-                if (!caster->IsWithinDist(at, range))
-                    continue;
+                CastSpellExtraArgs args(TRIGGERED_FULL_MASK);
+                uint32 consumeSpell = GetConsumeSpellForAreaTrigger(at);
+                // spell_dh_consume_soul_missile (bound to 210047) replaces the missile's
+                // data-driven trigger with BP0 - supply its own heal spell.
+                if (consumeSpell == Spells::spell_dh_consume_soul_vengeance_shattered)
+                    args.AddSpellBP0(Spells::spell_dh_soul_fragment_heal_vengeance);
+                caster->CastSpell(tempSumm, consumeSpell, args);
 
-                if (TempSummon* tempSumm = caster->SummonCreature(WORLD_TRIGGER,
-                    at->GetPositionX(), at->GetPositionY(), at->GetPositionZ(),
-                    0, TEMPSUMMON_TIMED_DESPAWN, 100ms))
-                {
-                    tempSumm->SetFaction(caster->GetFaction());
-                    tempSumm->SetCreatorGUID(caster->GetGUID());
+                uint32 createPropertiesId = at->GetCreateProperties()->Id.Id;
+                if (createPropertiesId == 6659 || createPropertiesId == 6711)
+                    caster->CastSpell(caster, Spells::spell_dh_soul_fragment_demon_bonus, true);
 
-                    int32 bp = 0;
-                    switch (at->GetTemplate()->Id.Id)
-                    {
-                    case 6007:
-                    case 5997:
-                        bp = Spells::spell_dh_soul_fragment_heal_vengeance;
-                        break;
-                    case 6710:
-                        bp = Spells::spell_dh_consume_soul_heal;
-                        break;
-                    }
+                if (caster->HasAura(Spells::spell_dh_feed_the_demon))
+                    caster->GetSpellHistory()->ModifyCooldown(
+                        Spells::spell_dh_demon_spikes,
+                        -1s,
+                        false);
 
-                    caster->CastSpell(tempSumm,
-                        Spells::spell_dh_consume_soul_vengeance_shattered,
-                        CastSpellExtraArgs(TRIGGERED_FULL_MASK).AddSpellBP0(bp));
+                if (caster->HasAura(Spells::spell_dh_painbringer))
+                    caster->CastSpell(caster, Spells::spell_dh_painbringer_buff, true);
 
-                    if (at->GetTemplate()->Id.Id == 6007)
-                        caster->CastSpell(caster, Spells::spell_dh_soul_fragment_demon_bonus, true);
-
-                    if (caster->HasAura(Spells::spell_dh_feed_the_demon))
-                        caster->GetSpellHistory()->ModifyCooldown(
-                            Spells::spell_dh_demon_spikes,
-                            -1s,
-                            false);
-
-                    if (caster->HasAura(Spells::spell_dh_painbringer))
-                        caster->CastSpell(caster, Spells::spell_dh_painbringer_buff, true);
-
-                    at->SetDuration(0);
-                    ++consumed;
-                }
+                at->SetDuration(0);
+                ++consumed;
             }
         }
         return consumed;
     }
 
-    // Fragments consumed this cast — shared between spell_dh_soul_cleave (records)
+    // Fragments consumed this cast ? shared between spell_dh_soul_cleave (records)
     // and spell_dh_soul_cleave_damage (scales damage by consumed count)
     static std::unordered_map<ObjectGuid, int32> sSoulCleaveFragmentsConsumed;
 
@@ -2535,12 +2585,14 @@ namespace Scripts::Custom::DemonHunter
                 {
                     Spells::spell_dh_feast_of_souls,
                     Spells::spell_dh_feast_of_souls_periodic_heal,
-                    Spells::spell_dh_shattered_souls_havoc,
-                    Spells::spell_dh_shattered_souls_demon,
-                    Spells::spell_dh_lesser_soul_shard,
-                    Spells::spell_dh_soul_fragment_heal_vengeance,
-                    Spells::spell_dh_consume_soul_heal,
+                    Spells::spell_dh_consume_soul_havoc_shattered,
+                    Spells::spell_dh_consume_soul_havoc_demon,
+                    Spells::spell_dh_consume_soul_havoc_lesser,
                     Spells::spell_dh_consume_soul_vengeance_shattered,
+                    Spells::spell_dh_consume_soul_vengeance_demon,
+                    Spells::spell_dh_consume_soul_vengeance_lesser,
+                    Spells::spell_dh_consume_soul_devourer,
+                    Spells::spell_dh_soul_fragment_heal_vengeance,
                     Spells::spell_dh_soul_fragment_demon_bonus,
                     Spells::spell_dh_feed_the_demon,
                     Spells::spell_dh_demon_spikes,
@@ -2582,7 +2634,7 @@ namespace Scripts::Custom::DemonHunter
     // Soul cleave damage - 228478
     // 12.x: +20% damage per soul fragment consumed (EFFECT_2 BP); count is recorded
     // by spell_dh_soul_cleave::HandleDummy which runs before this trigger.
-    // Also applies Frailty (247456) per target when the caster has talent 389958 —
+    // Also applies Frailty (247456) per target when the caster has talent 389958 ?
     // covers Soul Sunder (452436) since it triggers the same damage spell.
     class spell_dh_soul_cleave_damage : public SpellScript
     {
@@ -2679,7 +2731,7 @@ namespace Scripts::Custom::DemonHunter
         }
     };
 
-    // Fragments consumed this cast — shared between spell_dh_spirit_bomb (records)
+    // Fragments consumed this cast ? shared between spell_dh_spirit_bomb (records)
     // and spell_dh_spirit_bomb_damage (scales damage)
     static std::unordered_map<ObjectGuid, int32> sSpiritBombFragmentsConsumed;
 
@@ -2692,9 +2744,13 @@ namespace Scripts::Custom::DemonHunter
         {
             return ValidateSpellInfo({
                 Spells::spell_dh_spirit_bomb_damage,
-                Spells::spell_dh_lesser_soul_shard,
-                Spells::spell_dh_shattered_souls_havoc,
-                Spells::spell_dh_shattered_souls_demon,
+                Spells::spell_dh_consume_soul_havoc_shattered,
+                Spells::spell_dh_consume_soul_havoc_demon,
+                Spells::spell_dh_consume_soul_havoc_lesser,
+                Spells::spell_dh_consume_soul_vengeance_shattered,
+                Spells::spell_dh_consume_soul_vengeance_demon,
+                Spells::spell_dh_consume_soul_vengeance_lesser,
+                Spells::spell_dh_consume_soul_devourer,
                 Spells::spell_dh_soul_barrier_talent,
                 Spells::spell_dh_soul_barrier
                 });
@@ -2707,9 +2763,7 @@ namespace Scripts::Custom::DemonHunter
                 return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
             // Must have at least one soul fragment AT
-            if (!caster->GetAreaTrigger(Spells::spell_dh_lesser_soul_shard) &&
-                !caster->GetAreaTrigger(Spells::spell_dh_shattered_souls_havoc) &&
-                !caster->GetAreaTrigger(Spells::spell_dh_shattered_souls_demon))
+            if (caster->GetAreaTriggers(IsSoulFragmentAreaTrigger).empty())
             {
                 return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
             }
@@ -3235,7 +3289,6 @@ void AddSC_custom_demonhunter_spell_fixes()
     RegisterSpellScript(spell_dh_cull_devourer);
     RegisterSpellScript(spell_dh_darkness_absorb);
     RegisterSpellScript(spell_dh_demonic_infusion);
-    RegisterSpellScript(spell_dh_desperate_instincts);
     RegisterSpellScript(spell_dh_devour);
     RegisterSpellScript(spell_dh_doomsayer_buff);
     RegisterSpellScript(spell_dh_doomsayer_passive);
@@ -3254,6 +3307,7 @@ void AddSC_custom_demonhunter_spell_fixes()
     RegisterSpellAndAuraScriptPair(spell_dh_fel_rush_dash, spell_dh_fel_rush_dash_aura);
     RegisterSpellScript(spell_dh_fel_rush_damage);
     RegisterSpellScript(spell_dh_fel_rush_dash_ground);
+    RegisterSpellScript(spell_dh_fiery_brand_spread);
     RegisterSpellScript(spell_dh_frailty);
     RegisterSpellScript(spell_dh_sigil_of_flame_frailty);
     RegisterSpellScript(spell_dh_hungering_slash_devourer);

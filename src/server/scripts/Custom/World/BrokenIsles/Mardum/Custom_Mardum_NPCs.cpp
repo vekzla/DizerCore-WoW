@@ -30,6 +30,7 @@
 #include "MotionMaster.h"
 #include "ObjectAccessor.h"
 #include "ObjectGuid.h"
+#include "ObjectMgr.h"
 #include "PhasingHandler.h"
 #include "Player.h"
 #include "ScriptedCreature.h"
@@ -822,18 +823,25 @@ namespace Scripts::Custom::Mardum
             }
         }
 
-        void JustDied(Unit* killer) override
+        void JustDied(Unit* /*killer*/) override
         {
             Talk(CreatureText::VorasDeathEmote);
             Talk(CreatureText::VorasDeath);
 
-            // covers kills by pets/summons/controlled units, not just the player directly
-            if (killer)
-                if (Player* player = killer->GetCharmerOrOwnerPlayerOrPlayerItself())
-                    player->m_Events.AddEventAtOffset([player]()
+            // Grant+reward the tracking quest to each participant seeing the death
+            // convo for the first time - the quest is the persistent "seen" flag.
+            if (Quest const* quest = sObjectMgr->GetQuestTemplate(Quests::BroodQueenCourtVoras))
+                for (ThreatReference const* ref : me->GetThreatManager().GetUnsortedThreatList())
+                    if (Player* player = ref->GetVictim()->GetCharmerOrOwnerPlayerOrPlayerItself())
+                        if (player->GetQuestStatus(quest->GetQuestId()) == QUEST_STATUS_NONE)
                         {
-                            Conversation::CreateConversation(Conversations::KingVorasDeath, player, player->GetPosition(), { player->GetGUID() });
-                        }, 5s);
+                            player->AddQuest(quest, nullptr);
+                            player->RewardQuest(quest, LootItemType::Item, 0, player);
+                            player->m_Events.AddEventAtOffset([player]()
+                                {
+                                    Conversation::CreateConversation(Conversations::KingVorasDeath, player, player->GetPosition(), { player->GetGUID() });
+                                }, 5s);
+                        }
         }
 
         void UpdateAI(uint32 diff) override
@@ -1020,10 +1028,6 @@ namespace Scripts::Custom::Mardum
             // who may be a companion/minion that pulled aggro first - resolve the owning player
             if (Player* player = who->GetCharmerOrOwnerPlayerOrPlayerItself())
             {
-                if (!player->HasAura(Spells::SummonCoilskarSeaCaller))
-                    player->CastSpell(player, Spells::SummonCoilskarSeaCaller, true);
-                if (!player->HasAura(Spells::SummonShivarraDestroyer))
-                    player->CastSpell(player, Spells::SummonShivarraDestroyer, true);
                 if (!player->HasAura(Spells::SummonMatronMotherMalevolence))
                     player->CastSpell(player, Spells::SummonMatronMotherMalevolence, true);
             }
@@ -1046,15 +1050,6 @@ namespace Scripts::Custom::Mardum
         void JustDied(Unit* killer) override
         {
             Talk(CreatureText::BrutargDeath, killer);
-
-            // dismiss the player's Shivarra Destroyer companion once Brutarg falls
-            if (Player* player = killer->GetCharmerOrOwnerPlayerOrPlayerItself())
-            {
-                std::list<TempSummon*> minions;
-                player->GetAllMinionsByEntry(minions, Creatures::ShivarraDestroyer);
-                for (TempSummon* minion : minions)
-                    minion->UnSummon();
-            }
         }
 
         void OnChannelFinished(SpellInfo const* spellInfo) override
@@ -1137,6 +1132,14 @@ namespace Scripts::Custom::Mardum
 
         void JustDied(Unit* killer) override
         {
+            // Reward the intro tracking quest to everyone on the boss's threat list
+            // (kill participation - pets and minions resolve to their owner).
+            if (Quest const* quest = sObjectMgr->GetQuestTemplate(Quests::BroodQueenCourtNefarious))
+                for (ThreatReference const* ref : me->GetThreatManager().GetUnsortedThreatList())
+                    if (Player* player = ref->GetVictim()->GetCharmerOrOwnerPlayerOrPlayerItself())
+                        if (player->GetQuestStatus(quest->GetQuestId()) == QUEST_STATUS_INCOMPLETE)
+                            player->RewardQuest(quest, LootItemType::Item, 0, player);
+
             if (Player* player = killer->GetCharmerOrOwnerPlayerOrPlayerItself())
             {
                 std::list<TempSummon*> minions;
@@ -1204,7 +1207,12 @@ namespace Scripts::Custom::Mardum
                 {
                     case Events::NefariousConversation:
                         if (Player* player = ObjectAccessor::GetPlayer(*me, _aggroPlayerGuid))
-                            Conversation::CreateConversation(Conversations::CountNefarious, player, *player, player->GetGUID());
+                            if (Quest const* quest = sObjectMgr->GetQuestTemplate(Quests::BroodQueenCourtNefarious))
+                                if (player->GetQuestStatus(quest->GetQuestId()) == QUEST_STATUS_NONE)
+                                {
+                                    player->AddQuest(quest, nullptr);
+                                    Conversation::CreateConversation(Conversations::CountNefarious, player, *player, player->GetGUID());
+                                }
                         break;
                     case Events::NefariousVampiricCleave:
                         DoCastVictim(Spells::NefariousVampiricCleave);
@@ -1329,6 +1337,20 @@ namespace Scripts::Custom::Mardum
             _engagerGuid = ObjectGuid::Empty;
         }
 
+        void MoveInLineOfSight(Unit* who) override
+        {
+            if (Player* player = who->ToPlayer()) {
+                if (player->GetDistance(me) < 75.0f)
+                    if (player->GetQuestStatus(Quests::BroodQueenCourtVolroth) == QUEST_STATUS_NONE) {
+                        if (const Quest* quest = sObjectMgr->GetQuestTemplate(Quests::BroodQueenCourtVolroth))
+                            player->AddQuest(quest, nullptr);
+                        Conversation* conversation = new Conversation;
+                        if (!conversation->CreateConversation(Conversations::SThenoVolroth, player, player->GetPosition(), { player->GetGUID() }))
+                            delete conversation;
+                    }
+            }
+        }
+
         void JustEngagedWith(Unit* who) override
         {
             Talk(CreatureText::VolrothAggro);
@@ -1358,6 +1380,14 @@ namespace Scripts::Custom::Mardum
         void JustDied(Unit* killer) override
         {
             Talk(CreatureText::VolrothDeath);
+
+            // Reward the intro tracking quest to everyone on the boss's threat list
+            // (kill participation - pets and minions resolve to their owner).
+            if (Quest const* quest = sObjectMgr->GetQuestTemplate(Quests::BroodQueenCourtVolroth))
+                for (ThreatReference const* ref : me->GetThreatManager().GetUnsortedThreatList())
+                    if (Player* player = ref->GetVictim()->GetCharmerOrOwnerPlayerOrPlayerItself())
+                        if (player->GetQuestStatus(quest->GetQuestId()) == QUEST_STATUS_INCOMPLETE)
+                            player->RewardQuest(quest, LootItemType::Item, 0, player);
 
             // the killing blow may come from a captive or the player's own minion -
             // fall back through the threat list and the stored engager
