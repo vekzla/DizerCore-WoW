@@ -55,6 +55,7 @@
 #include "RealmList.h"
 #include "ScriptMgr.h"
 #include "SocialMgr.h"
+#include "VduConduit.h"
 #include "World.h"
 #include "WorldSocket.h"
 #include <boost/circular_buffer.hpp>
@@ -238,11 +239,17 @@ void WorldSession::SendPacket(WorldPacket const* packet, bool forced /*= false*/
     }
 
     ServerOpcodeHandler const* handler = opcodeTable[static_cast<OpcodeServer>(packet->GetOpcode())];
+
     if (!handler)
     {
         TC_LOG_ERROR("network.opcode", "Prevented sending of opcode {} with non existing handler to {}", packet->GetOpcode(), GetPlayerInfo());
         return;
     }
+
+    if (Vdu::IsListening(Vdu::kBaseDir) || Vdu::WantedWithoutListening(handler->Name))
+        Vdu::RecordPacket(Vdu::kBaseDir, Vdu::Direction::Out, handler->Name,
+            _player ? static_cast<uint64>(_player->GetGUID().GetCounter()) : 0,
+            packet->size(), Vdu::HexPreview(packet->data(), packet->size(), Vdu::PreviewBytesFor(handler->Name)));
 
     // Default connection index defined in Opcodes.cpp table
     ConnectionType conIdx = handler->ConnectionIndex;
@@ -380,6 +387,19 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
     {
         OpcodeClient opcode = static_cast<OpcodeClient>(packet->GetOpcode());
         ClientOpcodeHandler const* opHandle = opcodeTable[opcode];
+        // VDU: name the player from their first packet of each session, so names are known
+        // without a relog. Writes to players.jsonl every time.
+        static std::uint64_t vduNamedGuid = 0;
+        if (_player && _player->GetGUID().GetCounter() != vduNamedGuid)
+        {
+            vduNamedGuid = _player->GetGUID().GetCounter();
+            Vdu::RecordCharacter(Vdu::kBaseDir, vduNamedGuid, _player->GetName(), _player->GetClass());
+        }
+        if (Vdu::IsListening(Vdu::kBaseDir) || Vdu::WantedWithoutListening(opHandle->Name))
+                Vdu::RecordPacket(Vdu::kBaseDir, Vdu::Direction::In, opHandle->Name,
+                _player ? static_cast<uint64>(_player->GetGUID().GetCounter()) : 0,
+                packet->size(), Vdu::HexPreview(packet->data(), packet->size(), Vdu::PreviewBytesFor(opHandle->Name)));
+
         TC_METRIC_DETAILED_TIMER("worldsession_update_opcode_time", TC_METRIC_TAG("opcode", opHandle->Name));
 
         try
@@ -1307,6 +1327,11 @@ void WorldSession::HandleAddonRegisteredPrefixesOpcode(WorldPackets::Chat::ChatR
 void WorldSession::SetPlayer(Player* player)
 {
     _player = player;
+
+    // VDU: note who logged in, with name and class, so the viewer can name them.
+    if (_player)  // VDU: always, so the name sticks whether or not the viewer is listening
+        Vdu::RecordCharacter(Vdu::kBaseDir, _player->GetGUID().GetCounter(),
+            _player->GetName(), _player->GetClass());
 
     // set m_GUID that can be used while player loggined and later until m_playerRecentlyLogout not reset
     if (_player)
