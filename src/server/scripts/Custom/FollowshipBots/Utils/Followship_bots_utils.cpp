@@ -57,6 +57,8 @@ namespace FSBUtils
         case FSB_Class::Shaman:      return "Shaman";
         case FSB_Class::Monk:        return "Monk";
         case FSB_Class::DeathKnight: return "Death Knight";
+        case FSB_Class::DemonHunter: return "Demon Hunter";
+        case FSB_Class::Evoker:      return "Evoker";
         default:                     return "Unknown";
         }
     }
@@ -87,6 +89,14 @@ namespace FSBUtils
         case FSB_Race::EarthenHorde:        return "Earthen (Horde)";
         case FSB_Race::HaranirAlliance:     return "Haranir (Alliance)";
         case FSB_Race::HaranirHorde:        return "Haranir (Horde)";
+        case FSB_Race::DarkIronDwarf:       return "Dark Iron Dwarf";
+        case FSB_Race::KulTiran:            return "Kul Tiran";
+        case FSB_Race::Mechagnome:          return "Mechagnome";
+        case FSB_Race::MagharOrc:           return "Mag'har Orc";
+        case FSB_Race::ZandalariTroll:      return "Zandalari Troll";
+        case FSB_Race::Vulpera:             return "Vulpera";
+        case FSB_Race::DracthyrAlliance:    return "Dracthyr (Alliance)";
+        case FSB_Race::DracthyrHorde:       return "Dracthyr (Horde)";
         default:                 return "Unknown";
         }
     }
@@ -178,6 +188,14 @@ namespace FSBUtils
         case FSB_Race::EarthenHorde:        return RACE_EARTHEN_DWARF_HORDE;
         case FSB_Race::HaranirAlliance:     return RACE_HARANIR_ALLIANCE;
         case FSB_Race::HaranirHorde:        return RACE_HARANIR_HORDE;
+        case FSB_Race::DarkIronDwarf:       return RACE_DARK_IRON_DWARF;
+        case FSB_Race::KulTiran:            return RACE_KUL_TIRAN;
+        case FSB_Race::Mechagnome:          return RACE_MECHAGNOME;
+        case FSB_Race::MagharOrc:           return RACE_MAGHAR_ORC;
+        case FSB_Race::ZandalariTroll:      return RACE_ZANDALARI_TROLL;
+        case FSB_Race::Vulpera:             return RACE_VULPERA;
+        case FSB_Race::DracthyrAlliance:    return RACE_DRACTHYR_ALLIANCE;
+        case FSB_Race::DracthyrHorde:       return RACE_DRACTHYR_HORDE;
         default:
             TC_LOG_WARN("scripts.ai.fsb", "FSB Utils BotRaceToTC has no mapping for race {}", race);
             return RACE_NONE;
@@ -201,6 +219,10 @@ namespace FSBUtils
             case FSB_Race::LightforgedDraenei:
             case FSB_Race::EarthenAlliance:
             case FSB_Race::HaranirAlliance:
+            case FSB_Race::DarkIronDwarf:
+            case FSB_Race::KulTiran:
+            case FSB_Race::Mechagnome:
+            case FSB_Race::DracthyrAlliance:
                 return Team::ALLIANCE;
 
             case FSB_Race::Orc:
@@ -212,6 +234,10 @@ namespace FSBUtils
             case FSB_Race::PandarenHorde:
             case FSB_Race::EarthenHorde:
             case FSB_Race::HaranirHorde:
+            case FSB_Race::MagharOrc:
+            case FSB_Race::ZandalariTroll:
+            case FSB_Race::Vulpera:
+            case FSB_Race::DracthyrHorde:
                 return Team::HORDE;
 
             default:
@@ -302,6 +328,8 @@ namespace FSBUtils
         case FSB_Class::Warlock:            return CLASS_WARLOCK;
         case FSB_Class::Shaman:             return CLASS_SHAMAN;
         case FSB_Class::Monk:               return CLASS_MONK;
+        case FSB_Class::DemonHunter:        return CLASS_DEMON_HUNTER;
+        case FSB_Class::Evoker:             return CLASS_EVOKER;
         case FSB_Class::None:               return CLASS_NONE;
         default:
             break;
