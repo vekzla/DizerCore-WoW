@@ -39,30 +39,30 @@ std::vector<FSBSpellDefinition> PriestSpellsTable =
     { SPELL_DRAENEI_GIFT_NAARU,             FSBSpellType::Heal,     0.f,        50.f,           100.f,           30.f,          false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_PANDAREN_QUAKING_PALM,          FSBSpellType::Damage,   0.f,        0.f,            100.f,           2.f,           false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_ORC_BLOOD_FURY,                 FSBSpellType::Damage,   0.f,        0.f,            100.f,           0.f,           true,       120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
-    { SPELL_UNDEAD_WILL_OF_FORSAKEN,        FSBSpellType::Heal,     0.f,        80.f,           100.f,           0.f,           true,        30000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
+    { SPELL_UNDEAD_WILL_OF_FORSAKEN,        FSBSpellType::Heal,     0.f,        80.f,           100.f,           0.f,           true,        30000,         FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 120000 (FSB 30000)
     { SPELL_TAUREN_WAR_STOMP,               FSBSpellType::Damage,   0.f,        0.f,            100.f,           8.f,           false,       90000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_TROLL_BERSERKING,               FSBSpellType::Damage,   0.f,        0.f,            100.f,           0.f,           true,       180000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_BLOODELF_ARCANE_TORRENT,        FSBSpellType::Damage,   0.f,        0.f,            100.f,           8.f,           false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_GOBLIN_ROCKET_BARRAGE,          FSBSpellType::Damage,   0.f,        0.f,            100.f,          30.f,           false,       90000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
 
-    { SPELL_PRIEST_RENEW,               FSBSpellType::Heal,     0.f,        85.f,           75.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_ANY    },
-    { SPELL_PRIEST_FLASH_HEAL,          FSBSpellType::Heal,     0.f,        70.f,           70.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_ANY    },
+    { SPELL_PRIEST_RENEW,               FSBSpellType::Heal,     0.f,        85.f,           75.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_ANY    },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_PRIEST_FLASH_HEAL,          FSBSpellType::Heal,     0.f,        70.f,           70.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_ANY    },  // CSV cooldown 0 (FSB 1000)
 
-    { SPELL_PRIEST_SHADOW_WORD_PAIN,    FSBSpellType::Damage,   0.f,        0.f,            80.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_ANY    },
-    { SPELL_PRIEST_SMITE,               FSBSpellType::Damage,   0.f,        0.f,            50.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_ANY    },
+    { SPELL_PRIEST_SHADOW_WORD_PAIN,    FSBSpellType::Damage,   0.f,        0.f,            80.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_ANY    },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_PRIEST_SMITE,               FSBSpellType::Damage,   0.f,        0.f,            50.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_ANY    },  // CSV cooldown 0 (FSB 1000)
     
     // Healer
-    { SPELL_PRIEST_PAIN_SUPPRESSION,    FSBSpellType::Heal,     0.f,        50.f,           80.f,           40.f,           false,      180000,          FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_PRIEST_POWER_WORD_RADIANCE, FSBSpellType::Heal,     0.f,        40.f,           80.f,           40.f,           false,      18000,          FSB_RoleMask::FSB_ROLEMASK_HEALER },
+    { SPELL_PRIEST_PAIN_SUPPRESSION,    FSBSpellType::Heal,     0.f,        50.f,           80.f,           40.f,           false,      180000,          FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 1500 (FSB 180000)
+    { SPELL_PRIEST_POWER_WORD_RADIANCE, FSBSpellType::Heal,     0.f,        40.f,           80.f,           40.f,           false,      18000,          FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 18000)
     { SPELL_PRIEST_DESPERATE_PRAYER,    FSBSpellType::Heal,     0.f,        20.f,           100.f,          0.f,            true,       90000,          FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_PRIEST_HEAL,                FSBSpellType::Heal,     0.f,        40.f,           80.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_PRIEST_PRAYER_HEALING,      FSBSpellType::Heal,     0.f,        60.f,           70.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_PRIEST_PRAYER_OF_MENDING,   FSBSpellType::Heal,     0.f,        70.f,           50.f,           40.f,           false,      12000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_PRIEST_HOLY_WORD_SERENITY,  FSBSpellType::Heal,     0.f,        60.f,          70.f,           40.f,           false,      60000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_PRIEST_HOLY_WORD_SANCTIFY,  FSBSpellType::Heal,     0.f,        40.f,          70.f,           40.f,           false,      60000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
+    { SPELL_PRIEST_HEAL,                FSBSpellType::Heal,     0.f,        40.f,           80.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_PRIEST_PRAYER_HEALING,      FSBSpellType::Heal,     0.f,        60.f,           70.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_PRIEST_PRAYER_OF_MENDING,   FSBSpellType::Heal,     0.f,        70.f,           50.f,           40.f,           false,      12000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 1500 (FSB 12000)
+    { SPELL_PRIEST_HOLY_WORD_SERENITY,  FSBSpellType::Heal,     0.f,        60.f,          70.f,           40.f,           false,      60000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 60000)
+    { SPELL_PRIEST_HOLY_WORD_SANCTIFY,  FSBSpellType::Heal,     0.f,        40.f,          70.f,           40.f,           false,      60000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 60000)
     { SPELL_PRIEST_GUARDIAN_SPIRIT,     FSBSpellType::Heal,     0.f,        30.f,          70.f,           40.f,           false,      180000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
     { SPELL_PRIEST_DIVINE_HYMN,         FSBSpellType::Heal,     0.f,        30.f,          70.f,           40.f,           false,      180000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_PRIEST_POWER_WORD_SHIELD,   FSBSpellType::Heal,     0.f,        70.f,          70.f,           30.f,           false,      8000,           FSB_RoleMask::FSB_ROLEMASK_HEALER | FSB_RoleMask::FSB_ROLEMASK_ASSIST },
+    { SPELL_PRIEST_POWER_WORD_SHIELD,   FSBSpellType::Heal,     0.f,        70.f,          70.f,           30.f,           false,      8000,           FSB_RoleMask::FSB_ROLEMASK_HEALER | FSB_RoleMask::FSB_ROLEMASK_ASSIST },  // CSV cooldown 0 (FSB 8000)
 
     { SPELL_PRIEST_HOLY_WORD_CHASTISE,  FSBSpellType::Damage,   0.f,        0.f,          70.f,           30.f,           false,      60000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
 
@@ -72,34 +72,34 @@ std::vector<FSBSpellDefinition> PriestSpellsTable =
 
     { SPELL_PRIEST_SHADOWFIEND,         FSBSpellType::Damage,   0.f,        0.f,            50.f,          40.f,           false,      180000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
     { SPELL_PRIEST_SILENCE,             FSBSpellType::Damage,   0.f,        0.f,            100.f,          40.f,           false,      30000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_PRIEST_SHADOW_WORD_DEATH,   FSBSpellType::Damage,   0.f,        0.f,            70.f,           40.f,           false,      10000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_PRIEST_MIND_BLAST,          FSBSpellType::Damage,   0.f,        0.f,            70.f,           40.f,           false,      9000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_PRIEST_MIND_FLAY,           FSBSpellType::Damage,   0.2f,       0.f,            65.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
+    { SPELL_PRIEST_SHADOW_WORD_DEATH,   FSBSpellType::Damage,   0.f,        0.f,            70.f,           40.f,           false,      10000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 10000)
+    { SPELL_PRIEST_MIND_BLAST,          FSBSpellType::Damage,   0.f,        0.f,            70.f,           40.f,           false,      9000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 9000)
+    { SPELL_PRIEST_MIND_FLAY,           FSBSpellType::Damage,   0.2f,       0.f,            65.f,           40.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 1000)
     { SPELL_PRIEST_VOIDFORM,            FSBSpellType::Damage,   0.f,        0.f,            60.f,           40.f,           false,      120000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_PRIEST_PSYCHIC_SCREAM,      FSBSpellType::Damage,   0.f,        0.f,            80.f,           8.f,            false,       45000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE    },
+    { SPELL_PRIEST_PSYCHIC_SCREAM,      FSBSpellType::Damage,   0.f,        0.f,            80.f,           8.f,            false,       45000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE    },  // CSV cooldown 40000 (FSB 45000)
     { SPELL_PRIEST_VOID_TORRENT,        FSBSpellType::Damage,   0.f,        0.f,            50.f,           40.f,           false,      30000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_PRIEST_VAMPIRIC_TOUCH,      FSBSpellType::Damage,   0.2f,        0.f,            80.f,           40.f,           false,     1000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_PRIEST_TENTACLE_SLAM,       FSBSpellType::Damage,   0.f,        0.f,            50.f,           40.f,           false,      15000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
+    { SPELL_PRIEST_VAMPIRIC_TOUCH,      FSBSpellType::Damage,   0.2f,        0.f,            80.f,           40.f,           false,     1000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_PRIEST_TENTACLE_SLAM,       FSBSpellType::Damage,   0.f,        0.f,            50.f,           40.f,           false,      15000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 15000)
     
     
     
     
-    { SPELL_PRIEST_DEVOURING_PLAGUE,    FSBSpellType::Damage,   0.5f,       0.f,            40.f,           40.f,           false,      10000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
+    { SPELL_PRIEST_DEVOURING_PLAGUE,    FSBSpellType::Damage,   0.5f,       0.f,            40.f,           40.f,           false,      10000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 10000)
     
 
     // Hybrid
     { SPELL_PRIEST_POWER_INFUSION,      FSBSpellType::Heal,     0.f,        80.f,           80.f,           40.f,           false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ASSIST },
-    { SPELL_PRIEST_PLEA,                FSBSpellType::Heal,     0.f,        70.f,           80.f,           40.f,           false,      9000,           FSB_RoleMask::FSB_ROLEMASK_ASSIST },
-    { SPELL_PRIEST_PENANCE,             FSBSpellType::Heal,     0.f,        60.f,           80.f,           40.f,           false,      9000,           FSB_RoleMask::FSB_ROLEMASK_ASSIST },
-    { SPELL_PRIEST_PAIN_SUPPRESSION,    FSBSpellType::Heal,     0.f,        50.f,           80.f,           40.f,           false,      180000,         FSB_RoleMask::FSB_ROLEMASK_ASSIST },
-    { SPELL_PRIEST_POWER_WORD_RADIANCE, FSBSpellType::Heal,     0.f,        40.f,           80.f,           40.f,           false,      18000,          FSB_RoleMask::FSB_ROLEMASK_ASSIST },
+    { SPELL_PRIEST_PLEA,                FSBSpellType::Heal,     0.f,        70.f,           80.f,           40.f,           false,      9000,           FSB_RoleMask::FSB_ROLEMASK_ASSIST },  // CSV cooldown 0 (FSB 9000)
+    { SPELL_PRIEST_PENANCE,             FSBSpellType::Heal,     0.f,        60.f,           80.f,           40.f,           false,      9000,           FSB_RoleMask::FSB_ROLEMASK_ASSIST },  // CSV cooldown 1500 (FSB 9000)
+    { SPELL_PRIEST_PAIN_SUPPRESSION,    FSBSpellType::Heal,     0.f,        50.f,           80.f,           40.f,           false,      180000,         FSB_RoleMask::FSB_ROLEMASK_ASSIST },  // CSV cooldown 1500 (FSB 180000)
+    { SPELL_PRIEST_POWER_WORD_RADIANCE, FSBSpellType::Heal,     0.f,        40.f,           80.f,           40.f,           false,      18000,          FSB_RoleMask::FSB_ROLEMASK_ASSIST },  // CSV cooldown 0 (FSB 18000)
     { SPELL_PRIEST_POWER_WORD_BARRIER,  FSBSpellType::Heal,     0.f,        30.f,           80.f,           40.f,           false,      180000,         FSB_RoleMask::FSB_ROLEMASK_ASSIST },
     { SPELL_PRIEST_DESPERATE_PRAYER,    FSBSpellType::Heal,     0.f,        20.f,           100.f,          0.f,            true,       90000,          FSB_RoleMask::FSB_ROLEMASK_ASSIST },
 
     { SPELL_PRIEST_ULTIMATE_PENITENCE,  FSBSpellType::Damage,   0.f,       0.f,            80.f,           40.f,           false,       240000,         FSB_RoleMask::FSB_ROLEMASK_ASSIST },
     { SPELL_PRIEST_HOLY_FIRE,           FSBSpellType::Damage,   0.f,       0.f,            60.f,           40.f,           false,       10000,          FSB_RoleMask::FSB_ROLEMASK_ASSIST },
-    { SPELL_PRIEST_PENANCE,             FSBSpellType::Damage,   0.f,       0.f,            55.f,           40.f,           false,       9000,           FSB_RoleMask::FSB_ROLEMASK_ASSIST },
-    { SPELL_PRIEST_HOLY_NOVA,           FSBSpellType::Damage,   0.f,       0.f,            60.f,           6.f,            true,        1000,           FSB_RoleMask::FSB_ROLEMASK_ASSIST },
+    { SPELL_PRIEST_PENANCE,             FSBSpellType::Damage,   0.f,       0.f,            55.f,           40.f,           false,       9000,           FSB_RoleMask::FSB_ROLEMASK_ASSIST },  // CSV cooldown 1500 (FSB 9000)
+    { SPELL_PRIEST_HOLY_NOVA,           FSBSpellType::Damage,   0.f,       0.f,            60.f,           6.f,            true,        1000,           FSB_RoleMask::FSB_ROLEMASK_ASSIST },  // CSV cooldown 0 (FSB 1000)
 };
 
 

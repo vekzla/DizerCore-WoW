@@ -41,71 +41,71 @@ std::vector<FSBSpellDefinition> DruidSpellsTable =
     { SPELL_DRAENEI_GIFT_NAARU,             FSBSpellType::Heal,     0.f,        50.f,           100.f,           30.f,          false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_PANDAREN_QUAKING_PALM,          FSBSpellType::Damage,   0.f,        0.f,            100.f,           2.f,           false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_ORC_BLOOD_FURY,                 FSBSpellType::Damage,   0.f,        0.f,            100.f,           0.f,           true,       120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
-    { SPELL_UNDEAD_WILL_OF_FORSAKEN,        FSBSpellType::Heal,     0.f,        80.f,           100.f,           0.f,           true,        30000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
+    { SPELL_UNDEAD_WILL_OF_FORSAKEN,        FSBSpellType::Heal,     0.f,        80.f,           100.f,           0.f,           true,        30000,         FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 120000 (FSB 30000)
     { SPELL_TAUREN_WAR_STOMP,               FSBSpellType::Damage,   0.f,        0.f,            100.f,           8.f,           false,       90000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_TROLL_BERSERKING,               FSBSpellType::Damage,   0.f,        0.f,            100.f,           0.f,           true,       180000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_BLOODELF_ARCANE_TORRENT,        FSBSpellType::Damage,   0.f,        0.f,            100.f,           8.f,           false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_GOBLIN_ROCKET_BARRAGE,          FSBSpellType::Damage,   0.f,        0.f,            100.f,          30.f,           false,       90000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
 
-    { SPELL_DRUID_WRATH,                FSBSpellType::Damage,   0.f,        0.f,            70.f,            40.f,         false,       1000,        FSB_RoleMask::FSB_ROLEMASK_ANY },
+    { SPELL_DRUID_WRATH,                FSBSpellType::Damage,   0.f,        0.f,            70.f,            40.f,         false,       1000,        FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 0 (FSB 1000)
     { SPELL_DRUID_BARKSKIN,             FSBSpellType::Heal,     0.f,        60.f,           100.f,            0.f,          true,        60000,       FSB_RoleMask::FSB_ROLEMASK_ANY },
-    { SPELL_DRUID_REGROWTH,             FSBSpellType::Heal,     0.f,        70.f,           100.f,            30.f,         false,       1000,        FSB_RoleMask::FSB_ROLEMASK_ANY },
+    { SPELL_DRUID_REGROWTH,             FSBSpellType::Heal,     0.f,        70.f,           100.f,            30.f,         false,       1000,        FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 0 (FSB 1000)
 
     // TANK
-    { SPELL_DRUID_REGROWTH,             FSBSpellType::Heal,     0.f,        50.f,           100.f,            0.f,         true,       36000,        FSB_RoleMask::FSB_ROLEMASK_TANK },
+    { SPELL_DRUID_REGROWTH,             FSBSpellType::Heal,     0.f,        50.f,           100.f,            0.f,         true,       36000,        FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 0 (FSB 36000)
     { SPELL_DRUID_SKULL_BASH,           FSBSpellType::Damage,   0.f,        0.f,            100.f,            13.f,         false,       15000,       FSB_RoleMask::FSB_ROLEMASK_TANK },
     { SPELL_DRUID_BEAR_GROWL,           FSBSpellType::Damage,   0.f,        0.f,            100.f,            40.f,         false,       8000,        FSB_RoleMask::FSB_ROLEMASK_TANK },
     { SPELL_DRUID_BEAR_URSOC,           FSBSpellType::Damage,   0.f,        0.f,            90.f,            2.f,          true,        180000,      FSB_RoleMask::FSB_ROLEMASK_TANK },
-    { SPELL_DRUID_BEAR_SURVIVAL_INSTINCTS,FSBSpellType::Damage, 0.f,        0.f,            90.f,            2.f,          true,        180000,      FSB_RoleMask::FSB_ROLEMASK_TANK },
+    { SPELL_DRUID_BEAR_SURVIVAL_INSTINCTS,FSBSpellType::Damage, 0.f,        0.f,            90.f,            2.f,          true,        180000,      FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 6000 (FSB 180000)
     { SPELL_DRUID_BEAR_LUNAR_BEAM,      FSBSpellType::Damage,   0.f,        0.f,            90.f,            2.f,          false,       60000,       FSB_RoleMask::FSB_ROLEMASK_TANK },
     { SPELL_DRUID_BEAR_SUNDERING_ROAR,  FSBSpellType::Damage,   0.f,        0.f,            90.f,            2.f,          false,       60000,       FSB_RoleMask::FSB_ROLEMASK_TANK },
     { SPELL_DRUID_BEAR_RED_MOON,        FSBSpellType::Damage,   0.f,        0.f,            90.f,            40.f,         false,       30000,       FSB_RoleMask::FSB_ROLEMASK_TANK },
     
     { SPELL_DRUID_BEAR_THRASH,          FSBSpellType::Damage,   0.f,        0.f,            80.f,             8.f,          false,       6000,        FSB_RoleMask::FSB_ROLEMASK_TANK },
-    { SPELL_DRUID_BEAR_MANGLE,          FSBSpellType::Damage,   0.f,        0.f,            80.f,             2.f,          false,       6000,        FSB_RoleMask::FSB_ROLEMASK_TANK },
-    { SPELL_DRUID_BEAR_MAUL,            FSBSpellType::Damage,   0.f,        0.f,            80.f,             2.f,          false,       1000,        FSB_RoleMask::FSB_ROLEMASK_TANK },
-    { SPELL_DRUID_BEAR_RAZE,            FSBSpellType::Damage,   0.f,        0.f,            80.f,             2.f,          false,       1000,        FSB_RoleMask::FSB_ROLEMASK_TANK },
+    { SPELL_DRUID_BEAR_MANGLE,          FSBSpellType::Damage,   0.f,        0.f,            80.f,             2.f,          false,       6000,        FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 0 (FSB 6000)
+    { SPELL_DRUID_BEAR_MAUL,            FSBSpellType::Damage,   0.f,        0.f,            80.f,             2.f,          false,       1000,        FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_DRUID_BEAR_RAZE,            FSBSpellType::Damage,   0.f,        0.f,            80.f,             2.f,          false,       1000,        FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 0 (FSB 1000)
     { SPELL_DRUID_BEAR_INCAPACITATING_ROAR,FSBSpellType::Damage,   0.f,        0.f,            70.f,             2.f,          false,      30000,        FSB_RoleMask::FSB_ROLEMASK_TANK },
-    { SPELL_DRUID_SWIPE,                FSBSpellType::Damage,   0.f,         0.f,           50.f,            2.f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_TANK },
-    { SPELL_DRUID_BEAR_IRONFUR,         FSBSpellType::Damage,   0.f,         0.f,           50.f,            2.f,        true,       1000,        FSB_RoleMask::FSB_ROLEMASK_TANK },
+    { SPELL_DRUID_SWIPE,                FSBSpellType::Damage,   0.f,         0.f,           50.f,            2.f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_DRUID_BEAR_IRONFUR,         FSBSpellType::Damage,   0.f,         0.f,           50.f,            2.f,        true,       1000,        FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 500 (FSB 1000)
 
     // MELEE
     { SPELL_DRUID_SKULL_BASH,           FSBSpellType::Damage,   0.f,         0.f,            100.f,           13.f,        false,       15000,       FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
     { SPELL_DRUID_CAT_AVATAR_ASHAMANE,  FSBSpellType::Damage,   0.f,         0.f,            90.f,            2.f,         true,        180000,      FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_DRUID_CAT_FERAL_FRENZY,     FSBSpellType::Damage,   0.25f,       0.f,            90.f,            8.f,         false,       45000,       FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
+    { SPELL_DRUID_CAT_FERAL_FRENZY,     FSBSpellType::Damage,   0.25f,       0.f,            90.f,            8.f,         false,       45000,       FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 45000)
     { SPELL_DRUID_CAT_THRASH,           FSBSpellType::Damage,   0.f,         0.f,            90.f,            8.f,         false,       6000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_DRUID_CAT_SHRED,            FSBSpellType::Damage,   0.f,         0.f,            90.f,            2.5f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_DRUID_CAT_MANGLE,           FSBSpellType::Damage,   0.4f,        0.f,            90.f,            2.5f,        false,       6000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_DRUID_CAT_FEROCIOUS_BITE,   FSBSpellType::Damage,   0.25f,       0.f,            80.f,            2.5f,        false,       6000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_DRUID_CAT_PRIMAL_WRATH,     FSBSpellType::Damage,   0.f,         0.f,            80.f,            2.5f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
+    { SPELL_DRUID_CAT_SHRED,            FSBSpellType::Damage,   0.f,         0.f,            90.f,            2.5f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_DRUID_CAT_MANGLE,           FSBSpellType::Damage,   0.4f,        0.f,            90.f,            2.5f,        false,       6000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 6000)
+    { SPELL_DRUID_CAT_FEROCIOUS_BITE,   FSBSpellType::Damage,   0.25f,       0.f,            80.f,            2.5f,        false,       6000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 6000)
+    { SPELL_DRUID_CAT_PRIMAL_WRATH,     FSBSpellType::Damage,   0.f,         0.f,            80.f,            2.5f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 1000)
     { SPELL_DRUID_CAT_TIGER_FURY,       FSBSpellType::Damage,   0.f,         0.f,            50.f,            2.5f,        true,        30000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_DRUID_SWIPE,                FSBSpellType::Damage,   0.f,         0.f,            50.f,            2.5f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_DRUID_CAT_RIP,              FSBSpellType::Damage,   0.2f,        0.f,            50.f,            2.5f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_DRUID_CAT_RAKE,              FSBSpellType::Damage,   0.f,         0.f,            50.f,            2.5f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
+    { SPELL_DRUID_SWIPE,                FSBSpellType::Damage,   0.f,         0.f,            50.f,            2.5f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_DRUID_CAT_RIP,              FSBSpellType::Damage,   0.2f,        0.f,            50.f,            2.5f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_DRUID_CAT_RAKE,              FSBSpellType::Damage,   0.f,         0.f,            50.f,            2.5f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 1000)
     
 
     // RANGED
-    { SPELL_DRUID_HIBERNATE,            FSBSpellType::Damage,   0.f,        0.f,             100.f,            30.f,        false,       40000,       FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_DRUID_ROOTS,                FSBSpellType::Damage,   0.f,        0.f,             100.f,            30.f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_DRUID_STARFIRE,             FSBSpellType::Damage,   0.05f,      0.f,             100.f,            40.f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
+    { SPELL_DRUID_HIBERNATE,            FSBSpellType::Damage,   0.f,        0.f,             100.f,            30.f,        false,       40000,       FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 40000)
+    { SPELL_DRUID_ROOTS,                FSBSpellType::Damage,   0.f,        0.f,             100.f,            30.f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_DRUID_STARFIRE,             FSBSpellType::Damage,   0.05f,      0.f,             100.f,            40.f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 1000)
     { SPELL_DRUID_SOLAR_BEAM,           FSBSpellType::Damage,   0.f,        0.f,             100.f,            40.f,        false,       60000,       FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_DRUID_WILD_MUSHROOM,        FSBSpellType::Damage,   0.05f,      0.f,             100.f,            40.f,        false,       30000,       FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
+    { SPELL_DRUID_WILD_MUSHROOM,        FSBSpellType::Damage,   0.05f,      0.f,             100.f,            40.f,        false,       30000,       FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 30000)
     { SPELL_DRUID_TYPHOON,              FSBSpellType::Damage,   0.f,        0.f,             80.f,            15.f,        false,       30000,       FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_DRUID_NEW_MOON,             FSBSpellType::Damage,   0.f,        0.f,             80.f,            40.f,        false,       20000,       FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
+    { SPELL_DRUID_NEW_MOON,             FSBSpellType::Damage,   0.f,        0.f,             80.f,            40.f,        false,       20000,       FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 20000)
     { SPELL_DRUID_STARSURGE,            FSBSpellType::Damage,   0.f,        0.f,             80.f,            40.f,        false,       10000,       FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_DRUID_STARFALL,             FSBSpellType::Damage,   0.1f,       0.f,             80.f,            40.f,        false,       8000,        FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  
-    { SPELL_DRUID_MOONFIRE,             FSBSpellType::Damage,   0.f,        0.f,             70.f,            30.f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_DRUID_SUNFIRE,              FSBSpellType::Damage,   0.f,        0.f,             70.f,            40.f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_DRUID_CELESTIAL_ALIGNMENT,  FSBSpellType::Damage,   0.f,        0.f,             50.f,             40.f,        true,        180000,      FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
+    { SPELL_DRUID_STARFALL,             FSBSpellType::Damage,   0.1f,       0.f,             80.f,            40.f,        false,       8000,        FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },    // CSV cooldown 0 (FSB 8000)
+    { SPELL_DRUID_MOONFIRE,             FSBSpellType::Damage,   0.f,        0.f,             70.f,            30.f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_DRUID_SUNFIRE,              FSBSpellType::Damage,   0.f,        0.f,             70.f,            40.f,        false,       1000,        FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_DRUID_CELESTIAL_ALIGNMENT,  FSBSpellType::Damage,   0.f,        0.f,             50.f,             40.f,        true,        180000,      FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 1000 (FSB 180000)
 
     // HEALER
-    { SPELL_DRUID_NATURE_CURE,          FSBSpellType::Heal,     0.f,        100.f,           100.f,            40.f,        false,        8000,        FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_DRUID_REJUVENATION,         FSBSpellType::Heal,     0.f,        80.f,            100.f,            40.f,        false,        1000,        FSB_RoleMask::FSB_ROLEMASK_HEALER },
+    { SPELL_DRUID_NATURE_CURE,          FSBSpellType::Heal,     0.f,        100.f,           100.f,            40.f,        false,        8000,        FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 8000)
+    { SPELL_DRUID_REJUVENATION,         FSBSpellType::Heal,     0.f,        80.f,            100.f,            40.f,        false,        1000,        FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 1000)
     { SPELL_DRUID_WILD_GROWTH,          FSBSpellType::Heal,     0.f,        70.f,            100.f,            40.f,        false,        10000,       FSB_RoleMask::FSB_ROLEMASK_HEALER },
     { SPELL_DRUID_TREE_OF_LIFE,         FSBSpellType::Heal,     0.f,        50.f,            50.f,             0.f,         true,         180000,      FSB_RoleMask::FSB_ROLEMASK_HEALER },
     { SPELL_DRUID_IRONBARK,             FSBSpellType::Heal,     0.f,        50.f,            50.f,             0.f,         true,         90000,       FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_DRUID_LIFEBLOOM,            FSBSpellType::Heal,     0.f,        50.f,            50.f,             40.f,        false,        1000,        FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_DRUID_SWIFTMEND,            FSBSpellType::Heal,     0.f,        30.f,            50.f,             40.f,        false,        15000,       FSB_RoleMask::FSB_ROLEMASK_HEALER },
+    { SPELL_DRUID_LIFEBLOOM,            FSBSpellType::Heal,     0.f,        50.f,            50.f,             40.f,        false,        1000,        FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_DRUID_SWIFTMEND,            FSBSpellType::Heal,     0.f,        30.f,            50.f,             40.f,        false,        15000,       FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 15000)
     { SPELL_DRUID_TRANQUILITY,          FSBSpellType::Heal,     0.f,        30.f,            50.f,             40.f,        true,         180000,      FSB_RoleMask::FSB_ROLEMASK_HEALER },
 };
 

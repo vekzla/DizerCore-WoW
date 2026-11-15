@@ -36,7 +36,7 @@ std::vector<FSBSpellDefinition> WarlockSpellsTable =
     { SPELL_DRAENEI_GIFT_NAARU,             FSBSpellType::Heal,     0.f,        50.f,           100.f,           30.f,          false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_PANDAREN_QUAKING_PALM,          FSBSpellType::Damage,   0.f,        0.f,            100.f,           2.f,           false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_ORC_BLOOD_FURY,                 FSBSpellType::Damage,   0.f,        0.f,            100.f,           0.f,           true,       120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
-    { SPELL_UNDEAD_WILL_OF_FORSAKEN,        FSBSpellType::Heal,     0.f,        80.f,           100.f,           0.f,           true,        30000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
+    { SPELL_UNDEAD_WILL_OF_FORSAKEN,        FSBSpellType::Heal,     0.f,        80.f,           100.f,           0.f,           true,        30000,         FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 120000 (FSB 30000)
     { SPELL_TAUREN_WAR_STOMP,               FSBSpellType::Damage,   0.f,        0.f,            100.f,           8.f,           false,       90000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_TROLL_BERSERKING,               FSBSpellType::Damage,   0.f,        0.f,            100.f,           0.f,           true,       180000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_BLOODELF_ARCANE_TORRENT,        FSBSpellType::Damage,   0.f,        0.f,            100.f,           8.f,           false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
@@ -44,45 +44,45 @@ std::vector<FSBSpellDefinition> WarlockSpellsTable =
 
     { SPELL_WARLOCK_UNENDING_RESOLVE,       FSBSpellType::Heal,     0.f,        50.f,           50.f,            0.f,           true,       180000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     
-    { SPELL_WARLOCK_FEAR,                   FSBSpellType::Damage,   0.03f,      0.f,            70.f,            20.f,          false,      8000,           FSB_RoleMask::FSB_ROLEMASK_ANY },
+    { SPELL_WARLOCK_FEAR,                   FSBSpellType::Damage,   0.03f,      0.f,            70.f,            20.f,          false,      8000,           FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 0 (FSB 8000)
     { SPELL_WARLOCK_MORTAL_COIL,            FSBSpellType::Heal,     0.f,        60.f,           80.f,            20.f,          false,      45000,          FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_WARLOCK_DARK_PACT,              FSBSpellType::Heal,     0.f,        50.f,           60.f,            0.f,           true,       60000,          FSB_RoleMask::FSB_ROLEMASK_ANY },
-    { SPELL_WARLOCK_BLIGHT_WEAKNESS,        FSBSpellType::Damage,   0.05f,      0.f,            80.f,            40.f,          false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
-    { SPELL_WARLOCK_DRAIN_LIFE,             FSBSpellType::Damage,   0.f,        0.f,            40.f,            40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_ANY },
+    { SPELL_WARLOCK_BLIGHT_WEAKNESS,        FSBSpellType::Damage,   0.05f,      0.f,            80.f,            40.f,          false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 0 (FSB 120000)
+    { SPELL_WARLOCK_DRAIN_LIFE,             FSBSpellType::Damage,   0.f,        0.f,            40.f,            40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 0 (FSB 1000)
     
     // AFFLICTION
     { SPELL_WARLOCK_HOWL_TERROR,            FSBSpellType::Damage,   0.f,        0.f,        100.f,        5.f,           true,       40000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },
-    { SPELL_WARLOCK_CURSE_TONGUES,          FSBSpellType::Damage,   0.f,        0.f,        100.f,        40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },
-    { SPELL_WARLOCK_CURSE_EXHAUSTION,       FSBSpellType::Damage,   0.f,        0.f,        100.f,        40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },
+    { SPELL_WARLOCK_CURSE_TONGUES,          FSBSpellType::Damage,   0.f,        0.f,        100.f,        40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_WARLOCK_CURSE_EXHAUSTION,       FSBSpellType::Damage,   0.f,        0.f,        100.f,        40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },  // CSV cooldown 0 (FSB 1000)
 
     { SPELL_WARLOCK_HAUNT,                  FSBSpellType::Damage,   0.f,        0.f,        90.f,         40.f,          false,      15000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },
 
-    { SPELL_WARLOCK_CORRUPTION,             FSBSpellType::Damage,   0.f,        0.f,        90.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },
-    { SPELL_WARLOCK_AGONY,                  FSBSpellType::Damage,   0.f,        0.f,        90.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },
-    { SPELL_WARLOCK_CURSE_WEAKNESS,         FSBSpellType::Damage,   0.f,        0.f,        90.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },
+    { SPELL_WARLOCK_CORRUPTION,             FSBSpellType::Damage,   0.f,        0.f,        90.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_WARLOCK_AGONY,                  FSBSpellType::Damage,   0.f,        0.f,        90.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_WARLOCK_CURSE_WEAKNESS,         FSBSpellType::Damage,   0.f,        0.f,        90.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },  // CSV cooldown 0 (FSB 1000)
 
-    { SPELL_WARLOCK_DRAIN_SOUL,             FSBSpellType::Damage,   0.f,        0.f,        80.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },
+    { SPELL_WARLOCK_DRAIN_SOUL,             FSBSpellType::Damage,   0.f,        0.f,        80.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },  // CSV cooldown 0 (FSB 1000)
 
-    { SPELL_WARLOCK_SEED_CORRUPTION,        FSBSpellType::Damage,   0.f,        0.f,        70.f,         30.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },
-    { SPELL_WARLOCK_UNSTABLE_AFFLICTION,    FSBSpellType::Damage,   0.f,        0.f,        70.f,         30.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },
+    { SPELL_WARLOCK_SEED_CORRUPTION,        FSBSpellType::Damage,   0.f,        0.f,        70.f,         30.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_WARLOCK_UNSTABLE_AFFLICTION,    FSBSpellType::Damage,   0.f,        0.f,        70.f,         30.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_AFFLICTION },  // CSV cooldown 0 (FSB 1000)
 
     // DEMONOLOGY
     { SPELL_WARLOCK_DEMONIC_TYRANT,         FSBSpellType::Damage,   0.f,        0.f,        100.f,        40.f,          false,      60000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DEMONOLOGY },
-    { SPELL_WARLOCK_CALL_DREADSTALKERS,     FSBSpellType::Damage,   0.05f,      0.f,        100.f,        40.f,          false,      20000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DEMONOLOGY },
-    { SPELL_WARLOCK_DEMONBOLT,              FSBSpellType::Damage,   0.f,        0.f,        80.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DEMONOLOGY },
-    { SPELL_WARLOCK_SHADOW_BOLT,            FSBSpellType::Damage,   0.f,        0.f,        80.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DEMONOLOGY },
-    { SPELL_WARLOCK_WILD_IMPS,              FSBSpellType::Damage,   0.5f,       0.f,        20.f,         40.f,          false,      1800000,        FSB_RoleMask::FSB_ROLEMASK_RANGED_DEMONOLOGY },
+    { SPELL_WARLOCK_CALL_DREADSTALKERS,     FSBSpellType::Damage,   0.05f,      0.f,        100.f,        40.f,          false,      20000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DEMONOLOGY },  // CSV cooldown 0 (FSB 20000)
+    { SPELL_WARLOCK_DEMONBOLT,              FSBSpellType::Damage,   0.f,        0.f,        80.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DEMONOLOGY },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_WARLOCK_SHADOW_BOLT,            FSBSpellType::Damage,   0.f,        0.f,        80.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DEMONOLOGY },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_WARLOCK_WILD_IMPS,              FSBSpellType::Damage,   0.5f,       0.f,        20.f,         40.f,          false,      1800000,        FSB_RoleMask::FSB_ROLEMASK_RANGED_DEMONOLOGY },  // CSV cooldown 0 (FSB 1800000)
     { SPELL_WARLOCK_SHADOWFURY,             FSBSpellType::Damage,   0.f,        0.f,        100.f,        35.f,          false,      60000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DEMONOLOGY },
 
     // DESTRO
     { SPELL_WARLOCK_SUMMON_INFERNAL,        FSBSpellType::Damage,   0.3f,       0.f,        100.f,        40.f,          false,      180000,         FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },
-    { SPELL_WARLOCK_CHAOS_BOLT,             FSBSpellType::Damage,   0.04f,      0.f,         90.f,        40.f,          false,      10000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },
+    { SPELL_WARLOCK_CHAOS_BOLT,             FSBSpellType::Damage,   0.04f,      0.f,         90.f,        40.f,          false,      10000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },  // CSV cooldown 16000 (FSB 10000)
     { SPELL_WARLOCK_SOUL_FIRE,              FSBSpellType::Damage,   0.f,        0.f,         90.f,        40.f,          false,      45000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },
-    { SPELL_WARLOCK_SHADOW_BOLT,            FSBSpellType::Damage,   0.f,        0.f,        80.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },
-    { SPELL_WARLOCK_IMMOLATE,               FSBSpellType::Damage,   0.f,        0.f,         80.f,        40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },
-    { SPELL_WARLOCK_SHADOWBURN,             FSBSpellType::Damage,   0.f,        0.f,         80.f,        40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },
-    { SPELL_WARLOCK_CONFLAGRATE,            FSBSpellType::Damage,   0.f,        0.f,         70.f,        40.f,          false,      13000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },
-    { SPELL_WARLOCK_INCINERATE,             FSBSpellType::Damage,   0.f,        0.f,         70.f,        40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },
+    { SPELL_WARLOCK_SHADOW_BOLT,            FSBSpellType::Damage,   0.f,        0.f,        80.f,         40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_WARLOCK_IMMOLATE,               FSBSpellType::Damage,   0.f,        0.f,         80.f,        40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_WARLOCK_SHADOWBURN,             FSBSpellType::Damage,   0.f,        0.f,         80.f,        40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },  // CSV cooldown 10000 (FSB 1000)
+    { SPELL_WARLOCK_CONFLAGRATE,            FSBSpellType::Damage,   0.f,        0.f,         70.f,        40.f,          false,      13000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },  // CSV cooldown 0 (FSB 13000)
+    { SPELL_WARLOCK_INCINERATE,             FSBSpellType::Damage,   0.f,        0.f,         70.f,        40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },  // CSV cooldown 0 (FSB 1000)
     { SPELL_WARLOCK_HAVOC,                  FSBSpellType::Damage,   0.f,        0.f,         80.f,        40.f,          false,      30000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },
     { SPELL_WARLOCK_CATACLYSM,              FSBSpellType::Damage,   0.f,        0.f,         30.f,        40.f,          false,      30000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DESTRUCTION },
 

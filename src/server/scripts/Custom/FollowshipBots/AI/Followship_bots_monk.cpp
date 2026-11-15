@@ -38,82 +38,82 @@ std::vector<FSBSpellDefinition> MonkSpellsTable =
     { SPELL_DRAENEI_GIFT_NAARU,             FSBSpellType::Heal,     0.f,        50.f,           100.f,           30.f,          false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_PANDAREN_QUAKING_PALM,          FSBSpellType::Damage,   0.f,        0.f,            100.f,           2.f,           false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_ORC_BLOOD_FURY,                 FSBSpellType::Damage,   0.f,        0.f,            100.f,           0.f,           true,       120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
-    { SPELL_UNDEAD_WILL_OF_FORSAKEN,        FSBSpellType::Heal,     0.f,        80.f,           100.f,           0.f,           true,        30000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
+    { SPELL_UNDEAD_WILL_OF_FORSAKEN,        FSBSpellType::Heal,     0.f,        80.f,           100.f,           0.f,           true,        30000,         FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 120000 (FSB 30000)
     { SPELL_TAUREN_WAR_STOMP,               FSBSpellType::Damage,   0.f,        0.f,            100.f,           8.f,           false,       90000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_TROLL_BERSERKING,               FSBSpellType::Damage,   0.f,        0.f,            100.f,           0.f,           true,       180000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_BLOODELF_ARCANE_TORRENT,        FSBSpellType::Damage,   0.f,        0.f,            100.f,           8.f,           false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_GOBLIN_ROCKET_BARRAGE,          FSBSpellType::Damage,   0.f,        0.f,            100.f,          30.f,           false,       90000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
 
-    { SPELL_MONK_FORTIFYING_BREW,           FSBSpellType::Heal,     0.f,        20.f,           100.f,           0.f,           true,       90000,          FSB_RoleMask::FSB_ROLEMASK_ANY },
+    { SPELL_MONK_FORTIFYING_BREW,           FSBSpellType::Heal,     0.f,        20.f,           100.f,           0.f,           true,       90000,          FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 0 (FSB 90000)
 
     { SPELL_MONK_SPEAR_HAND_STRIKE,         FSBSpellType::Damage,   0.f,        0.f,            100.f,           2.f,           false,      15000,          FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_MONK_LEG_SWEEP,                 FSBSpellType::Damage,   0.f,        0.f,            50.f,            6.f,           false,      60000,          FSB_RoleMask::FSB_ROLEMASK_ANY },
 
     //TANK
-    { SPELL_MONK_VIVIFY,                    FSBSpellType::Heal,     0.3f,       50.f,           100.f,           40.f,          false,      2000,           FSB_RoleMask::FSB_ROLEMASK_TANK },
+    { SPELL_MONK_VIVIFY,                    FSBSpellType::Heal,     0.3f,       50.f,           100.f,           40.f,          false,      2000,           FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 0 (FSB 2000)
     { SPELL_MONK_BLACK_OX_BREW,             FSBSpellType::Heal,     0.f,        30.f,           50.f,            0.f,           true,       120000,         FSB_RoleMask::FSB_ROLEMASK_TANK },
-    { SPELL_MONK_CELESTIAL_INFUSION,        FSBSpellType::Heal,     0.f,        70.f,           50.f,            0.f,           true,       45000,          FSB_RoleMask::FSB_ROLEMASK_TANK },
-    { SPELL_MONK_CELESTIAL_BREW,            FSBSpellType::Heal,     0.f,        30.f,           50.f,            0.f,           true,       45000,          FSB_RoleMask::FSB_ROLEMASK_TANK },
+    { SPELL_MONK_CELESTIAL_INFUSION,        FSBSpellType::Heal,     0.f,        70.f,           50.f,            0.f,           true,       45000,          FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 0 (FSB 45000)
+    { SPELL_MONK_CELESTIAL_BREW,            FSBSpellType::Heal,     0.f,        30.f,           50.f,            0.f,           true,       45000,          FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 0 (FSB 45000)
     { SPELL_MONK_EXPEL_HARM,                FSBSpellType::Heal,     0.15f,      40.f,           100.f,           0.f,           true,       15000,          FSB_RoleMask::FSB_ROLEMASK_TANK },
-    { SPELL_MONK_PURIFYING_BREW,            FSBSpellType::Heal,     0.f,        70.f,           50.f,            0.f,           true,       10000,          FSB_RoleMask::FSB_ROLEMASK_TANK },
+    { SPELL_MONK_PURIFYING_BREW,            FSBSpellType::Heal,     0.f,        70.f,           50.f,            0.f,           true,       10000,          FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 1000 (FSB 10000)
 
-    { SPELL_MONK_PROVOKE,                   FSBSpellType::Damage,   0.f,        0.f,            100.f,           30.f,          false,      30000,          FSB_RoleMask::FSB_ROLEMASK_TANK },
+    { SPELL_MONK_PROVOKE,                   FSBSpellType::Damage,   0.f,        0.f,            100.f,           30.f,          false,      30000,          FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 8000 (FSB 30000)
 
     // cc
-    { SPELL_MONK_SPINNING_CRANE,            FSBSpellType::Damage,   0.4f,       0.f,            100.f,           6.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_TANK },
+    { SPELL_MONK_SPINNING_CRANE,            FSBSpellType::Damage,   0.4f,       0.f,            100.f,           6.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 0 (FSB 1000)
     { SPELL_MONK_BLACK_OX_STATUE,           FSBSpellType::Damage,   0.f,        0.f,            100.f,           2.f,           true,       10000,          FSB_RoleMask::FSB_ROLEMASK_TANK },
     { SPELL_MONK_RUSHING_JADE_WIND,         FSBSpellType::Damage,   0.f,        0.f,            100.f,           8.f,           false,      6000,           FSB_RoleMask::FSB_ROLEMASK_TANK },
     // dmg
-    { SPELL_MONK_TIGER_PALM,                FSBSpellType::Damage,   0.5f,       0.f,            100.f,           2.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_TANK },
+    { SPELL_MONK_TIGER_PALM,                FSBSpellType::Damage,   0.5f,       0.f,            100.f,           2.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 0 (FSB 1000)
     { SPELL_MONK_INVOKE_NIUZAO,             FSBSpellType::Damage,   0.f,        0.f,            100.f,           40.f,          false,      120000,         FSB_RoleMask::FSB_ROLEMASK_TANK },
     { SPELL_MONK_EXPLODING_KEG,             FSBSpellType::Damage,   0.f,        0.f,            100.f,           40.f,          false,      60000,          FSB_RoleMask::FSB_ROLEMASK_TANK },
     { SPELL_MONK_CHI_BURST,                 FSBSpellType::Damage,   0.f,        0.f,            100.f,           40.f,          false,      30000,          FSB_RoleMask::FSB_ROLEMASK_TANK },
     { SPELL_MONK_BREATH_FIRE,               FSBSpellType::Damage,   0.f,        0.f,            100.f,           2.f,           false,      15000,          FSB_RoleMask::FSB_ROLEMASK_TANK },
-    { SPELL_MONK_KEG_SMASH,                 FSBSpellType::Damage,   0.f,        0.f,            100.f,           15.f,          false,      8000,           FSB_RoleMask::FSB_ROLEMASK_TANK },
+    { SPELL_MONK_KEG_SMASH,                 FSBSpellType::Damage,   0.f,        0.f,            100.f,           15.f,          false,      8000,           FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 1000 (FSB 8000)
 
-    { SPELL_MONK_BLACKOUT_KICK,             FSBSpellType::Damage,   0.f,        0.f,            80.f,            2.f,           false,      4000,           FSB_RoleMask::FSB_ROLEMASK_TANK },
-    { SPELL_MONK_DISABLE,                   FSBSpellType::Damage,   0.15f,      0.f,            40.f,            2.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_TANK },
+    { SPELL_MONK_BLACKOUT_KICK,             FSBSpellType::Damage,   0.f,        0.f,            80.f,            2.f,           false,      4000,           FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 0 (FSB 4000)
+    { SPELL_MONK_DISABLE,                   FSBSpellType::Damage,   0.15f,      0.f,            40.f,            2.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_TANK },  // CSV cooldown 0 (FSB 1000)
 
 
     //HEAL
-    { SPELL_MONK_SOOTHING_MIST,             FSBSpellType::Heal,     0.f,        75.f,           100.f,           40.f,          false,      8000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
+    { SPELL_MONK_SOOTHING_MIST,             FSBSpellType::Heal,     0.f,        75.f,           100.f,           40.f,          false,      8000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 8000)
     { SPELL_MONK_EXPEL_HARM,                FSBSpellType::Heal,     0.15f,      40.f,           100.f,           0.f,           true,       15000,          FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_MONK_RENEWING_MIST,             FSBSpellType::Heal,     0.02f,      75.f,           100.f,           40.f,          false,      5000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_MONK_VIVIFY,                    FSBSpellType::Heal,     0.03f,      50.f,           100.f,           40.f,          false,      2000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_MONK_ENVELOPING_MIST,           FSBSpellType::Heal,     0.f,        70.f,           80.f,            40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_MONK_SHEILUN_GIFT,              FSBSpellType::Heal,     0.f,        60.f,           80.f,            40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_MONK_LIFE_COCOON,               FSBSpellType::Heal,     0.f,        30.f,           50.f,            40.f,          false,      120000,         FSB_RoleMask::FSB_ROLEMASK_HEALER },
+    { SPELL_MONK_RENEWING_MIST,             FSBSpellType::Heal,     0.02f,      75.f,           100.f,           40.f,          false,      5000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 5000)
+    { SPELL_MONK_VIVIFY,                    FSBSpellType::Heal,     0.03f,      50.f,           100.f,           40.f,          false,      2000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 2000)
+    { SPELL_MONK_ENVELOPING_MIST,           FSBSpellType::Heal,     0.f,        70.f,           80.f,            40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_MONK_SHEILUN_GIFT,              FSBSpellType::Heal,     0.f,        60.f,           80.f,            40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_MONK_LIFE_COCOON,               FSBSpellType::Heal,     0.f,        30.f,           50.f,            40.f,          false,      120000,         FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 750 (FSB 120000)
 
     // mass heal
-    { SPELL_MONK_RESTORAL,                  FSBSpellType::Heal,     0.f,        100.f,          50.f,            0.f,           true,       180000,         FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_MONK_REVIVAL,                   FSBSpellType::Heal,     0.f,        100.f,          50.f,            0.f,           true,       180000,         FSB_RoleMask::FSB_ROLEMASK_HEALER },
+    { SPELL_MONK_RESTORAL,                  FSBSpellType::Heal,     0.f,        100.f,          50.f,            0.f,           true,       180000,         FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 1000 (FSB 180000)
+    { SPELL_MONK_REVIVAL,                   FSBSpellType::Heal,     0.f,        100.f,          50.f,            0.f,           true,       180000,         FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 1000 (FSB 180000)
     { SPELL_MONK_CELESTIAL_CONDUIT,         FSBSpellType::Heal,     0.05f,      100.f,          50.f,            0.f,           true,       90000,          FSB_RoleMask::FSB_ROLEMASK_HEALER },
 
     // cc
-    { SPELL_MONK_SPINNING_CRANE,            FSBSpellType::Damage,   0.1f,       0.f,            100.f,           6.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
+    { SPELL_MONK_SPINNING_CRANE,            FSBSpellType::Damage,   0.1f,       0.f,            100.f,           6.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 1000)
 
-    { SPELL_MONK_BLACKOUT_KICK,             FSBSpellType::Damage,   0.f,        0.f,            80.f,            2.f,           false,      4000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_MONK_RUSHING_WIND_KICK,         FSBSpellType::Damage,   0.02f,      0.f,            80.f,            2.f,           false,      10000,          FSB_RoleMask::FSB_ROLEMASK_HEALER },
+    { SPELL_MONK_BLACKOUT_KICK,             FSBSpellType::Damage,   0.f,        0.f,            80.f,            2.f,           false,      4000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 4000)
+    { SPELL_MONK_RUSHING_WIND_KICK,         FSBSpellType::Damage,   0.02f,      0.f,            80.f,            2.f,           false,      10000,          FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 10000)
     { SPELL_MONK_SUMMON_SERPENT_STATUE,     FSBSpellType::Damage,   0.05f,      0.f,            50.f,            40.f,          false,      10000,          FSB_RoleMask::FSB_ROLEMASK_HEALER },
     { SPELL_MONK_INVOKE_CHIJI,              FSBSpellType::Damage,   0.f,        0.f,            30.f,            40.f,          false,      120000,         FSB_RoleMask::FSB_ROLEMASK_HEALER },
     { SPELL_MONK_INVOKE_YULON,              FSBSpellType::Damage,   0.f,        0.f,            30.f,            40.f,          false,      120000,         FSB_RoleMask::FSB_ROLEMASK_HEALER },
 
     //DPS
     { SPELL_MONK_TIGER_LUST,                FSBSpellType::Heal,     0.f,        100.f,          100.f,           20.f,          false,      30000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_MONK_SOOTHING_MIST_CHI,         FSBSpellType::Heal,     0.2f,       70.f,           100.f,           40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
+    { SPELL_MONK_SOOTHING_MIST_CHI,         FSBSpellType::Heal,     0.2f,       70.f,           100.f,           40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 1000)
 
     { SPELL_MONK_PARALYSIS_CHI,             FSBSpellType::Damage,   0.f,        0.f,            100.f,           20.f,          false,      45000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
 
-    { SPELL_MONK_BLACKOUT_KICK_CHI,         FSBSpellType::Damage,   0.f,        0.f,            80.f,            2.f,           false,      4000,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_MONK_TIGER_PALM_CHI,            FSBSpellType::Damage,   0.f,        0.f,            80.f,            2.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
+    { SPELL_MONK_BLACKOUT_KICK_CHI,         FSBSpellType::Damage,   0.f,        0.f,            80.f,            2.f,           false,      4000,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 4000)
+    { SPELL_MONK_TIGER_PALM_CHI,            FSBSpellType::Damage,   0.f,        0.f,            80.f,            2.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 1000)
 
 
     { SPELL_MONK_STRIKE_WINDLORD,           FSBSpellType::Damage,   0.f,        0.f,            100.f,           9.f,           false,      35000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
     { SPELL_MONK_SLICING_WINDS_1,           FSBSpellType::Damage,   0.4f,       0.f,            100.f,           2.f,           false,      30000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
     { SPELL_MONK_FISTS_FURY,                FSBSpellType::Damage,   0.f,        0.f,            100.f,           8.f,           false,      24000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_MONK_RISING_SUN_KICK,           FSBSpellType::Damage,   0.40f,      0.f,            60.f,            2.f,           false,      10000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
+    { SPELL_MONK_RISING_SUN_KICK,           FSBSpellType::Damage,   0.40f,      0.f,            60.f,            2.f,           false,      10000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 10000)
     { SPELL_MONK_RUSHING_WIND,              FSBSpellType::Damage,   0.f,        0.f,            60.f,            6.f,           false,      6000,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_MONK_SPINNING_CRANE,            FSBSpellType::Damage,   0.40f,      0.f,            60.f,            6.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
+    { SPELL_MONK_SPINNING_CRANE,            FSBSpellType::Damage,   0.40f,      0.f,            60.f,            6.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 1000)
 };
 
 namespace FSBMonk

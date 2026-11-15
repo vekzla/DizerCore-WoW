@@ -39,54 +39,54 @@ std::vector<FSBSpellDefinition> ShamanSpellsTable =
     { SPELL_DRAENEI_GIFT_NAARU,             FSBSpellType::Heal,     0.f,        50.f,           100.f,           30.f,          false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_PANDAREN_QUAKING_PALM,          FSBSpellType::Damage,   0.f,        0.f,            100.f,           2.f,           false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_ORC_BLOOD_FURY,                 FSBSpellType::Damage,   0.f,        0.f,            100.f,           0.f,           true,       120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
-    { SPELL_UNDEAD_WILL_OF_FORSAKEN,        FSBSpellType::Heal,     0.f,        80.f,           100.f,           0.f,           true,        30000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
+    { SPELL_UNDEAD_WILL_OF_FORSAKEN,        FSBSpellType::Heal,     0.f,        80.f,           100.f,           0.f,           true,        30000,         FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 120000 (FSB 30000)
     { SPELL_TAUREN_WAR_STOMP,               FSBSpellType::Damage,   0.f,        0.f,            100.f,           8.f,           false,       90000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_TROLL_BERSERKING,               FSBSpellType::Damage,   0.f,        0.f,            100.f,           0.f,           true,       180000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_BLOODELF_ARCANE_TORRENT,        FSBSpellType::Damage,   0.f,        0.f,            100.f,           8.f,           false,      120000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_GOBLIN_ROCKET_BARRAGE,          FSBSpellType::Damage,   0.f,        0.f,            100.f,          30.f,           false,       90000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
 
     // ===================== SHARED (ANY ROLE) =====================
-    { SPELL_SHAMAN_HEALING_SURGE,           FSBSpellType::Heal,     0.1f,       50.f,           100.f,           40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_ANY },
-    { SPELL_SHAMAN_FLAME_SHOCK,             FSBSpellType::Damage,   0.f,        0.f,            70.f,            25.f,          false,      6000,           FSB_RoleMask::FSB_ROLEMASK_ANY },
-    { SPELL_SHAMAN_FROST_SHOCK,             FSBSpellType::Damage,   0.f,        0.f,            50.f,            25.f,          false,      6000,           FSB_RoleMask::FSB_ROLEMASK_ANY },
-    { SPELL_SHAMAN_HEROISM,                 FSBSpellType::Damage,   0.f,        0.f,            50.f,            0.f,           true,       600000,         FSB_RoleMask::FSB_ROLEMASK_ANY },
+    { SPELL_SHAMAN_HEALING_SURGE,           FSBSpellType::Heal,     0.1f,       50.f,           100.f,           40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_SHAMAN_FLAME_SHOCK,             FSBSpellType::Damage,   0.f,        0.f,            70.f,            25.f,          false,      6000,           FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 0 (FSB 6000)
+    { SPELL_SHAMAN_FROST_SHOCK,             FSBSpellType::Damage,   0.f,        0.f,            50.f,            25.f,          false,      6000,           FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 0 (FSB 6000)
+    { SPELL_SHAMAN_HEROISM,                 FSBSpellType::Damage,   0.f,        0.f,            50.f,            0.f,           true,       600000,         FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 300000 (FSB 600000)
     { SPELL_SHAMAN_WIND_SHEAR,              FSBSpellType::Damage,   0.f,        0.f,            100.f,           25.f,          false,      12000,          FSB_RoleMask::FSB_ROLEMASK_ANY },
     { SPELL_SHAMAN_HEX,                     FSBSpellType::Damage,   0.f,        0.f,            100.f,           30.f,          false,      30000,          FSB_RoleMask::FSB_ROLEMASK_ANY },
-    { SPELL_SHAMAN_ASTRAL_SHIFT,            FSBSpellType::Heal,     0.f,        30.f,           100.f,           0.f,           true,       90000,          FSB_RoleMask::FSB_ROLEMASK_ANY },
+    { SPELL_SHAMAN_ASTRAL_SHIFT,            FSBSpellType::Heal,     0.f,        30.f,           100.f,           0.f,           true,       90000,          FSB_RoleMask::FSB_ROLEMASK_ANY },  // CSV cooldown 120000 (FSB 90000)
     { SPELL_SHAMAN_THUNDERSTORM,            FSBSpellType::Damage,   0.f,        0.f,            100.f,           0.f,           true,       30000,          FSB_RoleMask::FSB_ROLEMASK_ANY },
 
     // ===================== ELEMENTAL (RANGED DAMAGE) =====================
-    { SPELL_SHAMAN_LIGHTNING_BOLT,          FSBSpellType::Damage,   0.f,        0.f,            70.f,            40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_SHAMAN_LAVA_BURST,              FSBSpellType::Damage,   0.f,        0.f,            80.f,            40.f,          false,      8000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_SHAMAN_EARTH_SHOCK,             FSBSpellType::Damage,   0.f,        0.f,            70.f,            25.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_SHAMAN_CHAIN_LIGHTNING,         FSBSpellType::Damage,   0.f,        0.f,            60.f,            40.f,          false,      3000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
-    { SPELL_SHAMAN_ELEMENTAL_BLAST,         FSBSpellType::Damage,   0.f,        0.f,            70.f,            40.f,          false,      12000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
+    { SPELL_SHAMAN_LIGHTNING_BOLT,          FSBSpellType::Damage,   0.f,        0.f,            70.f,            40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_SHAMAN_LAVA_BURST,              FSBSpellType::Damage,   0.f,        0.f,            80.f,            40.f,          false,      8000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 8000)
+    { SPELL_SHAMAN_EARTH_SHOCK,             FSBSpellType::Damage,   0.f,        0.f,            70.f,            25.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_SHAMAN_CHAIN_LIGHTNING,         FSBSpellType::Damage,   0.f,        0.f,            60.f,            40.f,          false,      3000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 3000)
+    { SPELL_SHAMAN_ELEMENTAL_BLAST,         FSBSpellType::Damage,   0.f,        0.f,            70.f,            40.f,          false,      12000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },  // CSV cooldown 0 (FSB 12000)
     { SPELL_SHAMAN_STORMKEEPER,             FSBSpellType::Damage,   0.f,        0.f,            50.f,            40.f,          true,       60000,          FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE },
     //{ SPELL_SHAMAN_EARTHQUAKE,              FSBSpellType::Damage,   0.f,        0.f,            60.f,            40.f,          false,      6000,           FSB_RoleMask::FSB_ROLEMASK_RANGED_DAMAGE,                        true },
 
     // ===================== ENHANCEMENT (MELEE DAMAGE) =====================
     { SPELL_SHAMAN_ASCENDANCE_AIR,          FSBSpellType::Damage,     0.f,      0.f,            50.f,            2.f,           true,       180000,         FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
 
-    { SPELL_SHAMAN_STORMSTRIKE,             FSBSpellType::Damage,   0.f,        0.f,            80.f,            2.f,           false,      7500,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
+    { SPELL_SHAMAN_STORMSTRIKE,             FSBSpellType::Damage,   0.f,        0.f,            80.f,            2.f,           false,      7500,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 7500)
     { SPELL_SHAMAN_LAVA_LASH,               FSBSpellType::Damage,   0.f,        0.f,            70.f,            2.f,           false,      18000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_SHAMAN_CRASH_LIGHTNING,         FSBSpellType::Damage,   0.f,        0.f,            60.f,            2.f,           false,      12000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_SHAMAN_PRIMAL_STRIKE,           FSBSpellType::Damage,   0.f,        0.f,            70.f,            2.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_SHAMAN_SUNDERING,               FSBSpellType::Damage,   0.f,        0.f,            50.f,            2.f,           false,      40000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
-    { SPELL_SHAMAN_DOOM_WINDS,              FSBSpellType::Damage,   0.f,        0.f,            50.f,            2.f,           true,       40000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
+    { SPELL_SHAMAN_CRASH_LIGHTNING,         FSBSpellType::Damage,   0.f,        0.f,            60.f,            2.f,           false,      12000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 12000)
+    { SPELL_SHAMAN_PRIMAL_STRIKE,           FSBSpellType::Damage,   0.f,        0.f,            70.f,            2.f,           false,      1000,           FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_SHAMAN_SUNDERING,               FSBSpellType::Damage,   0.f,        0.f,            50.f,            2.f,           false,      40000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 30000 (FSB 40000)
+    { SPELL_SHAMAN_DOOM_WINDS,              FSBSpellType::Damage,   0.f,        0.f,            50.f,            2.f,           true,       40000,          FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },  // CSV cooldown 60000 (FSB 40000)
     //{ SPELL_SHAMAN_FERAL_SPIRIT,            FSBSpellType::Damage,   0.f,        0.f,            100.f,           0.f,           true,       120000,         FSB_RoleMask::FSB_ROLEMASK_MELEE_DAMAGE },
 
     // ===================== RESTORATION (HEALER) =====================
     { SPELL_SHAMAN_ASCENDANCE,              FSBSpellType::Heal,     0.f,        90.f,           50.f,            0.f,           true,       180000,         FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_SHAMAN_HEALING_RAIN,            FSBSpellType::Heal,     0.f,        40.f,           100.f,           40.f,          false,      18000,          FSB_RoleMask::FSB_ROLEMASK_HEALER,                               true },
-    { SPELL_SHAMAN_HEALING_WAVE,            FSBSpellType::Heal,     0.f,        40.f,           100.f,           40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_SHAMAN_CHAIN_HEAL,              FSBSpellType::Heal,     0.f,        50.f,           80.f,            40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_SHAMAN_UNLEASH_LIFE,            FSBSpellType::Heal,     0.f,        70.f,           50.f,            40.f,          false,      20000,          FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_SHAMAN_RIPTIDE,                 FSBSpellType::Heal,     0.f,        70.f,           100.f,           40.f,          false,      6000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
-    { SPELL_SHAMAN_DOWNPOUR,                FSBSpellType::Heal,     0.f,        30.f,           80.f,            35.f,          false,      35000,          FSB_RoleMask::FSB_ROLEMASK_HEALER,                               true },
+    { SPELL_SHAMAN_HEALING_RAIN,            FSBSpellType::Heal,     0.f,        40.f,           100.f,           40.f,          false,      18000,          FSB_RoleMask::FSB_ROLEMASK_HEALER,                               true },  // CSV cooldown 12000 (FSB 18000)
+    { SPELL_SHAMAN_HEALING_WAVE,            FSBSpellType::Heal,     0.f,        40.f,           100.f,           40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_SHAMAN_CHAIN_HEAL,              FSBSpellType::Heal,     0.f,        50.f,           80.f,            40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 1000)
+    { SPELL_SHAMAN_UNLEASH_LIFE,            FSBSpellType::Heal,     0.f,        70.f,           50.f,            40.f,          false,      20000,          FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 20000)
+    { SPELL_SHAMAN_RIPTIDE,                 FSBSpellType::Heal,     0.f,        70.f,           100.f,           40.f,          false,      6000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 6000)
+    { SPELL_SHAMAN_DOWNPOUR,                FSBSpellType::Heal,     0.f,        30.f,           80.f,            35.f,          false,      35000,          FSB_RoleMask::FSB_ROLEMASK_HEALER,                               true },  // CSV cooldown 0 (FSB 35000)
     //{ SPELL_SHAMAN_SPIRIT_LINK_TOTEM,       FSBSpellType::Heal,     0.f,        25.f,           100.f,           40.f,          false,      180000,         FSB_RoleMask::FSB_ROLEMASK_HEALER,                               true },
 
     // Healer filler damage (when group is healthy)
-    { SPELL_SHAMAN_LIGHTNING_BOLT,          FSBSpellType::Damage,   0.f,        0.f,            40.f,            40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },
+    { SPELL_SHAMAN_LIGHTNING_BOLT,          FSBSpellType::Damage,   0.f,        0.f,            40.f,            40.f,          false,      1000,           FSB_RoleMask::FSB_ROLEMASK_HEALER },  // CSV cooldown 0 (FSB 1000)
 };
 
 namespace FSBShaman
