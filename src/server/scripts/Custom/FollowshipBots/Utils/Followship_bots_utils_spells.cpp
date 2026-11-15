@@ -122,10 +122,10 @@ namespace FSBSpellsUtils
             // Can only be cast on more than 2/3 attackers
             // OR when 2/3 attackers are around
             // This way we limit spells to CC instead of general/spam use
-        case SPELL_PALADIN_REPENTANCE:
+        case SPELL_PALADIN_REPENTANCE:  // duplicate check line 637
             return CheckRepentanceRequirements(bot, target);
 
-        case SPELL_HUNTER_SCARE_BEAST:
+        case SPELL_HUNTER_SCARE_BEAST:  // duplicate check line 639
             return CheckCrowdControlRequirements(bot, 30.f) && target->GetCreatureType() == CREATURE_TYPE_BEAST;
 
         case SPELL_WARRIOR_CLEAVE:
@@ -152,18 +152,18 @@ namespace FSBSpellsUtils
         case SPELL_MAGE_FROST_NOVA:
             return CheckCrowdControlRequirements(bot, 12.f);
 
-        case SPELL_ROGUE_BLIND:
+        case SPELL_ROGUE_BLIND:  // duplicate check line 636
             return CheckCrowdControlRequirements(bot, 15.f);
 
-        case SPELL_MONK_PARALYSIS:
-        case SPELL_MONK_PARALYSIS_CHI:
+        case SPELL_MONK_PARALYSIS:  // duplicate check line 640
+        case SPELL_MONK_PARALYSIS_CHI:  // duplicate check line 641
             return CheckCrowdControlRequirements(bot, 20.f);
 
         case SPELL_MAGE_BLIZZARD:
         case SPELL_MAGE_FLAMESTRIKE:
-        case SPELL_DRUID_HIBERNATE:
-        case SPELL_MAGE_POLYMORPH:
-        case SPELL_SHAMAN_HEX:
+        case SPELL_DRUID_HIBERNATE:  // duplicate check line 634
+        case SPELL_MAGE_POLYMORPH:  // duplicate check line 632
+        case SPELL_SHAMAN_HEX:  // duplicate check line 643
             return CheckCrowdControlRequirements(bot, 30.f);
 
         case SPELL_SHAMAN_CHAIN_LIGHTNING:
@@ -223,7 +223,7 @@ namespace FSBSpellsUtils
             return target && target->GetHealthPct() <= 20;
 
             // RACIAL
-        case SPELL_PANDAREN_QUAKING_PALM:
+        case SPELL_PANDAREN_QUAKING_PALM:  // duplicate check line 642
         {
             FSB_Race race = FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry());
             return (race == FSB_Race::Pandaren || race == FSB_Race::PandarenHorde) && CheckCrowdControlRequirements(bot, 5.f);
@@ -255,6 +255,86 @@ namespace FSBSpellsUtils
 
         case SPELL_TROLL_BERSERKING:
             return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Troll;
+
+        // Stage 0.11: racial actives
+        case SPELL_GNOME_ESCAPE_ARTIST:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Gnome;
+        case SPELL_NIGHTELF_SHADOWMELD:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::NightElf;
+        case SPELL_WORGEN_DARKFLIGHT:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Worgen;
+        case SPELL_WORGEN_TWO_FORMS:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Worgen;
+        case SPELL_VOIDELF_SPATIAL_RIFT:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::VoidElf;
+        case SPELL_LIGHTFORGED_LIGHT_S_JUDGMENT:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::LightforgedDraenei;
+        case SPELL_DARKIRON_FIREBLOOD:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::DarkIronDwarf;
+        case SPELL_DARKIRON_MOLE_MACHINE:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::DarkIronDwarf;
+        case SPELL_KULTIRAN_HAYMAKER:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::KulTiran;
+        case SPELL_MECHAGNOME_HYPER_ORGANIC_LIGHT_ORIGINATOR:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Mechagnome;
+        case SPELL_DRACTHYR_AERIAL_HALT:
+        {
+            FSB_Race race = FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry());
+            return race == FSB_Race::DracthyrAlliance || race == FSB_Race::DracthyrHorde;
+        }
+        case SPELL_DRACTHYR_VISAGE:
+        {
+            FSB_Race race = FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry());
+            return race == FSB_Race::DracthyrAlliance || race == FSB_Race::DracthyrHorde;
+        }
+        case SPELL_DRACTHYR_WING_BUFFET:
+        {
+            FSB_Race race = FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry());
+            return race == FSB_Race::DracthyrAlliance || race == FSB_Race::DracthyrHorde;
+        }
+        case SPELL_GOBLIN_PACK_HOBGOBLIN:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Goblin;
+        case SPELL_GOBLIN_ROCKET_JUMP:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Goblin;
+        case SPELL_UNDEAD_CANNIBALIZE:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Undead;
+        case SPELL_NIGHTBORNE_ARCANE_PULSE:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Nightborne;
+        case SPELL_NIGHTBORNE_CANTRIPS:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Nightborne;
+        case SPELL_HIGHMOUNTAIN_BULL_RUSH:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::HighmountainTauren;
+        case SPELL_MAGHAR_ANCESTRAL_CALL:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::MagharOrc;
+        case SPELL_ZANDALARI_EMBRACE_OF_THE_LOA:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::ZandalariTroll;
+        case SPELL_ZANDALARI_PTERRORDAX_SWOOP:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::ZandalariTroll;
+        case SPELL_ZANDALARI_REGENERATIN:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::ZandalariTroll;
+        case SPELL_VULPERA_BAG_OF_TRICKS:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Vulpera;
+        case SPELL_VULPERA_MAKE_CAMP:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Vulpera;
+        case SPELL_VULPERA_RETURN_TO_CAMP:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Vulpera;
+        case SPELL_VULPERA_RUMMAGE_YOUR_BAG:
+            return FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry()) == FSB_Race::Vulpera;
+        case SPELL_EARTHEN_AZERITE_SURGE:
+        {
+            FSB_Race race = FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry());
+            return race == FSB_Race::EarthenAlliance || race == FSB_Race::EarthenHorde;
+        }
+        case SPELL_EARTHEN_QUIET_CONTEMPLATION:
+        {
+            FSB_Race race = FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry());
+            return race == FSB_Race::EarthenAlliance || race == FSB_Race::EarthenHorde;
+        }
+        case SPELL_HARANIR_THORN_BLOOM:
+        {
+            FSB_Race race = FSBMgr::Get()->GetBotRaceForEntry(bot->GetEntry());
+            return race == FSB_Race::HaranirAlliance || race == FSB_Race::HaranirHorde;
+        }
 
         case SPELL_PALADIN_BLESSING_SANCTUARY:
             return HasAnyMechanic(target, { MECHANIC_FEAR, MECHANIC_HORROR, MECHANIC_SILENCE, MECHANIC_STUN });
@@ -315,6 +395,19 @@ namespace FSBSpellsUtils
             return false;
 
         return true;
+    }
+
+    void ApplyRacialPassives(Creature* bot, FSB_Race race)
+    {
+        if (!bot)
+            return;
+
+        auto it = RacialPassiveSpells.find(race);
+        if (it == RacialPassiveSpells.end())
+            return;
+
+        for (uint32 spellId : it->second)
+            bot->CastSpell(bot, spellId, true);
     }
 
     bool CheckDwarfStoneformRequirements(Creature* bot)
@@ -629,18 +722,18 @@ namespace FSBSpellsUtils
     {
         switch (spellId)
         {
-        case SPELL_MAGE_POLYMORPH:
+        case SPELL_MAGE_POLYMORPH:  // duplicate check line 165
         case SPELL_WARLOCK_FEAR:
-        case SPELL_DRUID_HIBERNATE:
+        case SPELL_DRUID_HIBERNATE:  // duplicate check line 164
         case SPELL_WARLOCK_HAVOC:
-        case SPELL_ROGUE_BLIND:
-        case SPELL_PALADIN_REPENTANCE:
+        case SPELL_ROGUE_BLIND:  // duplicate check line 155
+        case SPELL_PALADIN_REPENTANCE:  // duplicate check line 125
         case SPELL_HUNTER_SCATTER_SHOT:
-        case SPELL_HUNTER_SCARE_BEAST:
-        case SPELL_MONK_PARALYSIS:
-        case SPELL_MONK_PARALYSIS_CHI:
-        case SPELL_PANDAREN_QUAKING_PALM:
-        case SPELL_SHAMAN_HEX:
+        case SPELL_HUNTER_SCARE_BEAST:  // duplicate check line 128
+        case SPELL_MONK_PARALYSIS:  // duplicate check line 158
+        case SPELL_MONK_PARALYSIS_CHI:  // duplicate check line 159
+        case SPELL_PANDAREN_QUAKING_PALM:  // duplicate check line 226
+        case SPELL_SHAMAN_HEX:  // duplicate check line 166
             return true;
         default:
             return false;

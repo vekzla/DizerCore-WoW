@@ -46,6 +46,7 @@
 #include "Followship_bots_powers_handler.h"
 #include "Followship_bots_stats_handler.h"
 #include "Followship_bots_utils.h"
+#include "Followship_bots_utils_spells.h"
 
 FSBMgr* FSBMgr::Get()
 {
@@ -666,6 +667,7 @@ void FSBMgr::SetInitialBotState(Creature* bot)
     bot->SetFaction(FSBUtils::GetFactionForFSBRace(botRace));
     baseAI->botLanguage = FSBUtils::GetLanguageForFSBRace(botRace);
     FSBStats::ApplyBotBaseClassStats(bot, botClass);
+    FSBSpellsUtils::ApplyRacialPassives(bot, botRace);
     botStats = FSBBotStats();
     botRole = GetRandomRoleForClass(botClass);
     TC_LOG_INFO("scripts.fsb.manager", "FSB: SetInitialBotState Assigned random role {} to bot {}", botRole, bot->GetName());
