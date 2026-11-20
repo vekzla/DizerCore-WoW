@@ -59,6 +59,14 @@ namespace Scripts::Custom::VaultOfTheWardens
         static constexpr uint32 SoulFragment = 89297;
 
         static constexpr uint32 MiranaStarlight      = 99451;
+        // "Stop Gul'dan!" (40253) arena fight - the paired brutes and the
+        // Kayn/Altruis fight clones (phase 5128 statics), plus the invisible
+        // ritual anchor that fires 210439 once both brutes are down
+        static constexpr uint32 Crusher         = 97632;
+        static constexpr uint32 Sledge          = 92990;
+        static constexpr uint32 KaynArenaClone    = 92984;
+        static constexpr uint32 AltruisArenaClone = 92985;
+        static constexpr uint32 GenericBunny      = 59113;
     }
 
     namespace GameObjects
@@ -75,6 +83,16 @@ namespace Scripts::Custom::VaultOfTheWardens
     namespace Areas
     {
         static constexpr uint32 VaultOfSilence = 7873;
+        // "Stop Gul'dan!" scene-end destination (sniffed SubareaID of the
+        // arena INIT_WORLD_STATES)
+        static constexpr uint32 VaultOfTheBetrayer = 7819;
+    }
+
+    namespace Zones
+    {
+        // parent zone of the whole instance (sniffed AreaID field of the
+        // arena INIT_WORLD_STATES)
+        static constexpr uint32 VaultOfTheWardens = 7814;
     }
 
     namespace Quests
@@ -89,6 +107,12 @@ namespace Scripts::Custom::VaultOfTheWardens
         // tracking quest completed by spell 202116 - its reward status is
         // retail's persistent once-per-player gate for conversation 1181
         static constexpr uint32 BastillaxTauntTracking = 40921;
+        // "Stop Gul'dan!" (40253), and the retail tracking quest rewarded when
+        // scene 1016 finishes ("Tracking Quest: Mephistos 2") - its reward
+        // status drives the persistent 7385 -> 5128 phase swap (same pattern
+        // as 40921's gate for the Bastillax taunt)
+        static constexpr uint32 StopGuldan              = 40253;
+        static constexpr uint32 StopGuldanSceneTracking = 40922;
     }
 
     namespace Texts
@@ -174,6 +198,30 @@ namespace Scripts::Custom::VaultOfTheWardens
         // Penitent boundary; CREATE_PRIVATE_CONVERSATION (conversation 1181,
         // Bastillax) + QUEST_COMPLETE (tracking quest 40921, the once-gate)
         static constexpr uint32 BastillaxTaunt = 202116;
+        // "Stop Gul'dan: Quest Accept" - quest 40253's SourceSpellID, cast by
+        // the player on accept (the KILL_CREDIT2 -> objective 99303 effect is
+        // native); its hidden 1s DUMMY aura expiry casts 187864 - retail marks
+        // the spell as a server-side script
+        static constexpr uint32 StopGuldanQuestAccept = 223661;
+        // "Play Scene" - SPELL_EFFECT_PLAY_SCENE -> scene 1016 (sniffed
+        // self-cast in the same tick the 223661 aura expired)
+        static constexpr uint32 StopGuldanPlayScene   = 187864;
+        // "Stop Gul'dan!: Crusher Dies 01" - Generic Bunny self-cast the tick
+        // the second brute died. Its FORCE_CAST targets 210446 "Taking Power
+        // 01" which is absent from the 7.0.5 client spell data, so
+        // spell_vault_crusher_dies reproduces its job (210467 on the players)
+        static constexpr uint32 CrusherDies = 210439;
+        // "Taking Power" - the 3s ritual aura on the player: native
+        // PERIODIC_TRIGGER casts 210461 "Taking Power 02" on the brute
+        // corpses; credit for objective 280751 lands when the aura expires
+        static constexpr uint32 TakingPower = 210467;
+    }
+
+    namespace Scenes
+    {
+        // played by spell 187864 - "Stop Gul'dan!" tomb cinematic
+        // (scene_template package 1423, flags 26)
+        static constexpr uint32 StopGuldan = 1016;
     }
 
     namespace Events
@@ -195,6 +243,9 @@ namespace Scripts::Custom::VaultOfTheWardens
         static constexpr uint32 KaynEnd        = 99326;  // objective 280526 - Kayn reaches the rally point
         // "Rise of the Illidari" (38690) - sniffed SMSG_QUEST_UPDATE_ADD_CREDIT ObjectID
         static constexpr uint32 ImprisonedIllidariFreed = 96762; // objective 278285 - generic counter, granted per cell use
+        // "Stop Gul'dan!" (40253) - objective 280751 "Crusher & Sledge slain &
+        // power taken", granted when the Taking Power ritual aura expires
+        static constexpr uint32 PowerTaken = 106241;
     }
 
     namespace Phases
@@ -207,6 +258,12 @@ namespace Scripts::Custom::VaultOfTheWardens
         // Tomb of the Penitent trio (Maiev/Kayn/Altruis entrance + convo AT) -
         // sniffed phase add on entering area 7871 via PhaseGroup 920
         static constexpr uint32 TombOfThePenitent = 7385;
+        // Vault of the Betrayer arena (area 7819): static demon portals,
+        // Sledge, Crusher and the Kayn/Altruis fight clones - raised by the
+        // scene tracking quest, dropped when 40253 completes
+        static constexpr uint32 VaultOfTheBetrayerArena     = 5128;
+        // post-fight arena state (sniffed phase swap at quest completion)
+        static constexpr uint32 VaultOfTheBetrayerPostFight = 5498;
     }
 
     namespace Paths
@@ -260,5 +317,9 @@ namespace Scripts::Custom::VaultOfTheWardens
         // rally-point spawn spots of the post-reward clones (sniffed create data)
         static constexpr Position KaynPostRewardSpawn    = { 4328.46f, -583.66f, -281.924f, 3.36849f };
         static constexpr Position AltruisPostRewardSpawn = { 4323.64f, -583.668f, -281.924f, 6.12611f };
+        // sniffed SMSG_MOVE_TELEPORT landing at scene 1016 end - the Vault of
+        // the Betrayer arena (no teleport spell exists in the sniff, the
+        // server teleports directly)
+        static constexpr Position StopGuldanArenaTeleport = { 4084.27f, -298.11f, -282.07f, 3.118f };
     }
 }
