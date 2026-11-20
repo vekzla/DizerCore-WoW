@@ -46,12 +46,12 @@ namespace FSBUtils
     {
         switch (cls)
         {
-        case FSB_Class::Warrior: return "Warrior";
-        case FSB_Class::Priest:  return "Priest";
-        case FSB_Class::Mage:    return "Mage";
-        case FSB_Class::Rogue:   return "Rogue";
-        case FSB_Class::Druid:   return "Druid";
-        case FSB_Class::Paladin: return "Paladin";
+        case FSB_Class::Warrior:     return "Warrior";
+        case FSB_Class::Priest:      return "Priest";
+        case FSB_Class::Mage:        return "Mage";
+        case FSB_Class::Rogue:       return "Rogue";
+        case FSB_Class::Druid:       return "Druid";
+        case FSB_Class::Paladin:     return "Paladin";
         case FSB_Class::Hunter:      return "Hunter";
         case FSB_Class::Warlock:     return "Warlock";
         case FSB_Class::Shaman:      return "Shaman";
@@ -67,21 +67,21 @@ namespace FSBUtils
     {
         switch (race)
         {
-        case FSB_Race::Human:    return "Human";
-        case FSB_Race::Dwarf:    return "Dwarf";
-        case FSB_Race::Draenei:  return "Draenei";
-        case FSB_Race::NightElf: return "Night Elf";
-        case FSB_Race::Gnome:    return "Gnome";
-        case FSB_Race::Worgen:   return "Worgen";
-        case FSB_Race::Pandaren: return "Pandaren";
-        case FSB_Race::VoidElf:  return "Void Elf";
-        case FSB_Race::Orc:        return "Orc";
-        case FSB_Race::Undead:     return "Undead";
-        case FSB_Race::Tauren:     return "Tauren";
-        case FSB_Race::Troll:      return "Troll";
-        case FSB_Race::BloodElf:   return "Blood Elf";
-        case FSB_Race::Goblin:     return "Goblin";
-        case FSB_Race::PandarenHorde: return "Pandaren (Horde)";
+        case FSB_Race::Human:               return "Human";
+        case FSB_Race::Dwarf:               return "Dwarf";
+        case FSB_Race::Draenei:             return "Draenei";
+        case FSB_Race::NightElf:            return "Night Elf";
+        case FSB_Race::Gnome:               return "Gnome";
+        case FSB_Race::Worgen:              return "Worgen";
+        case FSB_Race::Pandaren:            return "Pandaren";
+        case FSB_Race::VoidElf:             return "Void Elf";
+        case FSB_Race::Orc:                 return "Orc";
+        case FSB_Race::Undead:              return "Undead";
+        case FSB_Race::Tauren:              return "Tauren";
+        case FSB_Race::Troll:               return "Troll";
+        case FSB_Race::BloodElf:            return "Blood Elf";
+        case FSB_Race::Goblin:              return "Goblin";
+        case FSB_Race::PandarenHorde:       return "Pandaren (Horde)";
         case FSB_Race::HighmountainTauren:  return "Highmountain Tauren";
         case FSB_Race::Nightborne:          return "Nightborne";
         case FSB_Race::LightforgedDraenei:  return "Lightforged Draenei";
@@ -166,21 +166,21 @@ namespace FSBUtils
     {
         switch (race)
         {
-        case FSB_Race::Human:    return RACE_HUMAN;
-        case FSB_Race::Dwarf:    return RACE_DWARF;
-        case FSB_Race::Draenei:  return RACE_DRAENEI;
-        case FSB_Race::NightElf: return RACE_NIGHTELF;
-        case FSB_Race::Gnome:    return RACE_GNOME;
-        case FSB_Race::Worgen:   return RACE_WORGEN;
-        case FSB_Race::Pandaren: return RACE_PANDAREN_ALLIANCE;
-        case FSB_Race::VoidElf:  return RACE_VOID_ELF;
-        case FSB_Race::Orc:        return RACE_ORC;
-        case FSB_Race::Undead:     return RACE_UNDEAD_PLAYER;
-        case FSB_Race::Tauren:     return RACE_TAUREN;
-        case FSB_Race::Troll:      return RACE_TROLL;
-        case FSB_Race::BloodElf:   return RACE_BLOODELF;
-        case FSB_Race::Goblin:     return RACE_GOBLIN;
-        case FSB_Race::PandarenHorde: return RACE_PANDAREN_HORDE;
+        case FSB_Race::Human:               return RACE_HUMAN;
+        case FSB_Race::Dwarf:               return RACE_DWARF;
+        case FSB_Race::Draenei:             return RACE_DRAENEI;
+        case FSB_Race::NightElf:            return RACE_NIGHTELF;
+        case FSB_Race::Gnome:               return RACE_GNOME;
+        case FSB_Race::Worgen:              return RACE_WORGEN;
+        case FSB_Race::Pandaren:            return RACE_PANDAREN_ALLIANCE;
+        case FSB_Race::VoidElf:             return RACE_VOID_ELF;
+        case FSB_Race::Orc:                 return RACE_ORC;
+        case FSB_Race::Undead:              return RACE_UNDEAD_PLAYER;
+        case FSB_Race::Tauren:              return RACE_TAUREN;
+        case FSB_Race::Troll:               return RACE_TROLL;
+        case FSB_Race::BloodElf:            return RACE_BLOODELF;
+        case FSB_Race::Goblin:              return RACE_GOBLIN;
+        case FSB_Race::PandarenHorde:       return RACE_PANDAREN_HORDE;
         case FSB_Race::HighmountainTauren:  return RACE_HIGHMOUNTAIN_TAUREN;
         case FSB_Race::Nightborne:          return RACE_NIGHTBORNE;
         case FSB_Race::LightforgedDraenei:  return RACE_LIGHTFORGED_DRAENEI;
@@ -330,6 +330,7 @@ namespace FSBUtils
         case FSB_Class::Monk:               return CLASS_MONK;
         case FSB_Class::DemonHunter:        return CLASS_DEMON_HUNTER;
         case FSB_Class::Evoker:             return CLASS_EVOKER;
+        case FSB_Class::DeathKnight:        return CLASS_DEATH_KNIGHT;
         case FSB_Class::None:               return CLASS_NONE;
         default:
             break;

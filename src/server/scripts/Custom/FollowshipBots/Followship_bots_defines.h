@@ -76,7 +76,7 @@ enum class FSB_Class : uint8
     Monk = 10,
     DeathKnight = 11,
     DemonHunter = 12,
-    Evoker = 13
+    Evoker = 13,
 };
 
 enum class FSB_Race : uint8

@@ -1484,5 +1484,194 @@ UPDATE `creature_template` SET `ScriptName`='npc_vault_freed_named_illidari' WHE
 
 -- Quest 40253 - Stop Gul'dan!
 DELETE FROM `quest_template_addon` WHERE `ID`=40253;
-INSERT INTO `quest_template_addon` (`ID`, `PrevQuestID`) VALUES
-(40253, 38690);
+INSERT INTO `quest_template_addon` (`ID`, `PrevQuestID`, `SourceSpellID`, `ScriptName`) VALUES
+(40253, 38690, 223661, 'quest_vault_wardens_stop_guldan');
+
+-- Tomb of the Penitent (area 7871) - phase 7385 trio + private conversation
+-- Sniff (session 4, ~18:53): entering area 7871 adds phase 7385 via
+-- PhaseGroup 920; Maiev/Kayn/Altruis spawn at the tomb entrance in that
+-- phase, and crossing the tomb mouth (~4272.9,-300.1,-283.6) makes the
+-- player self-cast 192605 "Conversation: Illidan's Chamber Arrival", which
+-- creates private conversation 527. Phase is gated on quests 38689/38690
+-- COMPLETE (objectives done, NOT yet rewarded) - condition type 28.
+DELETE FROM `phase_name` WHERE `ID`=7385;
+INSERT INTO `phase_name` (`ID`, `Name`) VALUES
+(7385, 'Tomb of the Penitent - Vault Trio');
+
+DELETE FROM `phase_area` WHERE `PhaseId`=7385;
+INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES
+(7871, 7385, 'Tomb of the Penitent - Vault Trio');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup`=7385;
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `ConditionStringValue1`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
+-- The trio must stay up through both turn-ins and the cinematic: QUESTSTATE
+-- mask 66 (COMPLETE|REWARDED) keeps 7385 once each quest is done, and only
+-- the scene-end tracking quest drops it - the sniffed phase swap removes
+-- 7385 with the arena transition, not before
+(26, 7385, 7871, 0, 0, 47, 0, 38689, 66, 0, '', 0, 0, 0, '', 'Phase 7385 requires quest 38689 Fel Infusion completed or rewarded'),
+(26, 7385, 7871, 0, 1, 47, 0, 38690, 66, 0, '', 0, 0, 0, '', 'Phase 7385 requires quest 38690 Rise of the Illidari completed or rewarded'),
+(26, 7385, 7871, 0, 2, 8, 0, 40922, 0, 0, '', 1, 0, 0, '', 'Phase 7385 drops once the Stop Gul''dan scene transition (40922) is rewarded');
+
+-- Conversation trigger: the sniff carries no server-side AT packet for the
+-- tomb mouth - retail's volume is invisible to the sniffer. A custom
+-- serverside sphere (r=12, centered on the sniffed cast point) drives the
+-- self-cast. The spawn is itself phased to 7385, so it only exists for
+-- players who can see the trio.
+DELETE FROM `areatrigger_template` WHERE `Id`=70004 AND `IsCustom`=1;
+INSERT INTO `areatrigger_template` (`Id`, `IsCustom`, `Flags`, `ActionSetId`, `ActionSetFlags`, `VerifiedBuild`) VALUES
+(70004, 1, 1, 0, 0, 70575); -- Flags=1 IsServerSide (invisible unless .debug areatriggers)
+
+DELETE FROM `areatrigger_create_properties` WHERE `Id`=70004 AND `IsCustom`=1;
+INSERT INTO `areatrigger_create_properties` (`Id`, `IsCustom`, `AreaTriggerId`, `IsAreatriggerCustom`, `Flags`, `MoveCurveId`, `ScaleCurveId`, `MorphCurveId`, `FacingCurveId`, `AnimId`, `AnimKitId`, `DecalPropertiesId`, `SpellForVisuals`, `TimeToTargetScale`, `Speed`, `SpeedIsTime`, `Shape`, `ShapeData0`, `ShapeData1`, `ShapeData2`, `ShapeData3`, `ShapeData4`, `ShapeData5`, `ShapeData6`, `ShapeData7`, `VerifiedBuild`) VALUES
+(70004, 1, 70004, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 12, 0, 0, 0, 0, 0, 0, 70575); -- Shape 0 = Sphere, r=12
+
+SET @ATSPAWNID := 100200;
+DELETE FROM `areatrigger` WHERE `SpawnId`=@ATSPAWNID+1;
+INSERT INTO `areatrigger` (`SpawnId`, `AreaTriggerCreatePropertiesId`, `IsCustom`, `MapId`, `SpawnDifficulties`, `PosX`, `PosY`, `PosZ`, `Orientation`, `PhaseUseFlags`, `PhaseId`, `PhaseGroup`, `ScriptName`, `Comment`, `VerifiedBuild`) VALUES
+(@ATSPAWNID+1, 70004, 1, 1468, '0', 4273.0, -300.14, -283.55, 0, 0, 7385, 0, 'at_tomb_of_the_penitent_conversation', 'Tomb of the Penitent - private conversation 527 trigger', 70575);
+
+-- Illidari Ward (7872) -> Tomb of the Penitent (7871) boundary: sniffed
+-- player crossing at (4325.9,-408.3)->(4325.7,-404.7) creates private
+-- conversation 1181 (Bastillax taunt) while 38689/38690 are both
+-- complete-not-rewarded. Phased to 7385 like the tomb-mouth AT, so the
+-- trigger only exists during that window; at_bastillax_taunt also
+-- re-checks quest status and fires once per player.
+DELETE FROM `areatrigger_template` WHERE `Id`=70005 AND `IsCustom`=1;
+INSERT INTO `areatrigger_template` (`Id`, `IsCustom`, `Flags`, `ActionSetId`, `ActionSetFlags`, `VerifiedBuild`) VALUES
+(70005, 1, 1, 0, 0, 70575); -- Flags=1 IsServerSide (invisible unless .debug areatriggers)
+
+DELETE FROM `areatrigger_create_properties` WHERE `Id`=70005 AND `IsCustom`=1;
+INSERT INTO `areatrigger_create_properties` (`Id`, `IsCustom`, `AreaTriggerId`, `IsAreatriggerCustom`, `Flags`, `MoveCurveId`, `ScaleCurveId`, `MorphCurveId`, `FacingCurveId`, `AnimId`, `AnimKitId`, `DecalPropertiesId`, `SpellForVisuals`, `TimeToTargetScale`, `Speed`, `SpeedIsTime`, `Shape`, `ShapeData0`, `ShapeData1`, `ShapeData2`, `ShapeData3`, `ShapeData4`, `ShapeData5`, `ShapeData6`, `ShapeData7`, `VerifiedBuild`) VALUES
+(70005, 1, 70005, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 15, 0, 0, 0, 0, 0, 0, 70575); -- Shape 0 = Sphere, r=15
+
+DELETE FROM `areatrigger` WHERE `SpawnId`=@ATSPAWNID+2;
+INSERT INTO `areatrigger` (`SpawnId`, `AreaTriggerCreatePropertiesId`, `IsCustom`, `MapId`, `SpawnDifficulties`, `PosX`, `PosY`, `PosZ`, `Orientation`, `PhaseUseFlags`, `PhaseId`, `PhaseGroup`, `ScriptName`, `Comment`, `VerifiedBuild`) VALUES
+(@ATSPAWNID+2, 70005, 1, 1468, '0', 4326.0, -405.0, -282.0, 0, 0, 7385, 0, 'at_bastillax_taunt', 'Illidari Ward -> Tomb of the Penitent boundary - private conversation 1181 trigger', 70575);
+
+-- Conversation 527 actors are world-object actors resolved by creature
+-- spawnid at create time (ConversationActorWorldObjectTemplate -> map's
+-- GetCreatureBySpawnIdStore). Spawnid 0 drops the actor, which is why the
+-- cast showed nothing; bind them to the phase-7385 tomb-entrance spawns.
+-- 49446/idx0 = Maiev (92718, guid 70063917), 49445/idx1 = Kayn (96665, guid 70063915)
+UPDATE `conversation_actors` SET `ConversationActorGuid`=70063917 WHERE `ConversationId`=527 AND `ConversationActorId`=49446;
+UPDATE `conversation_actors` SET `ConversationActorGuid`=70063915 WHERE `ConversationId`=527 AND `ConversationActorId`=49445;
+
+-- Stop Gul'dan! accept chain: aura 223661 expiry casts 187864 (AuraScript);
+-- 187864's native PLAY_SCENE effect runs scene 1016 under the bound script.
+DELETE FROM `spell_script_names` WHERE `spell_id`=223661;
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(223661, 'spell_vault_stop_guldan_accept'); -- aura expiry -> 187864 Play Scene
+
+UPDATE `scene_template` SET `ScriptName`='scene_vault_stop_guldan' WHERE `SceneId`=1016;
+
+-- Vault of the Betrayer arena (area 7819)
+-- Sniffed lifecycle: phase 5128 enters at scene end and drops at quest
+-- completion in favor of 5498. Gating on tracking quest 40922 (rewarded by
+-- scene_vault_stop_guldan) keeps the swap persistent across relogs; the
+-- not-complete/not-rewarded rows reproduce the sniffed 5128 -> 5498 swap.
+DELETE FROM `phase_name` WHERE `ID` IN (5128, 5498);
+INSERT INTO `phase_name` (`ID`, `Name`) VALUES
+(5128, 'Vault of the Betrayer - Arena'),
+(5498, 'Vault of the Betrayer - Post Fight');
+
+DELETE FROM `phase_area` WHERE `PhaseId` IN (5128, 5498) AND `AreaId`=7819;
+INSERT INTO `phase_area` (`AreaId`, `PhaseId`, `Comment`) VALUES
+(7819, 5128, 'Vault of the Betrayer - arena (portals, Sledge, Crusher, clones)'),
+(7819, 5498, 'Vault of the Betrayer - post fight');
+
+DELETE FROM `conditions` WHERE `SourceTypeOrReferenceId`=26 AND `SourceGroup` IN (5128, 5498);
+INSERT INTO `conditions` (`SourceTypeOrReferenceId`, `SourceGroup`, `SourceEntry`, `SourceId`, `ElseGroup`, `ConditionTypeOrReference`, `ConditionTarget`, `ConditionValue1`, `ConditionValue2`, `ConditionValue3`, `ConditionStringValue1`, `NegativeCondition`, `ErrorType`, `ErrorTextId`, `ScriptName`, `Comment`) VALUES
+(26, 5128, 7819, 0, 0, 8, 0, 40922, 0, 0, '', 0, 0, 0, '', 'Phase 5128 requires the Stop Gul''dan scene transition (40922) rewarded'),
+(26, 5128, 7819, 0, 0, 47, 0, 40253, 66, 0, '', 1, 0, 0, '', 'Phase 5128 drops once quest 40253 is completed or rewarded'),
+(26, 5498, 7819, 0, 0, 47, 0, 40253, 66, 0, '', 0, 0, 0, '', 'Phase 5498 active once quest 40253 is completed or rewarded');
+
+
+-- ============================================================================
+-- "Stop Gul'dan!" (40253) - Vault of the Betrayer arena fight (phase 5128)
+-- ============================================================================
+-- Sniffed sequence (sniff 4): the teleport lands at 18:56:05.9 and both
+-- clones engage instantly - Kayn clone (92984) duels Sledge, Altruis clone
+-- (92985) duels Crusher (pairing confirmed by spawn geometry: each clone
+-- ~5-10y from its brute). Kayn/Altruis run a shared DH rotation; Sledge adds
+-- three private Kayn<->Altruis banter conversations at ~+14/+34/+54s and
+-- whispers a mechanic hint when it gains Brutal Attacks. Crusher dies at
+-- 18:57:13.8, Sledge at 18:57:18.8, and the Generic Bunny anchor casts
+-- 210439 "Crusher Dies 01" in the same tick - its FORCE_CAST hits removed
+-- spell 210446, so spell_vault_crusher_dies applies the Taking Power ritual
+-- aura (210467) to every arena player instead. The aura natively ticks
+-- 210461 "Taking Power 02" beams onto the corpses for 3s; credit for
+-- objective 280751 ("Crusher & Sledge slain & power taken", 106241) lands on
+-- aura expiry, completing 40253 and swapping 5128 -> 5498.
+
+-- AI bindings: brutes/clones run SmartAI; the ritual anchor is C++ and
+-- bound at SPAWN level (creature.ScriptName on the @CGUID+69 row in the
+-- spawns file) - 59113 is a generic bunny shared across maps, so the
+-- template stays untouched. The brutes' SAI pushes SET_DATA to the bunny
+-- on death (1 = Sledge, 2 = Crusher); it casts 210439 once both arrived.
+UPDATE `creature_template` SET `AIName`='SmartAI' WHERE `entry` IN (92984, 92985, 92990, 97632);
+
+DELETE FROM `spell_script_names` WHERE `spell_id` IN (210439, 210467);
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(210439, 'spell_vault_crusher_dies'),  -- replaces the missing 210446 trigger: Taking Power on arena players
+(210467, 'spell_vault_taking_power'); -- aura expiry -> kill credit 106241 (objective 280751)
+
+-- Kayn clone (92984) - duels Sledge; DH rotation from the sniffed cast
+-- sequence (Throw Glaive, Shear, Chaos Strike, Fel Rush, Soul Cleave, Eye
+-- Beam). Soul-fragment / Shattered Souls casts in the sniff are the
+-- passive's own procs, not clone actions.
+DELETE FROM `smart_scripts` WHERE `entryorguid` IN (92984) AND source_type = 0;
+INSERT INTO smart_scripts (entryorguid, source_type, id, link, Difficulties, event_type, event_phase_mask, event_chance, event_flags, event_param1, event_param2, event_param3, event_param4, event_param5, event_param_string, action_type, action_param1, action_param2, action_param3, action_param4, action_param5, action_param6, action_param7, action_param_string, target_type, target_param1, target_param2, target_param3, target_param4, target_param_string, target_x, target_y, target_z, target_o, comment) VALUES
+(92984, 0, 1, 0, '', 11, 0, 100, 0, 1, 1468, 0, 0, 0, '', 49, 0, 0, 0, 0, 0, 0, 0, '', 19, 92990, 60, 0, 0, '', 0, 0, 0, 0, 'Kayn Sunfury (arena) - On Respawn - Attack Sledge'),
+(92984, 0, 2, 0, '', 0, 0, 100, 0, 2000, 4000, 8000, 12000, 0, '', 11, 200881, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Kayn Sunfury (arena) - In Combat - Cast Throw Glaive'),
+(92984, 0, 3, 0, '', 0, 0, 100, 0, 3000, 5000, 4000, 7000, 0, '', 11, 223473, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Kayn Sunfury (arena) - In Combat - Cast Shear'),
+(92984, 0, 4, 0, '', 0, 0, 100, 0, 4000, 6000, 5000, 8000, 0, '', 11, 197639, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Kayn Sunfury (arena) - In Combat - Cast Chaos Strike'),
+(92984, 0, 5, 0, '', 0, 0, 100, 0, 7000, 9000, 10000, 15000, 0, '', 11, 200879, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Kayn Sunfury (arena) - In Combat - Cast Fel Rush'),
+(92984, 0, 6, 0, '', 0, 0, 100, 0, 6000, 8000, 9000, 14000, 0, '', 11, 213241, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Kayn Sunfury (arena) - In Combat - Cast Soul Cleave'),
+(92984, 0, 7, 0, '', 0, 0, 100, 0, 10000, 12000, 18000, 25000, 0, '', 11, 197641, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Kayn Sunfury (arena) - In Combat - Cast Eye Beam');
+
+-- Altruis clone (92985) - duels Crusher; same rotation
+DELETE FROM `smart_scripts` WHERE `entryorguid` IN (92985) AND source_type = 0;
+INSERT INTO smart_scripts (entryorguid, source_type, id, link, Difficulties, event_type, event_phase_mask, event_chance, event_flags, event_param1, event_param2, event_param3, event_param4, event_param5, event_param_string, action_type, action_param1, action_param2, action_param3, action_param4, action_param5, action_param6, action_param7, action_param_string, target_type, target_param1, target_param2, target_param3, target_param4, target_param_string, target_x, target_y, target_z, target_o, comment) VALUES
+(92985, 0, 1, 0, '', 11, 0, 100, 0, 1, 1468, 0, 0, 0, '', 49, 0, 0, 0, 0, 0, 0, 0, '', 19, 97632, 60, 0, 0, '', 0, 0, 0, 0, 'Altruis the Sufferer (arena) - On Respawn - Attack Crusher'),
+(92985, 0, 2, 0, '', 0, 0, 100, 0, 2000, 4000, 8000, 12000, 0, '', 11, 200881, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Altruis the Sufferer (arena) - In Combat - Cast Throw Glaive'),
+(92985, 0, 3, 0, '', 0, 0, 100, 0, 3000, 5000, 4000, 7000, 0, '', 11, 223473, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Altruis the Sufferer (arena) - In Combat - Cast Shear'),
+(92985, 0, 4, 0, '', 0, 0, 100, 0, 4000, 6000, 5000, 8000, 0, '', 11, 197639, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Altruis the Sufferer (arena) - In Combat - Cast Chaos Strike'),
+(92985, 0, 5, 0, '', 0, 0, 100, 0, 7000, 9000, 10000, 15000, 0, '', 11, 200879, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Altruis the Sufferer (arena) - In Combat - Cast Fel Rush'),
+(92985, 0, 6, 0, '', 0, 0, 100, 0, 6000, 8000, 9000, 14000, 0, '', 11, 213241, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Altruis the Sufferer (arena) - In Combat - Cast Soul Cleave'),
+(92985, 0, 7, 0, '', 0, 0, 100, 0, 10000, 12000, 18000, 25000, 0, '', 11, 197641, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Altruis the Sufferer (arena) - In Combat - Cast Eye Beam');
+
+-- Sledge (92990) - ability timers from the sniffed cast cadence. Aggro starts
+-- the banter actionlist (three private Kayn<->Altruis conversations at
+-- ~+14/+34/+54s, sniffed self-casts 192626/192627/192628 -> convs 528/529/530).
+-- Brutal Attacks pairs with the mechanic BossWhisper; Annihilate is the
+-- sniffed 199602+199604 pair. On death it self-casts 210038 (the demon-death
+-- shatter-soul chain, same as Lekos).
+DELETE FROM `smart_scripts` WHERE `entryorguid` IN (92990, 9299001) AND source_type IN (0, 9);
+INSERT INTO smart_scripts (entryorguid, source_type, id, link, Difficulties, event_type, event_phase_mask, event_chance, event_flags, event_param1, event_param2, event_param3, event_param4, event_param5, event_param_string, action_type, action_param1, action_param2, action_param3, action_param4, action_param5, action_param6, action_param7, action_param_string, target_type, target_param1, target_param2, target_param3, target_param4, target_param_string, target_x, target_y, target_z, target_o, comment) VALUES
+(92990, 0, 1, 0, '', 4, 0, 100, 0, 0, 0, 0, 0, 0, '', 80, 9299001, 1, 1, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge - On Aggro - Start combat banter actionlist'),
+(92990, 0, 2, 0, '', 0, 0, 100, 0, 4000, 6000, 12000, 16000, 0, '', 11, 199476, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge - In Combat - Cast Shoulder Charge'),
+(92990, 0, 3, 0, '', 0, 0, 100, 0, 8000, 10000, 18000, 22000, 0, '', 11, 199551, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge - In Combat - Cast Leaping Retreat'),
+(92990, 0, 4, 0, '', 0, 0, 100, 0, 12000, 14000, 20000, 26000, 0, '', 11, 199553, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge - In Combat - Cast Brutal Impact'),
+(92990, 0, 5, 6, '', 0, 0, 100, 0, 20000, 24000, 38000, 45000, 0, '', 11, 199556, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge - In Combat - Cast Brutal Attacks'),
+(92990, 0, 6, 0, '', 61, 0, 100, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 1, 0, 0, 0, 0, '', 25, 100, 1, 0, 0, '', 0, 0, 0, 0, 'Sledge - Linked - BossWhisper to closest player'),
+(92990, 0, 7, 8, '', 0, 0, 100, 0, 16000, 18000, 28000, 34000, 0, '', 11, 199602, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge - In Combat - Cast Annihilate (leap)'),
+(92990, 0, 8, 0, '', 61, 0, 100, 0, 0, 0, 0, 0, 0, '', 11, 199604, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge - Linked - Cast Annihilate (impact cone)'),
+(92990, 0, 9, 0, '', 0, 0, 100, 0, 10000, 12000, 18000, 25000, 0, '', 11, 209980, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge - In Combat - Cast Shatter Soul'),
+(92990, 0, 10, 0, '', 0, 0, 100, 0, 14000, 17000, 21000, 27000, 0, '', 11, 209981, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge - In Combat - Cast Shatter Soul'),
+(92990, 0, 11, 0, '', 6, 0, 100, 0, 0, 0, 0, 0, 0, '', 11, 210038, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge - On Death - Cast Shatter Soul (demon-death chain)'),
+(92990, 0, 12, 0, '', 6, 0, 100, 0, 0, 0, 0, 0, 0, '', 45, 1, 1, 0, 0, 0, 0, 0, '', 19, 59113, 100, 0, 0, '', 0, 0, 0, 0, 'Sledge - On Death - SetData(1,1) on arena bunny'),
+(9299001, 9, 0, 0, '', 0, 0, 100, 0, 14000, 14000, 0, 0, 0, '', 11, 192626, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge banter - +14s - Conversation: Combat A (528)'),
+(9299001, 9, 1, 0, '', 0, 0, 100, 0, 20000, 20000, 0, 0, 0, '', 11, 192627, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge banter - +20s - Conversation: Combat B (529)'),
+(9299001, 9, 2, 0, '', 0, 0, 100, 0, 20000, 20000, 0, 0, 0, '', 11, 192628, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Sledge banter - +20s - Conversation: Combat C (530)');
+
+-- Crusher (97632) - simpler kit (Shoulder Charge, Throw Sword, Face Kick,
+-- Shatter Soul variants) plus the same demon-death 210038
+DELETE FROM `smart_scripts` WHERE `entryorguid` IN (97632) AND source_type = 0;
+INSERT INTO smart_scripts (entryorguid, source_type, id, link, Difficulties, event_type, event_phase_mask, event_chance, event_flags, event_param1, event_param2, event_param3, event_param4, event_param5, event_param_string, action_type, action_param1, action_param2, action_param3, action_param4, action_param5, action_param6, action_param7, action_param_string, target_type, target_param1, target_param2, target_param3, target_param4, target_param_string, target_x, target_y, target_z, target_o, comment) VALUES
+(97632, 0, 1, 0, '', 0, 0, 100, 0, 5000, 7000, 12000, 16000, 0, '', 11, 199481, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Crusher - In Combat - Cast Shoulder Charge'),
+(97632, 0, 2, 0, '', 0, 0, 100, 0, 7000, 9000, 10000, 14000, 0, '', 11, 199577, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Crusher - In Combat - Cast Throw Sword'),
+(97632, 0, 3, 0, '', 0, 0, 100, 0, 14000, 16000, 22000, 30000, 0, '', 11, 199645, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Crusher - In Combat - Cast Face Kick'),
+(97632, 0, 4, 0, '', 0, 0, 100, 0, 10000, 12000, 18000, 25000, 0, '', 11, 209980, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Crusher - In Combat - Cast Shatter Soul'),
+(97632, 0, 5, 0, '', 0, 0, 100, 0, 15000, 18000, 22000, 28000, 0, '', 11, 209981, 0, 0, 0, 0, 0, 0, '', 2, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Crusher - In Combat - Cast Shatter Soul'),
+(97632, 0, 6, 0, '', 6, 0, 100, 0, 0, 0, 0, 0, 0, '', 11, 210038, 0, 0, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, '', 0, 0, 0, 0, 'Crusher - On Death - Cast Shatter Soul (demon-death chain)'),
+(97632, 0, 7, 0, '', 6, 0, 100, 0, 0, 0, 0, 0, 0, '', 45, 2, 1, 0, 0, 0, 0, 0, '', 19, 59113, 100, 0, 0, '', 0, 0, 0, 0, 'Crusher - On Death - SetData(2,1) on arena bunny');
