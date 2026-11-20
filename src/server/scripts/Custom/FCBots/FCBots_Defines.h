@@ -25,6 +25,19 @@ enum class Race : std::uint8_t
     MagharOrc = 36, Mechagnome = 37, Dracthyr52 = 52, Dracthyr70 = 70,
     Earthen84 = 84, Earthen85 = 85, Haranir86 = 86, Haranir91 = 91
 };
+// Values that must match sql/base/fcbots_database.sql.
+// Bot creature entries (world.creature_template.entry) live in this block only.
+constexpr std::uint32_t BotEntryMin = 10000000u;
+constexpr std::uint32_t BotEntryMax = 19999999u;
+
+// bot_templates.gender (tinyint unsigned, default 2).
+enum class BotGender : std::uint8_t
+{
+    Male = 0,
+    Female = 1,
+    Unknown = 2
+};
+
 // Faction. Races that exist on both sides share one folder; the faction is kept here.
 // Alliance = 0, Horde = 1, Neutral = 2 (ChrRaces Alliance column).
 enum class Faction : std::uint8_t
