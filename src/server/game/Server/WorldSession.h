@@ -1159,6 +1159,7 @@ class TC_GAME_API WorldSession
         ~WorldSession();
 
         bool PlayerLoading() const { return !m_playerLoading.IsEmpty(); }
+        void SetBotLoginGuid(ObjectGuid guid) { m_playerLoading = guid; }
         bool PlayerLogout() const { return m_playerLogout; }
         bool PlayerLogoutWithSave() const { return m_playerLogout && m_playerSave; }
         bool PlayerRecentlyLoggedOut() const { return m_playerRecentlyLogout; }

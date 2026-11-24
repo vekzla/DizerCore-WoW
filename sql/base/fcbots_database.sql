@@ -38,6 +38,8 @@ CREATE TABLE `bot_templates` (
   `chatter_type` tinyint unsigned NOT NULL DEFAULT 0,
   `gender` tinyint unsigned NOT NULL DEFAULT 2 COMMENT '0 male, 1 female, 2 unknown',
   `pet_source` int NOT NULL DEFAULT 0,
+  `spec_id` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '0 none, 1 Arms, 2 Fury, 3 Protection (Warrior, Talents.h Spec)',
+  `hero_tree_id` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '0 none, 1 Colossus, 2 Slayer, 3 Mountain Thane (Talents.h HeroTree)',
   PRIMARY KEY (`entry`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='FCBots bot template definitions';
 

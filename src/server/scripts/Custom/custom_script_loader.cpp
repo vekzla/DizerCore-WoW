@@ -157,6 +157,9 @@ void AddSC_barber_scripts();
 void AddSC_CustomDisplayHandler();
 void AddSC_CustomDisplayCommands();
 
+// ==================== FCBots Scripts ========================= //
+void AddSC_fcbots_warrior_world();
+
 // The name of this function should match:
 // void Add${NameOfDirectory}Scripts()
 void AddCustomScripts()
@@ -297,4 +300,7 @@ void AddCustomScripts()
     // RolePlay
     AddSC_CustomDisplayHandler();
     AddSC_CustomDisplayCommands();
+	
+	// FCBots
+    AddSC_fcbots_warrior_world();
 }

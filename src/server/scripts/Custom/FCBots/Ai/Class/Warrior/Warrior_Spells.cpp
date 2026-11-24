@@ -1,6 +1,3 @@
-// Placeholder. Empty by design in Stage 1; filled in later stages.
 #include "Warrior_Spells.h"
 
-namespace FCBots::Class::Warrior
-{
-}
+// Spell and cooldown values are in the header.
