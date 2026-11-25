@@ -1,6 +1,8 @@
 #include "FCBots_Accounts.h"
 
 #include "AccountMgr.h"
+#include "BattlenetAccountMgr.h"
+#include "DatabaseEnv.h"
 #include "Log.h"
 
 #include <random>
@@ -21,6 +23,21 @@ std::string RandomPassword(std::size_t length)
         out.push_back(Alphabet[pick(gen)]);
     return out;
 }
+
+// Game account linked to the Battle.net account with this email (LOGIN_SEL_BNET_GAME_ACCOUNT_LIST_SMALL).
+bool FindLinkedGameAccount(std::string const& email, BotAccount& out)
+{
+    LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_BNET_GAME_ACCOUNT_LIST_SMALL);
+    stmt->setString(0, email);
+    PreparedQueryResult result = LoginDatabase.Query(stmt);
+    if (!result)
+        return false;
+
+    Field* fields = result->Fetch();
+    out.AccountId = fields[0].GetUInt32();
+    out.Username = fields[1].GetString();
+    return true;
+}
 }
 
 std::vector<BotAccount> EnsureBotAccounts(std::string const& prefix, std::uint32_t count)
@@ -30,29 +47,31 @@ std::vector<BotAccount> EnsureBotAccounts(std::string const& prefix, std::uint32
 
     for (std::uint32_t i = 1; i <= count; ++i)
     {
-        // Real game account in the auth database: username fcbotN, email fcbotN@fcbotN.
+        // Battle.net account (`.bnetaccount create fcbotN@fcbotN`) with its linked game account.
         std::string const name = prefix + std::to_string(i);
         std::string const email = name + "@" + name;
 
-        std::uint32_t accountId = sAccountMgr->GetId(name);
-        if (accountId == 0)
+        if (Battlenet::AccountMgr::GetId(email) == 0)
         {
-            AccountOpResult const result = sAccountMgr->CreateAccount(name, RandomPassword(16), email);
+            std::string gameAccountName;
+            AccountOpResult const result = Battlenet::AccountMgr::CreateBattlenetAccount(
+                email, RandomPassword(16), true, &gameAccountName);
             if (result != AccountOpResult::AOR_OK)
             {
-                TC_LOG_ERROR("scripts", "FCBots: could not create account {} (result {})", name, static_cast<int>(result));
+                TC_LOG_ERROR("scripts", "FCBots: could not create Battle.net account {} (result {})",
+                    email, static_cast<int>(result));
                 continue;
             }
-            accountId = sAccountMgr->GetId(name);
-            TC_LOG_INFO("scripts", "FCBots: created account {} (id {})", name, accountId);
+            TC_LOG_INFO("scripts", "FCBots: created Battle.net account {} (game account {})", email, gameAccountName);
         }
 
-        if (accountId == 0)
+        BotAccount account{};
+        if (!FindLinkedGameAccount(email, account))
         {
-            TC_LOG_ERROR("scripts", "FCBots: account {} not found after create", name);
+            TC_LOG_ERROR("scripts", "FCBots: no game account linked to Battle.net account {}", email);
             continue;
         }
-        accounts.push_back(BotAccount{ accountId, name });
+        accounts.push_back(account);
     }
 
     return accounts;

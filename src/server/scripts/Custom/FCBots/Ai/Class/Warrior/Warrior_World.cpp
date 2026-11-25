@@ -5,8 +5,10 @@
 
 #include "ObjectAccessor.h"
 #include "Player.h"
-#include "../../Bot/Autologin/FCBots_Autologin.h"
-#include "FCBots_Config.h"
+#include "../../../Bot/Autologin/FCBots_Autologin.h"
+#include "../../../Bot/Group/FCBots_Group.h"
+#include "../../../Bot/Target/FCBots_Target.h"
+#include "../../../FCBots_Config.h"
 #include "ScriptMgr.h"
 #include "Unit.h"
 #include "Warrior_Bot.h"
@@ -53,9 +55,18 @@ public:
         for (RegisteredBot& bot : Registry())
         {
             Player* player = ObjectAccessor::FindPlayer(bot.Guid);
-            if (!player || !player->IsAlive())
+            if (!player)
                 continue;
-            TickBot(player, player->GetVictim(), bot.Setup, bot.Progress);
+
+            // Group invites are handled even while the bot is dead.
+            FCBots::Group::AcceptPendingInvite(player);
+
+            if (!player->IsAlive())
+                continue;
+
+            // Pick and keep an attack target, then run the class engine against it.
+            Unit* target = FCBots::Target::UpdateTarget(player);
+            TickBot(player, target, bot.Setup, bot.Progress);
         }
     }
 
