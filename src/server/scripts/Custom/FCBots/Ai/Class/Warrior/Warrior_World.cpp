@@ -1,10 +1,11 @@
 // Periodic tick for FCBots Warrior bots. Runs from the world update.
-// Bots are registered with RegisterWarriorBot; summon and login create the bot Player and call it.
+// Bots are registered with RegisterWarriorBot by autologin at worldserver start (OnStartup).
 #include <cstdint>
 #include <vector>
 
 #include "ObjectAccessor.h"
 #include "Player.h"
+#include "../../Bot/Autologin/FCBots_Autologin.h"
 #include "FCBots_Config.h"
 #include "ScriptMgr.h"
 #include "Unit.h"
@@ -31,6 +32,11 @@ class FCBotsWarriorWorld : public WorldScript
 {
 public:
     FCBotsWarriorWorld() : WorldScript("fcbots_warrior_world") { }
+
+    void OnStartup() override
+    {
+        FCBots::Autologin::RunAutologin();
+    }
 
     void OnUpdate(uint32 diff) override
     {

@@ -17,7 +17,7 @@ namespace FCBots::Class::Warrior::Bot
 // Returns the spell cast (0 if none).
 std::uint32_t TickBot(Player* bot, Unit* target, Engine::BotSetup const& setup, Engine::BotProgress& progress);
 
-// Adds a bot to the world tick. Called when the bot is summoned.
+// Adds a bot to the world tick. Called by autologin at worldserver start, not by a player command.
 void RegisterWarriorBot(ObjectGuid guid, Engine::BotSetup const& setup);
 }
 

@@ -4,7 +4,8 @@
 #include <cstdint>
 #include <string>
 
-// FCBots settings, read from worldserver.conf (see the FCBots block in worldserver.conf.dist).
+// FCBots settings, read from fcbots.conf (see APPLY_MANUALLY/fcbots.conf.dist).
+// worldserver loads every *.conf in its config folder, so no include line is needed in worldserver.conf.
 namespace FCBots::Config
 {
 struct Settings
@@ -15,16 +16,16 @@ struct Settings
     std::int32_t AccountPoolSize = 10;          // FCBots.AccountPoolSize
     std::int32_t TickIntervalMs = 200;          // FCBots.Tick.IntervalMs
     std::int32_t ClientBuild = 0;               // FCBots.ClientBuild (build the server runs)
-    bool SummonAllowInCombat = true;            // FCBots.Summon.AllowInCombat
-    bool SummonAllowWhenMasterDead = true;      // FCBots.Summon.AllowWhenMasterDead
-    bool SummonAllowWhenBotDead = true;         // FCBots.Summon.AllowWhenBotDead
+
+    bool AutologinEnabled = false;              // FCBots.Autologin.Enabled
+    std::int32_t AutologinCount = 10;           // FCBots.Autologin.Count (random warriors picked from bot_names)
+    bool AutologinOnlyWithRealPlayers = false;  // FCBots.Autologin.OnlyWithRealPlayers
+    std::int32_t AutologinLoginDelaySeconds = 30;   // FCBots.Autologin.LoginDelaySeconds
+    std::int32_t AutologinLogoutDelaySeconds = 300; // FCBots.Autologin.LogoutDelaySeconds
 };
 
 // Reads the settings once from sConfigMgr and returns them. Safe to call every tick.
 Settings const& Get();
-
-// Summon rules from the config. Returns true when a summon is allowed in the given state.
-bool SummonAllowed(bool masterInCombat, bool masterDead, bool botDead);
 }
 
 #endif // FCBOTS_FCBOTS_CONFIG_H_H

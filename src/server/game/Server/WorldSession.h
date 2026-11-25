@@ -1159,7 +1159,8 @@ class TC_GAME_API WorldSession
         ~WorldSession();
 
         bool PlayerLoading() const { return !m_playerLoading.IsEmpty(); }
-        void SetBotLoginGuid(ObjectGuid guid) { m_playerLoading = guid; }
+        void SetBotLoginGuid(ObjectGuid guid) { m_playerLoading = guid; m_isBotSession = true; }
+        bool IsBotSession() const { return m_isBotSession; }
         bool PlayerLogout() const { return m_playerLogout; }
         bool PlayerLogoutWithSave() const { return m_playerLogout && m_playerSave; }
         bool PlayerRecentlyLoggedOut() const { return m_playerRecentlyLogout; }
@@ -2412,6 +2413,7 @@ class TC_GAME_API WorldSession
         time_t _logoutTime;
         bool m_inQueue;                                     // session wait in auth.queue
         ObjectGuid m_playerLoading;                         // code processed in LoginPlayer
+		bool m_isBotSession = false;                        // FCBots: bot sessions have no socket
         bool m_playerLogout;                                // code processed in LogoutPlayer
         bool m_playerRecentlyLogout;
         bool m_playerSave;

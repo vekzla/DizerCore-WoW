@@ -1,6 +1,7 @@
 #include "FCBots_Config.h"
 
 #include "Config.h"
+#include "Log.h"
 
 namespace FCBots::Config
 {
@@ -8,6 +9,13 @@ Settings const& Get()
 {
     static Settings const settings = []
     {
+        // worldserver.conf holds one line: FCBots.ConfigFile = "fcbots.conf".
+        // That file is loaded here, so FCBots keeps its own conf without the core's config.d folder.
+        std::string const file = sConfigMgr->GetStringDefault("FCBots.ConfigFile", "fcbots.conf");
+        std::string error;
+        if (!sConfigMgr->LoadAdditionalFile(file, true, error))
+            TC_LOG_ERROR("scripts", "FCBots: could not load config file {}: {}", file, error);
+
         Settings s;
         s.Enabled = sConfigMgr->GetBoolDefault("FCBots.Enabled", false);
         s.WarriorEnabled = sConfigMgr->GetBoolDefault("FCBots.Warrior.Enabled", false);
@@ -15,23 +23,14 @@ Settings const& Get()
         s.AccountPoolSize = sConfigMgr->GetIntDefault("FCBots.AccountPoolSize", 10);
         s.TickIntervalMs = sConfigMgr->GetIntDefault("FCBots.Tick.IntervalMs", 200);
         s.ClientBuild = sConfigMgr->GetIntDefault("FCBots.ClientBuild", 0);
-        s.SummonAllowInCombat = sConfigMgr->GetBoolDefault("FCBots.Summon.AllowInCombat", true);
-        s.SummonAllowWhenMasterDead = sConfigMgr->GetBoolDefault("FCBots.Summon.AllowWhenMasterDead", true);
-        s.SummonAllowWhenBotDead = sConfigMgr->GetBoolDefault("FCBots.Summon.AllowWhenBotDead", true);
+
+        s.AutologinEnabled = sConfigMgr->GetBoolDefault("FCBots.Autologin.Enabled", false);
+        s.AutologinCount = sConfigMgr->GetIntDefault("FCBots.Autologin.Count", 10);
+        s.AutologinOnlyWithRealPlayers = sConfigMgr->GetBoolDefault("FCBots.Autologin.OnlyWithRealPlayers", false);
+        s.AutologinLoginDelaySeconds = sConfigMgr->GetIntDefault("FCBots.Autologin.LoginDelaySeconds", 30);
+        s.AutologinLogoutDelaySeconds = sConfigMgr->GetIntDefault("FCBots.Autologin.LogoutDelaySeconds", 300);
         return s;
     }();
     return settings;
-}
-
-bool SummonAllowed(bool masterInCombat, bool masterDead, bool botDead)
-{
-    Settings const& s = Get();
-    if (masterInCombat && !s.SummonAllowInCombat)
-        return false;
-    if (masterDead && !s.SummonAllowWhenMasterDead)
-        return false;
-    if (botDead && !s.SummonAllowWhenBotDead)
-        return false;
-    return true;
 }
 }

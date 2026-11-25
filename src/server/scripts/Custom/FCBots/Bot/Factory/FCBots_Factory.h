@@ -1,9 +1,19 @@
-#ifndef FCBOTS_BOT_FACTORY_FCBOTS_FACTORY_H_H
-#define FCBOTS_BOT_FACTORY_FCBOTS_FACTORY_H_H
+#ifndef FCBOTS_FACTORY_H
+#define FCBOTS_FACTORY_H
 
-// Placeholder. Empty by design in Stage 1; filled in later stages.
+#include <cstdint>
+
+#include "ObjectGuid.h"
+
+class WorldSession;
+
 namespace FCBots::Factory
 {
+// Creates a character on the session's account. The name comes from NameGen.db2 (sDB2Manager),
+// checked against the character name rules and the characters table.
+// Returns the new character's low guid, or 0 on failure.
+ObjectGuid::LowType CreateCharacter(WorldSession* session, std::uint32_t accountId,
+    std::uint8_t race, std::uint8_t classId, std::uint8_t gender);
 }
 
-#endif // FCBOTS_BOT_FACTORY_FCBOTS_FACTORY_H_H
+#endif // FCBOTS_FACTORY_H
