@@ -2215,7 +2215,10 @@ void Unit::DoMeleeAttackIfReady()
 
     auto getAutoAttackError = [&]() -> Optional<AttackSwingErr>
     {
-        if (!IsValidAttackTarget(victim))
+        // Bot sessions skip the visibility part of IsValidAttackTarget. CanSeeOrDetect returns false for
+        // every creature for bots, which blocks all swings. Targets are still chosen as hostile and alive.
+        bool const botSession = ToPlayer() && ToPlayer()->GetSession()->IsBotSession();
+        if (!botSession && !IsValidAttackTarget(victim))
             return AttackSwingErr::CantAttack;
 
         if (!IsWithinMeleeRange(victim))

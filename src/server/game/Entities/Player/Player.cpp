@@ -1317,13 +1317,28 @@ bool Player::TeleportTo(TeleportLocation const& teleportLocation, TeleportToOpti
 
         // code for finish transfer called in WorldSession::HandleMovementOpcodes()
         // at client packet CMSG_MOVE_TELEPORT_ACK
-        SetTeleportState(GetPlayerMovingMe() ? TeleportState::WaitingForTeleportAck : TeleportState::NotTeleporting);
+        SetTeleportState(GetPlayerMovingMe() && !GetSession()->IsBotSession() ? TeleportState::WaitingForTeleportAck : TeleportState::NotTeleporting);
         // near teleport, triggering send CMSG_MOVE_TELEPORT_ACK from client at landing
         if (!GetSession()->PlayerLogout())
             SendTeleportPacket(m_teleport_dest);
 
         if (!IsBeingTeleportedNear()) // update position immediately if we will not be waiting for client ACK
             UpdatePosition(m_teleport_dest.Location, true);
+        // Bots never send CMSG_MOVE_TELEPORT_ACK or movement packets, so nearby clients are never told the new position.
+        // Stop any running movement, set m_movementInfo to the destination, broadcast the teleport, then force a visibility refresh.
+        if (GetSession()->IsBotSession() && !GetSession()->PlayerLogout())
+        {
+            // Stop the running spline and tell nearby clients the bot has stopped, then clear the movement flags.
+            StopMoving(true);
+            GetMotionMaster()->Clear();
+            GetMotionMaster()->MoveIdle();
+            m_movementInfo.flags &= ~(MOVEMENTFLAG_MASK_MOVING | MOVEMENTFLAG_MASK_TURNING);
+            m_movementInfo.pos.Relocate(m_teleport_dest.Location);
+            m_movementInfo.time = GameTime::GetGameTimeMS();
+            SendTeleportPacket(m_teleport_dest);
+            UpdateObjectVisibility(true);
+            TC_LOG_ERROR("scripts", "FCBots teleport broadcast: {} to {:.1f}, {:.1f}, {:.1f}", GetName(), m_teleport_dest.Location.GetPositionX(), m_teleport_dest.Location.GetPositionY(), m_teleport_dest.Location.GetPositionZ());
+        }
     }
     else
     {

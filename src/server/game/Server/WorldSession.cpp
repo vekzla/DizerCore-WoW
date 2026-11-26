@@ -266,9 +266,11 @@ void WorldSession::SendPacket(WorldPacket const* packet, bool forced /*= false*/
         conIdx = packet->GetConnection();
     }
 
-    if (!m_Socket[conIdx])
+        if (!m_Socket[conIdx])
     {
-        TC_LOG_ERROR("network.opcode", "Prevented sending of {} to non existent socket {} to {}", GetOpcodeNameForLogging(static_cast<OpcodeServer>(packet->GetOpcode())), uint32(conIdx), GetPlayerInfo());
+        // FCBots: bot sessions have no client, so their packets are dropped without logging.
+        if (!m_isBotSession)
+            TC_LOG_ERROR("network.opcode", "Prevented sending of {} to non existent socket {} to {}", GetOpcodeNameForLogging(static_cast<OpcodeServer>(packet->GetOpcode())), uint32(conIdx), GetPlayerInfo());
         return;
     }
 

@@ -4,6 +4,7 @@
 
 #include "CellImpl.h"
 #include "Log.h"
+#include "ConditionMgr.h"
 #include "Creature.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
@@ -46,9 +47,10 @@ public:
             return false;
         if (!unit->GetCharmerOrOwnerGUID().IsEmpty())
             return false;
-        if (!_bot->IsValidAttackTarget(unit))
+        if (!_bot->IsHostileTo(unit))
             return false;
-        if (!_bot->IsWithinDistInMap(unit, _range) || !_bot->CanSeeOrDetect(unit))
+        // Visibility check removed for testing: every creature reported canSee=false for bots.
+        if (!_bot->IsWithinDistInMap(unit, _range))
             return false;
 
         _range = _bot->GetDistance(unit); // nearer units win on the following checks
@@ -109,14 +111,78 @@ bool IsStillValid(Player* bot, Unit* target)
 }
 }
 
+// The nearest hostile creature currently attacking the bot, if any.
+Unit* FindAttacker(Player* bot)
+{
+    Unit* found = nullptr;
+    for (Unit* attacker : bot->getAttackers())
+    {
+        if (!attacker || attacker->GetTypeId() != TYPEID_UNIT)
+            continue;
+        if (!IsStillValid(bot, attacker) || !bot->IsHostileTo(attacker))
+            continue;
+        if (!found || bot->GetDistance(attacker) < bot->GetDistance(found))
+            found = attacker;
+    }
+    return found;
+}
+
 Unit* UpdateTarget(Player* bot)
 {
     Unit* target = bot->GetVictim();
+	// Retaliate: a hostile creature attacking the bot takes priority over the current victim.
+    if (Unit* attacker = FindAttacker(bot); attacker && attacker != target)
+    {
+        if (target)
+        {
+            bot->AttackStop();
+            bot->GetMotionMaster()->Remove(CHASE_MOTION_TYPE);
+        }
+        if (!bot->Attack(attacker, true))
+            return nullptr;
+
+        TC_LOG_ERROR("scripts", "FCBots target: {} switching to attacker {} (entry {})", bot->GetName(), attacker->GetName(), attacker->GetEntry());
+        bot->GetMotionMaster()->Remove(CHASE_MOTION_TYPE);
+        if (!bot->IsWithinMeleeRange(attacker))
+            bot->GetMotionMaster()->MoveChase(attacker, ChaseRange(MeleeChaseDistance));
+        return attacker;
+    }
     if (IsStillValid(bot, target))
     {
-        if (!bot->IsWithinMeleeRange(target)
-            && bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
+        // Diagnostic: once every 2 seconds, report which swing checks pass for the current victim.
+        static std::uint32_t swingDiagMs = 0u;
+        swingDiagMs += 200u;
+                if (swingDiagMs >= 2000u)
+        {
+            swingDiagMs = 0u;
+            TC_LOG_ERROR("scripts", "FCBots swing diag: {} vs {} los={} canSee={} validTarget={} inMelee={} attackReady={}",
+                bot->GetName(), target->GetName(),
+                bot->IsWithinLOSInMap(target), bot->CanSeeOrDetect(target), bot->IsValidAttackTarget(target),
+                bot->IsWithinMeleeRange(target), bot->isAttackReady(BASE_ATTACK));
+
+            SpawnTrackingStateData const* spawnState = target->GetSpawnTrackingStateDataForPlayer(bot);
+            TC_LOG_ERROR("scripts", "FCBots vis diag: samePhase={} spawnTracked={} spawnVisible={}",
+                bot->InSamePhase(target), spawnState != nullptr, spawnState ? spawnState->Visible : true);
+            
+			TC_LOG_ERROR("scripts", "FCBots sight2 diag: privateOwnerOk={} conditionsOk={} withinSight={}",
+                target->CheckPrivateObjectOwnerVisibility(bot) && bot->CheckPrivateObjectOwnerVisibility(target),
+                sConditionMgr->IsObjectMeetingVisibilityByObjectIdConditions(target, bot),
+                bot->IsWithinDist(target, bot->GetSightRange(target), false));
+        }
+
+        if (bot->IsWithinMeleeRange(target))
+        {
+            // In melee range: stand still, face the target, and swing.
+            if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+                bot->GetMotionMaster()->MoveIdle();
+            if (!bot->HasInArc(2 * float(M_PI) / 3, target))
+                bot->SetFacingToObject(target);
+        }
+		
+        else if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
+        {
             bot->GetMotionMaster()->MoveChase(target, ChaseRange(MeleeChaseDistance));
+        }
         return target;
     }
 
@@ -141,9 +207,10 @@ Unit* UpdateTarget(Player* bot)
         }
 
         // Walk to the hunt point when not there yet and not already walking to it.
-        if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != POINT_MOTION_TYPE
-            && !bot->IsWithinDist2d(HuntX, HuntY, HuntArriveRange))
-            bot->GetMotionMaster()->MovePoint(HuntPointId, HuntX, HuntY, HuntZ);
+        // Hunting-point walk disabled for the summon test. Re-enable once summon works.
+        // if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != POINT_MOTION_TYPE
+        //     && !bot->IsWithinDist2d(HuntX, HuntY, HuntArriveRange))
+        //     bot->GetMotionMaster()->MovePoint(HuntPointId, HuntX, HuntY, HuntZ);
         return nullptr;
     }
 
